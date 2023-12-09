@@ -1,21 +1,45 @@
 package com.compi;
 
 import java_cup.runtime.*;
+import java.io.*;
+import java.util.*;
+import java.lang.Math;
 
 class Parser;
 
-terminal PLUS, TIMES, LPAREN, RPAREN;
-terminal Integer NUMBER;
+terminal RUDOLPH, DASHER, DANCER, PRANCER, VIXEN, COMET,
+         CUPID, GRINCH, QUIEN, HERMEY, BUDDY, JINGLE,
+         JANGLE, PEPPERMINT, WUNORSE, MELCHOR, GASPAR,
+         BALTASAR, FINREGALO;
 
-non terminal Integer expr;
+terminal Integer SantaClaus;
+terminal Double PereNoel;
+terminal Boolean FatherChristmas;
+
+non terminal Integer exprInt;
+non terminal Double exprFloat;
+non terminal Boolean exprBol;
 
 /* Precedencia */
-precedence left PLUS;
-precedence left TIMES;
+precedence left RUDOLPH, DASHER;
+precedence left DANCER, PRANCER;
+precedence left VIXEN, COMET;
+precedence left CUPID;
+precedence left GRINCH, QUIEN;
+precedence left HERMEY, BUDDY, JINGLE, JANGLE;
+precedence left PEPPERMINT, WUNORSE;
+precedence left MELCHOR;
+precedence left GASPAR;
+precedence left BALTASAR;
+precedence left FINREGALO;
 
-start with expr;
+start with exprInt;
 
-expr ::= expr:e1 PLUS expr:e2   {: RESULT = e1 + e2; :}
-        | expr:e1 TIMES expr:e2 {: RESULT = e1 * e2; :}
-        | LPAREN expr:e RPAREN  {: RESULT = e; :}
-        | NUMBER:n              {: RESULT = n; :};
+exprInt ::= exprInt:e1 RUDOLPH exprInt:e2   {: RESULT = e1 + e2; :}
+        | exprInt:e1 DASHER exprInt:e2 {: RESULT = e1 - e2; :}
+        | exprInt:e1 DANCER exprInt:e2  {: RESULT = e1 / e2; :}
+        | exprInt:e1 VIXEN exprInt:e2  {: RESULT = e1 * e2; :}
+        | exprInt:e1 COMET exprInt:e2  {: RESULT = e1 % e2; :}
+        | GRINCH exprInt:e1  {: RESULT = e1 + 1; :}
+        | QUIEN exprInt:e1  {: RESULT = e1 - 1; :}
+        | SantaClaus:n              {: RESULT = n; :};
