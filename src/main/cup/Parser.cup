@@ -7,20 +7,47 @@ import java.lang.Math;
 
 class Parser;
 
+/*SANTACLAUS	Entero
+PERENOEL	Flotante
+FATHERCHRISTMAS	Booleano
+KRISKRINGLE	Caracter
+DedMoroz	String
+PAPANOEL	Array
+abrecuento	(
+cierrecuento	)
+abreempaque	[
+cierraempaque	]
+abreregalo	{
+cierraregalo	}
+*/
+
+/* Terminales */
+terminal Integer SANTACLAUS;
+terminal Double PERENOEL; // Agregado para exprFloat
+terminal Boolean FATHERCHRISTMAS; // Agregado para exprBol
+terminal Character KRISKRINGLE; // Agregado para expresiones de caracteres
+terminal String DEDMOROZ; // Agregado para expresiones de cadenas
+terminal Integer[] PAPANOEL; // Agregado para expresiones de arrays
+terminal Integer ABRECUENTO; // (
+terminal Integer CIERRECUENTO; // )
+terminal Integer ABREEMPAQUE; // [
+terminal Integer CIERREEMPAQUE; // ]
+terminal Integer ABREREGALO; // {
+terminal Integer CIERRAREGALO; // }
+terminal String PERSONA; // indentificador
+
+
+/* No terminales */
+non terminal Integer exprInt;
+non terminal Double exprFloat; // Nuevo no terminal para expresiones de punto flotante
+non terminal Boolean exprBol; // Nuevo no terminal para expresiones booleanas
+
 terminal RUDOLPH, DASHER, DANCER, PRANCER, VIXEN, COMET,
          CUPID, GRINCH, QUIEN, HERMEY, BUDDY, JINGLE,
          JANGLE, PEPPERMINT, WUNORSE, MELCHOR, GASPAR,
          BALTASAR, FINREGALO;
-
-terminal Integer SantaClaus;
-terminal Double PereNoel;
-terminal Boolean FatherChristmas;
-
-non terminal Integer exprInt;
-non terminal Double exprFloat;
-non terminal Boolean exprBol;
-
-/* Precedencia */
+         
+/* Declaraciones de precedencia */
 precedence left RUDOLPH, DASHER;
 precedence left DANCER, PRANCER;
 precedence left VIXEN, COMET;
@@ -33,6 +60,7 @@ precedence left GASPAR;
 precedence left BALTASAR;
 precedence left FINREGALO;
 
+/* Símbolo inicial y producciones */
 start with exprInt;
 
 exprInt ::= exprInt:e1 RUDOLPH exprInt:e2   {: RESULT = e1 + e2; :}
@@ -42,4 +70,22 @@ exprInt ::= exprInt:e1 RUDOLPH exprInt:e2   {: RESULT = e1 + e2; :}
         | exprInt:e1 COMET exprInt:e2  {: RESULT = e1 % e2; :}
         | GRINCH exprInt:e1  {: RESULT = e1 + 1; :}
         | QUIEN exprInt:e1  {: RESULT = e1 - 1; :}
-        | SantaClaus:n              {: RESULT = n; :};
+        | SANTACLAUS:n              {: RESULT = n; :};
+
+exprFloat ::= PERENOEL:e1 RUDOLPH PERENOEL:e2   {: RESULT = e1 + e2; :}
+           | PERENOEL:e1 DASHER PERENOEL:e2 {: RESULT = e1 - e2; :}
+           | PERENOEL:e1 DANCER PERENOEL:e2  {: RESULT = e1 / e2; :}
+           | PERENOEL:e1 VIXEN PERENOEL:e2  {: RESULT = e1 * e2; :}
+           | GRINCH PERENOEL:e1  {: RESULT = e1 + 1.0; :}
+           | QUIEN PERENOEL:e1  {: RESULT = e1 - 1.0; :};
+
+exprBol ::= FATHERCHRISTMAS:e1 PEPPERMINT FATHERCHRISTMAS:e2   {: RESULT = e1 && e2; :}
+         | FATHERCHRISTMAS:e1 WUNORSE FATHERCHRISTMAS:e2 {: RESULT = e1 || e2; :}
+         | MELCHOR FATHERCHRISTMAS:e1  {: RESULT = !e1; :};
+// Agregado para expresiones de caracteres
+exprInt ::= KRISKRINGLE:e1  {: RESULT = (int)e1; :};
+// Agregado para expresiones de arrays
+exprInt ::= PAPANOEL:e1  {: RESULT = e1.length; :};
+// Agregado para expresiones de cadenas
+exprInt ::= DEDMOROZ:e1  {: RESULT = e1.length(); :};
+

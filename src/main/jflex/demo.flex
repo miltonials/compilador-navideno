@@ -4,8 +4,8 @@ package com.compi;
 import java_cup.runtime.*;
 
 /**
-  * This class is a simple example lexer.
-  */
+ * This class is a simple example lexer.
+ */
 %%
 %public
 %class IdLexer
@@ -14,21 +14,26 @@ digit = [0-9]
 letter = [a-zA-Z]
 whitespace = [ \t]
 LineTerminator = \r|\n|\r\n
+// boolean = true|false
+boolean = true|false
+// string = "([^"\\]|\\["\\bfnrt])*"
+string = [:letter:]+
+
 
 %{
 
-  private Symbol symbol(int type) {
+private Symbol symbol(int type) {
     return new Symbol(type, yyline, yycolumn);
-  }
+}
 
-  private Symbol symbol(int type, Object value) {
+private Symbol symbol(int type, Object value) {
     return new Symbol(type, yyline, yycolumn, value);
-  }
+}
 %}
 
 %%
 
-{digit}+ { return symbol(ParserSym.SantaClaus, Integer.valueOf(yytext())); }
+{digit}+ { return symbol(ParserSym.SANTACLAUS, Integer.valueOf(yytext())); }
 "+" { return symbol(ParserSym.RUDOLPH, yytext()); }
 "-" { return symbol(ParserSym.DASHER, yytext()); }
 "/" { return symbol(ParserSym.DANCER, yytext()); }
@@ -56,9 +61,32 @@ LineTerminator = \r|\n|\r\n
   yycolumn = 1;
 }
 
-[^\s] {
-  return symbol(ParserSym.FINREGALO, yytext());
-}
+// Identifier = {letter}({letter}|{digit})*
+// {Identifier}+ { return symbol(ParserSym.PERSONA, yytext()); }
+
+/*
+PERENOEL	Flotante
+FATHERCHRISTMAS	Booleano
+KRISKRINGLE	Caracter
+DEDMOROZ	String
+PAPANOEL	Array
+abrecuento	(
+cierrecuento	)
+abreempaque	[
+cierraempaque	]
+abreregalo	{
+cierraregalo	}
+*/
+boolean { return symbol(ParserSym.FATHERCHRISTMAS, yytext()); }
+string { return symbol(ParserSym.DEDMOROZ, yytext()); }
+
+"(" { return symbol(ParserSym.ABRECUENTO, yytext()); }
+")" { return symbol(ParserSym.CIERRECUENTO, yytext()); }
+"[" { return symbol(ParserSym.ABREEMPAQUE, yytext()); }
+"]" { return symbol(ParserSym.CIERREEMPAQUE, yytext()); }
+"{" { return symbol(ParserSym.ABREREGALO, yytext()); }
+"}" { return symbol(ParserSym.CIERRAREGALO, yytext()); }
+
 
 <<EOF>> { return symbol(ParserSym.EOF); }
 
