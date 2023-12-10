@@ -20,9 +20,16 @@ decimal = {decimales}("."{decimales})? // decimal
 letter = [a-zA-Z]
 whitespace = [ \t]
 LineTerminator = \r|\n|\r\n
-Identifier = [a-zA-Z][a-zA-Z0-9]* // identficador usado para declara a las personas
+// boolean = true|false // booleano
+//if 
+if = if // si
+else = else // sino
 
-boolean = true|false // booleano
+// Identifier = [a-zA-Z] [a-zA-Z0-9]* (?! (false | true) \b)  // identficador usado para declara a las personas, el identificador no puede ser true o false
+// Identifier = [a-zA-Z] [a-zA-Z0-9]* // identficador usado para declara a las personas
+Identifier = [a-zA-Z] [a-zA-Z0-9]* 
+
+
 string = \"[^\"]*\" // cadena de caracteres
 character = \'[^\']\' // caracter
 
@@ -35,7 +42,14 @@ comment = {ComentarioLinea}|{ComentarioBloque}
 ComentarioLinea = "@" {InputCharacter}* {LineTerminator}?
 // comentario de bloque /_ contenido_/
 ComentarioBloque = "/_" {CommentContent}* "_"+ "/"
-CommentContent = ( [^*] | ("*"+ [^/*]) )*
+CommentContent = ( [^*] | ("*"+ [^/*]) )* 
+
+// Array de cualquier tipo de dato ejemplo: [1,2,3,4,5], ["hola","mundo"], [true,false]
+// Array = "[" {ArrayContent} "]"
+// ArrayContent = (ArrayElement ("," ArrayElement)*)?
+// ArrayElement = (boolean | entero | decimal | string | character | Identifier)
+Array =  "[" {ArrayContent}* "]" 
+ArrayContent = ( [^,] | ("," [^,]) )* // contenido del array separado por comas 
 
 %{
 
@@ -86,13 +100,26 @@ KRISKRINGLE	Caracter
 DEDMOROZ	String
 PAPANOEL	Array
 */
-<YYINITIAL> {Identifier} { return symbol(ParserSym.PERSONA, yytext()); }
-<YYINITIAL> {boolean} { return symbol(ParserSym.FATHERCHRISTMAS, yytext()); }
-<YYINITIAL> {string} { return symbol(ParserSym.DEDMOROZ, yytext()); }
-<YYINITIAL> {decimal}+ { return symbol(ParserSym.PERENOEL, Double.valueOf(yytext())); }
-<YYINITIAL> {character} { return symbol(ParserSym.KRISKRINGLE, yytext()); }
-<YYINITIAL> {digit} { return symbol(ParserSym.PAPANOEL, yytext()); }
-
+// <YYINITIAL> {boolean} { return symbol(ParserSym.FATHERCHRISTMAS, yytext()); } // booleano
+// <YYINITIAL> {Identifier} { return symbol(ParserSym.PERSONA, yytext()); }
+<YYINITIAL> {Identifier} {
+    if (yytext().equals("true") || yytext().equals("false")) {
+        //yypushback(yytext().length()); // Vuelve atrás para que las palabras reservadas no se consuman
+        return symbol(ParserSym.FATHERCHRISTMAS, yytext()); // Puedes definir un símbolo diferente para booleanos si es necesario
+    // si es if o else
+    } else if (yytext().equals("if")) {
+        return symbol(ParserSym.IF, yytext());
+    } else if (yytext().equals("else")) {
+        return symbol(ParserSym.ELSE, yytext());
+    } else {
+        return symbol(ParserSym.PERSONA, yytext()); // Identificador regular
+    }
+}
+<YYINITIAL> {string} { return symbol(ParserSym.DEDMOROZ, yytext()); } // cadena de caracteres
+<YYINITIAL> {decimal}+ { return symbol(ParserSym.PERENOEL, Double.valueOf(yytext())); } // flotante
+<YYINITIAL> {character} { return symbol(ParserSym.KRISKRINGLE, yytext()); } // caracter
+// <YYINITIAL> {digit} { return symbol(ParserSym.PAPANOEL, yytext()); } // array
+<YYINITIAL> {Array} { return symbol(ParserSym.PAPANOEL, yytext()); } // array
 /* comentarios */
 /* comentario de linea @,
 comentario de bloque /_ contenido_/
@@ -117,6 +144,8 @@ cierraregalo	}
 "]" { return symbol(ParserSym.CIERREEMPAQUE, yytext()); }
 "{" { return symbol(ParserSym.ABREREGALO, yytext()); }
 "}" { return symbol(ParserSym.CIERRAREGALO, yytext()); }
+"," { return symbol(ParserSym.COMA, yytext()); }
+// "boolean" { return symbol(ParserSym.FATHERCHRISTMAS, yytext()); }
 
 
 <<EOF>> { return symbol(ParserSym.EOF); }

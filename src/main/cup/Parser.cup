@@ -35,7 +35,10 @@ terminal Integer CIERREEMPAQUE; // ]
 terminal Integer ABREREGALO; // {
 terminal Integer CIERRAREGALO; // }
 terminal String PERSONA; // indentificador
-
+// Coma ,
+terminal Integer COMA;
+terminal Integer IF;
+terminal Integer ELSE;
 
 /* No terminales */
 non terminal Integer exprInt;
