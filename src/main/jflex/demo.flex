@@ -16,9 +16,11 @@ digitnonzero = [1-9] // digito no cero
 letter = [a-zA-Z]
 whitespace = [ \t]
 LineTerminator = \r|\n|\r\n
-Identifier = [:jletter:][:jletterdigit:]* // identficador usado para declara a las personas
+Identifier = [a-zA-Z][a-zA-Z0-9]* // identficador usado para declara a las personas
+
 boolean = true|false // booleano
 string = \"[^\"]*\" // cadena de caracteres
+character = \'[^\']\' // caracter
 
 LineTerminator = \r|\n|\r\n // salto de linea
 InputCharacter = [^\r\n] // caracter de entrada
@@ -84,7 +86,7 @@ PAPANOEL	Array
 <YYINITIAL> {boolean} { return symbol(ParserSym.FATHERCHRISTMAS, yytext()); }
 <YYINITIAL> {string} { return symbol(ParserSym.DEDMOROZ, yytext()); }
 <YYINITIAL> {digit}+ { return symbol(ParserSym.PERENOEL, Integer.valueOf(yytext())); }
-<YYINITIAL> {letter} { return symbol(ParserSym.KRISKRINGLE, yytext()); }
+<YYINITIAL> {character} { return symbol(ParserSym.KRISKRINGLE, yytext()); }
 <YYINITIAL> {digit} { return symbol(ParserSym.PAPANOEL, yytext()); }
 
 /* comentarios */

@@ -15,9 +15,8 @@
 (5 < 8)|
 [10 <= 10]|
 {15 > 12}|
-1hola|
-s|
+hola1|
+'s'|
 @ hola mundo|
-/_ hola -/ 5
-sdf
+"sdf"
 s
