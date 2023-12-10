@@ -12,6 +12,10 @@ import java_cup.runtime.*;
 %cup
 digit = [0-9] // digito
 digitnonzero = [1-9] // digito no cero
+entero = {digitnonzero}{digit}* // entero
+// decimales desde 0 hasta 999999...
+decimales = 0|{digitnonzero}{digit}* // decimales
+decimal = {decimales}("."{decimales})? // decimal
 // 
 letter = [a-zA-Z]
 whitespace = [ \t]
@@ -46,7 +50,7 @@ private Symbol symbol(int type, Object value) {
 
 %%
 
-{digit}+ { return symbol(ParserSym.SANTACLAUS, Integer.valueOf(yytext())); }
+{entero}+ { return symbol(ParserSym.SANTACLAUS, Integer.valueOf(yytext())); }
 "+" { return symbol(ParserSym.RUDOLPH, yytext()); }
 "-" { return symbol(ParserSym.DASHER, yytext()); }
 "/" { return symbol(ParserSym.DANCER, yytext()); }
@@ -85,7 +89,7 @@ PAPANOEL	Array
 <YYINITIAL> {Identifier} { return symbol(ParserSym.PERSONA, yytext()); }
 <YYINITIAL> {boolean} { return symbol(ParserSym.FATHERCHRISTMAS, yytext()); }
 <YYINITIAL> {string} { return symbol(ParserSym.DEDMOROZ, yytext()); }
-<YYINITIAL> {digit}+ { return symbol(ParserSym.PERENOEL, Integer.valueOf(yytext())); }
+<YYINITIAL> {decimal}+ { return symbol(ParserSym.PERENOEL, Double.valueOf(yytext())); }
 <YYINITIAL> {character} { return symbol(ParserSym.KRISKRINGLE, yytext()); }
 <YYINITIAL> {digit} { return symbol(ParserSym.PAPANOEL, yytext()); }
 
