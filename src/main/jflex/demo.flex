@@ -10,15 +10,26 @@ import java_cup.runtime.*;
 %public
 %class IdLexer
 %cup
-digit = [0-9]
+digit = [0-9] // digito
+digitnonzero = [1-9] // digito no cero
+// 
 letter = [a-zA-Z]
 whitespace = [ \t]
 LineTerminator = \r|\n|\r\n
-// boolean = true|false
-boolean = true|false
-// string = "([^"\\]|\\["\\bfnrt])*"
-string = [:letter:]+
+Identifier = [:jletter:][:jletterdigit:]* // identficador usado para declara a las personas
+boolean = true|false // booleano
+string = \"[^\"]*\" // cadena de caracteres
 
+LineTerminator = \r|\n|\r\n // salto de linea
+InputCharacter = [^\r\n] // caracter de entrada
+
+/* Comentarios */
+comment = {ComentarioLinea}|{ComentarioBloque}
+// comentario de linea @
+ComentarioLinea = "@" {InputCharacter}* {LineTerminator}?
+// comentario de bloque /_ contenido_/
+ComentarioBloque = "/_" {CommentContent}* "_"+ "/"
+CommentContent = ( [^*] | ("*"+ [^/*]) )*
 
 %{
 
@@ -60,16 +71,32 @@ private Symbol symbol(int type, Object value) {
   yyline++;
   yycolumn = 1;
 }
-
-// Identifier = {letter}({letter}|{digit})*
-// {Identifier}+ { return symbol(ParserSym.PERSONA, yytext()); }
-
+/* Identificadores */
 /*
+PERSONA  Identificador
 PERENOEL	Flotante
 FATHERCHRISTMAS	Booleano
 KRISKRINGLE	Caracter
 DEDMOROZ	String
 PAPANOEL	Array
+*/
+<YYINITIAL> {Identifier} { return symbol(ParserSym.PERSONA, yytext()); }
+<YYINITIAL> {boolean} { return symbol(ParserSym.FATHERCHRISTMAS, yytext()); }
+<YYINITIAL> {string} { return symbol(ParserSym.DEDMOROZ, yytext()); }
+<YYINITIAL> {digit}+ { return symbol(ParserSym.PERENOEL, Integer.valueOf(yytext())); }
+<YYINITIAL> {letter} { return symbol(ParserSym.KRISKRINGLE, yytext()); }
+<YYINITIAL> {digit} { return symbol(ParserSym.PAPANOEL, yytext()); }
+
+/* comentarios */
+/* comentario de linea @,
+comentario de bloque /_ contenido_/
+*/
+<YYINITIAL> {comment} { /* skip comments */ } // comentarios
+// comentario de bloque /_ contenido_/
+<YYINITIAL> "/_" {CommentContent}* "_"+ "/" { /* skip comments */ }
+
+
+/*
 abrecuento	(
 cierrecuento	)
 abreempaque	[
@@ -77,8 +104,6 @@ cierraempaque	]
 abreregalo	{
 cierraregalo	}
 */
-boolean { return symbol(ParserSym.FATHERCHRISTMAS, yytext()); }
-string { return symbol(ParserSym.DEDMOROZ, yytext()); }
 
 "(" { return symbol(ParserSym.ABRECUENTO, yytext()); }
 ")" { return symbol(ParserSym.CIERRECUENTO, yytext()); }
