@@ -45,6 +45,11 @@ terminal Integer HACE;//DO
 terminal Integer REVISA;//UNTIL
 terminal Integer ENVIA;//RETURN
 terminal Integer CORTA;//BREAK
+terminal Integer NARRA;//print
+terminal Integer ESCUCHA;//READ 
+terminal Integer ENTREGA;//=
+// main
+terminal Integer MAIN;
 
 
 /* No terminales */

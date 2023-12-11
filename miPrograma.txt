@@ -20,19 +20,23 @@ hola1|
 's'|
 @ hola mundo|
 "sdf"|
-5.5
-true
-]
-,
+5.5 |
+true |
+] |
+, |
 [true,false,434,'f',["fsfd",3]] |
-'s'
-if
-else
-if
-elif
-else
-for
-do
-until
-return 
-break
+'s' |
+if |
+else |
+if |
+elif |
+else |
+for |
+do |
+until |
+return |
+break |
+print |
+read |
+= |
+main |

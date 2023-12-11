@@ -30,6 +30,10 @@ do = do
 until = until
 return  = return 
 break = break
+print = print
+read = read
+asignar = =;
+disparador = main;
 
 
 
@@ -92,6 +96,7 @@ private Symbol symbol(int type, Object value) {
 "#" { return symbol(ParserSym.GASPAR, yytext()); }
 "!" { return symbol(ParserSym.BALTASAR, yytext()); }
 "|" { return symbol(ParserSym.FINREGALO, yytext()); }
+"=" { return symbol(ParserSym.ENTREGA, yytext()); }
 
 {whitespace}+ { /* skip white spaces */ }
 
@@ -123,6 +128,7 @@ PAPANOEL	Array
       terminal Integer REVISA;//UNTIL
       terminal Integer ENVIA;//RETURN
       terminal Integer CORTA;//BREAK
+      terminal Integer NARRA;//PRINT
     */
     if (yytext().equals("if")) {
         //yypushback(yytext().length()); // Vuelve atrás para que las palabras reservadas no se consuman
@@ -156,6 +162,19 @@ PAPANOEL	Array
         //yypushback(yytext().length()); // Vuelve atrás para que las palabras reservadas no se consuman
         return symbol(ParserSym.CORTA, yytext()); // Puedes definir un símbolo diferente para booleanos si es necesario
     }
+    if (yytext().equals("print")) {
+        //yypushback(yytext().length()); // Vuelve atrás para que las palabras reservadas no se consuman
+        return symbol(ParserSym.NARRA, yytext()); // Puedes definir un símbolo diferente para booleanos si es necesario
+    }
+    if (yytext().equals("read")) {
+        //yypushback(yytext().length()); // Vuelve atrás para que las palabras reservadas no se consuman
+        return symbol(ParserSym.ESCUCHA, yytext()); // Puedes definir un símbolo diferente para booleanos si es necesario
+    }
+    if (yytext().equals("main")) {
+        //yypushback(yytext().length()); // Vuelve atrás para que las palabras reservadas no se consuman
+        return symbol(ParserSym.MAIN, yytext()); // Puedes definir un símbolo diferente para booleanos si es necesario
+    }
+    return symbol(ParserSym.PERSONA, yytext());
 }
 <YYINITIAL> {string} { return symbol(ParserSym.DEDMOROZ, yytext()); } // cadena de caracteres
 <YYINITIAL> {decimal}+ { return symbol(ParserSym.PERENOEL, Double.valueOf(yytext())); } // flotante
@@ -168,7 +187,7 @@ comentario de bloque /_ contenido_/
 */
 <YYINITIAL> {comment} { /* skip comments */ } // comentarios
 // comentario de bloque /_ contenido_/
-<YYINITIAL> "/_" {CommentContent}* "_"+ "/" { /* skip comments */ }
+<YYINITIAL> "/_" {CommentContent}* "_/" { /* skip comments */ }
 
 
 /*
