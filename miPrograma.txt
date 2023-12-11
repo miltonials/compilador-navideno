@@ -24,7 +24,15 @@ hola1|
 true
 ]
 ,
-[true,false,434,'f',"fsfd",3] |
+[true,false,434,'f',["fsfd",3]] |
 's'
 if
 else
+if
+elif
+else
+for
+do
+until
+return 
+break

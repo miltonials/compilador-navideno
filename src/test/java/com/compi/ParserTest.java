@@ -13,6 +13,4 @@ public class ParserTest {
     Parser p = new Parser(lexer);
     Integer resultado = (Integer) p.parse().value;
   }
-
-
 }

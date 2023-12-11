@@ -22,8 +22,16 @@ whitespace = [ \t]
 LineTerminator = \r|\n|\r\n
 // boolean = true|false // booleano
 //if 
-if = if // si
-else = else // sino
+if = if
+elif = elif
+else = else
+for = for
+do = do
+until = until
+return  = return 
+break = break
+
+
 
 // Identifier = [a-zA-Z] [a-zA-Z0-9]* (?! (false | true) \b)  // identficador usado para declara a las personas, el identificador no puede ser true o false
 // Identifier = [a-zA-Z] [a-zA-Z0-9]* // identficador usado para declara a las personas
@@ -106,13 +114,47 @@ PAPANOEL	Array
     if (yytext().equals("true") || yytext().equals("false")) {
         //yypushback(yytext().length()); // Vuelve atrás para que las palabras reservadas no se consuman
         return symbol(ParserSym.FATHERCHRISTMAS, yytext()); // Puedes definir un símbolo diferente para booleanos si es necesario
-    // si es if o else
-    } else if (yytext().equals("if")) {
-        return symbol(ParserSym.IF, yytext());
-    } else if (yytext().equals("else")) {
-        return symbol(ParserSym.ELSE, yytext());
-    } else {
-        return symbol(ParserSym.PERSONA, yytext()); // Identificador regular
+    }
+    /*terminal Integer ELFO;//IF
+      terminal Integer HADA;//ELSE
+      terminal Integer DUENDE;//ELSE
+      terminal Integer ENVUELVE;//FOR
+      terminal Integer HACE;//DO
+      terminal Integer REVISA;//UNTIL
+      terminal Integer ENVIA;//RETURN
+      terminal Integer CORTA;//BREAK
+    */
+    if (yytext().equals("if")) {
+        //yypushback(yytext().length()); // Vuelve atrás para que las palabras reservadas no se consuman
+        return symbol(ParserSym.ELFO, yytext()); // Puedes definir un símbolo diferente para booleanos si es necesario
+    }
+    if (yytext().equals("elif")) {
+        //yypushback(yytext().length()); // Vuelve atrás para que las palabras reservadas no se consuman
+        return symbol(ParserSym.HADA, yytext()); // Puedes definir un símbolo diferente para booleanos si es necesario
+    }
+    if (yytext().equals("else")) {
+        //yypushback(yytext().length()); // Vuelve atrás para que las palabras reservadas no se consuman
+        return symbol(ParserSym.DUENDE, yytext()); // Puedes definir un símbolo diferente para booleanos si es necesario
+    }
+    if (yytext().equals("for")) {
+        //yypushback(yytext().length()); // Vuelve atrás para que las palabras reservadas no se consuman
+        return symbol(ParserSym.ENVUELVE, yytext()); // Puedes definir un símbolo diferente para booleanos si es necesario
+    }
+    if (yytext().equals("do")) {
+        //yypushback(yytext().length()); // Vuelve atrás para que las palabras reservadas no se consuman
+        return symbol(ParserSym.HACE, yytext()); // Puedes definir un símbolo diferente para booleanos si es necesario
+    }
+    if (yytext().equals("until")) {
+        //yypushback(yytext().length()); // Vuelve atrás para que las palabras reservadas no se consuman
+        return symbol(ParserSym.REVISA, yytext()); // Puedes definir un símbolo diferente para booleanos si es necesario
+    }
+    if (yytext().equals("return")) {
+        //yypushback(yytext().length()); // Vuelve atrás para que las palabras reservadas no se consuman
+        return symbol(ParserSym.ENVIA, yytext()); // Puedes definir un símbolo diferente para booleanos si es necesario
+    }
+    if (yytext().equals("break")) {
+        //yypushback(yytext().length()); // Vuelve atrás para que las palabras reservadas no se consuman
+        return symbol(ParserSym.CORTA, yytext()); // Puedes definir un símbolo diferente para booleanos si es necesario
     }
 }
 <YYINITIAL> {string} { return symbol(ParserSym.DEDMOROZ, yytext()); } // cadena de caracteres

@@ -37,8 +37,15 @@ terminal Integer CIERRAREGALO; // }
 terminal String PERSONA; // indentificador
 // Coma ,
 terminal Integer COMA;
-terminal Integer IF;
-terminal Integer ELSE;
+terminal Integer ELFO;//IF
+terminal Integer HADA;//ELSE
+terminal Integer DUENDE;//ELSE
+terminal Integer ENVUELVE;//FOR
+terminal Integer HACE;//DO
+terminal Integer REVISA;//UNTIL
+terminal Integer ENVIA;//RETURN
+terminal Integer CORTA;//BREAK
+
 
 /* No terminales */
 non terminal Integer exprInt;
