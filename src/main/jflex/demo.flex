@@ -76,7 +76,7 @@ private Symbol symbol(int type, Object value) {
 
 %%
 
-{entero}+ { return symbol(ParserSym.SANTACLAUS, Integer.valueOf(yytext())); }
+{entero}+ { return symbol(ParserSym.L_SANTACLAUS, Integer.valueOf(yytext())); }
 "+" { return symbol(ParserSym.RUDOLPH, yytext()); }
 "-" { return symbol(ParserSym.DASHER, yytext()); }
 "/" { return symbol(ParserSym.DANCER, yytext()); }
@@ -107,18 +107,18 @@ private Symbol symbol(int type, Object value) {
 /* Identificadores */
 /*
 PERSONA  Identificador
-PERENOEL	Flotante
-FATHERCHRISTMAS	Booleano
-KRISKRINGLE	Caracter
-DEDMOROZ	String
-PAPANOEL	Array
+L_PERENOEL	Flotante
+L_FATHERCHRISTMAS	Booleano
+L_KRISKRINGLE	Caracter
+L_DEDMOROZ	String
+L_PAPANOEL	Array
 */
-// <YYINITIAL> {boolean} { return symbol(ParserSym.FATHERCHRISTMAS, yytext()); } // booleano
+// <YYINITIAL> {boolean} { return symbol(ParserSym.L_FATHERCHRISTMAS, yytext()); } // booleano
 // <YYINITIAL> {Identifier} { return symbol(ParserSym.PERSONA, yytext()); }
 <YYINITIAL> {Identifier} {
     if (yytext().equals("true") || yytext().equals("false")) {
         //yypushback(yytext().length()); // Vuelve atrás para que las palabras reservadas no se consuman
-        return symbol(ParserSym.FATHERCHRISTMAS, yytext()); // Puedes definir un símbolo diferente para booleanos si es necesario
+        return symbol(ParserSym.L_FATHERCHRISTMAS, yytext()); // Puedes definir un símbolo diferente para booleanos si es necesario
     }
     /*terminal Integer ELFO;//IF
       terminal Integer HADA;//ELSE
@@ -176,11 +176,11 @@ PAPANOEL	Array
     }
     return symbol(ParserSym.PERSONA, yytext());
 }
-<YYINITIAL> {string} { return symbol(ParserSym.DEDMOROZ, yytext()); } // cadena de caracteres
-<YYINITIAL> {decimal}+ { return symbol(ParserSym.PERENOEL, Double.valueOf(yytext())); } // flotante
-<YYINITIAL> {character} { return symbol(ParserSym.KRISKRINGLE, yytext()); } // caracter
-// <YYINITIAL> {digit} { return symbol(ParserSym.PAPANOEL, yytext()); } // array
-<YYINITIAL> {Array} { return symbol(ParserSym.PAPANOEL, yytext()); } // array
+<YYINITIAL> {string} { return symbol(ParserSym.L_DEDMOROZ, yytext()); } // cadena de caracteres
+<YYINITIAL> {decimal}+ { return symbol(ParserSym.L_PERENOEL, Double.valueOf(yytext())); } // flotante
+<YYINITIAL> {character} { return symbol(ParserSym.L_KRISKRINGLE, yytext()); } // caracter
+// <YYINITIAL> {digit} { return symbol(ParserSym.L_PAPANOEL, yytext()); } // array
+<YYINITIAL> {Array} { return symbol(ParserSym.L_PAPANOEL, yytext()); } // array
 /* comentarios */
 /* comentario de linea @,
 comentario de bloque /_ contenido_/
@@ -206,11 +206,12 @@ cierraregalo	}
 "{" { return symbol(ParserSym.ABREREGALO, yytext()); }
 "}" { return symbol(ParserSym.CIERRAREGALO, yytext()); }
 "," { return symbol(ParserSym.COMA, yytext()); }
-// "boolean" { return symbol(ParserSym.FATHERCHRISTMAS, yytext()); }
+// "boolean" { return symbol(ParserSym.L_FATHERCHRISTMAS, yytext()); }
 
 
 <<EOF>> { return symbol(ParserSym.EOF); }
 
 . {
-  throw new Error("Cadena ilegal <" + yytext() + ">");
+    // throw new Error("Cadena ilegal <" + yytext() + ">"); no detener el programa
+    System.err.println("Cadena ilegal <" + yytext() + ">");
 }

@@ -7,12 +7,12 @@ import java.lang.Math;
 
 class Parser;
 
-/*SANTACLAUS	Entero
-PERENOEL	Flotante
-FATHERCHRISTMAS	Booleano
-KRISKRINGLE	Caracter
-DedMoroz	String
-PAPANOEL	Array
+/*L_SANTACLAUS	Entero
+L_PERENOEL	Flotante
+L_FATHERCHRISTMAS	Booleano
+L_KRISKRINGLE	Caracter
+L_DEDMOROZ	String
+L_PAPANOEL	Array
 abrecuento	(
 cierrecuento	)
 abreempaque	[
@@ -22,12 +22,12 @@ cierraregalo	}
 */
 
 /* Terminales */
-terminal Integer SANTACLAUS;
-terminal Double PERENOEL; // Agregado para exprFloat
-terminal Boolean FATHERCHRISTMAS; // Agregado para exprBol
-terminal Character KRISKRINGLE; // Agregado para expresiones de caracteres
-terminal String DEDMOROZ; // Agregado para expresiones de cadenas
-terminal Integer[] PAPANOEL; // Agregado para expresiones de arrays
+terminal Integer L_SANTACLAUS;
+terminal Double L_PERENOEL; // Agregado para exprFloat
+terminal Boolean L_FATHERCHRISTMAS; // Agregado para exprBol
+terminal Character L_KRISKRINGLE; // Agregado para expresiones de caracteres
+terminal String L_DEDMOROZ; // Agregado para expresiones de cadenas
+terminal Integer[] L_PAPANOEL; // Agregado para expresiones de arrays
 terminal Integer ABRECUENTO; // (
 terminal Integer CIERRECUENTO; // )
 terminal Integer ABREEMPAQUE; // [
@@ -85,22 +85,22 @@ exprInt ::= exprInt:e1 RUDOLPH exprInt:e2   {: RESULT = e1 + e2; :}
         | exprInt:e1 COMET exprInt:e2  {: RESULT = e1 % e2; :}
         | GRINCH exprInt:e1  {: RESULT = e1 + 1; :}
         | QUIEN exprInt:e1  {: RESULT = e1 - 1; :}
-        | SANTACLAUS:n              {: RESULT = n; :};
+        | L_SANTACLAUS:n              {: RESULT = n; :};
 
-exprFloat ::= PERENOEL:e1 RUDOLPH PERENOEL:e2   {: RESULT = e1 + e2; :}
-           | PERENOEL:e1 DASHER PERENOEL:e2 {: RESULT = e1 - e2; :}
-           | PERENOEL:e1 DANCER PERENOEL:e2  {: RESULT = e1 / e2; :}
-           | PERENOEL:e1 VIXEN PERENOEL:e2  {: RESULT = e1 * e2; :}
-           | GRINCH PERENOEL:e1  {: RESULT = e1 + 1.0; :}
-           | QUIEN PERENOEL:e1  {: RESULT = e1 - 1.0; :};
+exprFloat ::= L_PERENOEL:e1 RUDOLPH L_PERENOEL:e2   {: RESULT = e1 + e2; :}
+           | L_PERENOEL:e1 DASHER L_PERENOEL:e2 {: RESULT = e1 - e2; :}
+           | L_PERENOEL:e1 DANCER L_PERENOEL:e2  {: RESULT = e1 / e2; :}
+           | L_PERENOEL:e1 VIXEN L_PERENOEL:e2  {: RESULT = e1 * e2; :}
+           | GRINCH L_PERENOEL:e1  {: RESULT = e1 + 1.0; :}
+           | QUIEN L_PERENOEL:e1  {: RESULT = e1 - 1.0; :};
 
-exprBol ::= FATHERCHRISTMAS:e1 PEPPERMINT FATHERCHRISTMAS:e2   {: RESULT = e1 && e2; :}
-         | FATHERCHRISTMAS:e1 WUNORSE FATHERCHRISTMAS:e2 {: RESULT = e1 || e2; :}
-         | MELCHOR FATHERCHRISTMAS:e1  {: RESULT = !e1; :};
+exprBol ::= L_FATHERCHRISTMAS:e1 PEPPERMINT L_FATHERCHRISTMAS:e2   {: RESULT = e1 && e2; :}
+         | L_FATHERCHRISTMAS:e1 WUNORSE L_FATHERCHRISTMAS:e2 {: RESULT = e1 || e2; :}
+         | MELCHOR L_FATHERCHRISTMAS:e1  {: RESULT = !e1; :};
 // Agregado para expresiones de caracteres
-exprInt ::= KRISKRINGLE:e1  {: RESULT = (int)e1; :};
+exprInt ::= L_KRISKRINGLE:e1  {: RESULT = (int)e1; :};
 // Agregado para expresiones de arrays
-exprInt ::= PAPANOEL:e1  {: RESULT = e1.length; :};
+exprInt ::= L_PAPANOEL:e1  {: RESULT = e1.length; :};
 // Agregado para expresiones de cadenas
-exprInt ::= DEDMOROZ:e1  {: RESULT = e1.length(); :};
+exprInt ::= L_DEDMOROZ:e1  {: RESULT = e1.length(); :};
 
