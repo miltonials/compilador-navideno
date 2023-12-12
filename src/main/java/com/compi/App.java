@@ -29,8 +29,8 @@ public class App implements Callable<Integer> {
             // Leer desde la entrada estándar
             Scanner scanner = new Scanner(System.in);
             System.out.print("Path: ");
-            // String input = scanner.nextLine();
-            String input = "miPrograma.txt";
+            String input = scanner.nextLine();
+            //String input = "miPrograma.txt";
 
             if (input.equalsIgnoreCase("exit")) {
                 return 0;

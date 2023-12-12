@@ -212,6 +212,7 @@ cierraregalo	}
 <<EOF>> { return symbol(ParserSym.EOF); }
 
 . {
-    // throw new Error("Cadena ilegal <" + yytext() + ">"); no detener el programa
+    // throw new Error("Cadena ilegal <" + yytext() + ">"); 
     System.err.println("Cadena ilegal <" + yytext() + ">");
+    //terminar el programaSystem.exit(1);
 }
