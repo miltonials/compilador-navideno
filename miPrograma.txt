@@ -40,3 +40,13 @@ print |
 read |
 = |
 main |
+/_ hola
+ aisaos
+ _/
+ hola
+ int
+ bool
+ char
+ string
+ float
+ array

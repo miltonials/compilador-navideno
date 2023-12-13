@@ -23,11 +23,17 @@ cierraregalo	}
 
 /* Terminales */
 terminal Integer L_SANTACLAUS;
+terminal Integer SANTACLAUS; // INT 
 terminal Double L_PERENOEL; // Agregado para exprFloat
+terminal Double PERENOEL; // FLOAT
 terminal Boolean L_FATHERCHRISTMAS; // Agregado para exprBol
+terminal Boolean FATHERCHRISTMAS; // BOOLEAN
 terminal Character L_KRISKRINGLE; // Agregado para expresiones de caracteres
+terminal Character KRISKRINGLE; // CHAR
 terminal String L_DEDMOROZ; // Agregado para expresiones de cadenas
+terminal String DEDMOROZ; // STRING
 terminal Integer[] L_PAPANOEL; // Agregado para expresiones de arrays
+terminal Integer[] PAPANOEL; // ARRAY
 terminal Integer ABRECUENTO; // (
 terminal Integer CIERRECUENTO; // )
 terminal Integer ABREEMPAQUE; // [

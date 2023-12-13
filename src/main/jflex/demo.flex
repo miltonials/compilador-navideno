@@ -174,6 +174,30 @@ L_PAPANOEL	Array
         //yypushback(yytext().length()); // Vuelve atrás para que las palabras reservadas no se consuman
         return symbol(ParserSym.MAIN, yytext()); // Puedes definir un símbolo diferente para booleanos si es necesario
     }
+    if (yytext().equals("int")) {
+        //yypushback(yytext().length()); // Vuelve atrás para que las palabras reservadas no se consuman
+        return symbol(ParserSym.SANTACLAUS, yytext()); // Puedes definir un símbolo diferente para booleanos si es necesario
+    }
+    if (yytext().equals("float")) {
+        //yypushback(yytext().length()); // Vuelve atrás para que las palabras reservadas no se consuman
+        return symbol(ParserSym.PERENOEL, yytext()); // Puedes definir un símbolo diferente para booleanos si es necesario
+    }
+    if (yytext().equals("char")) {
+        //yypushback(yytext().length()); // Vuelve atrás para que las palabras reservadas no se consuman
+        return symbol(ParserSym.KRISKRINGLE, yytext()); // Puedes definir un símbolo diferente para booleanos si es necesario
+    }
+    if (yytext().equals("string")) {
+        //yypushback(yytext().length()); // Vuelve atrás para que las palabras reservadas no se consuman
+        return symbol(ParserSym.DEDMOROZ, yytext()); // Puedes definir un símbolo diferente para booleanos si es necesario
+    }
+    if (yytext().equals("bool")) {
+        //yypushback(yytext().length()); // Vuelve atrás para que las palabras reservadas no se consuman
+        return symbol(ParserSym.FATHERCHRISTMAS, yytext()); // Puedes definir un símbolo diferente para booleanos si es necesario
+    }
+    if (yytext().equals("array")) {
+        //yypushback(yytext().length()); // Vuelve atrás para que las palabras reservadas no se consuman
+        return symbol(ParserSym.PAPANOEL, yytext()); // Puedes definir un símbolo diferente para booleanos si es necesario
+    }
     return symbol(ParserSym.PERSONA, yytext());
 }
 <YYINITIAL> {string} { return symbol(ParserSym.L_DEDMOROZ, yytext()); } // cadena de caracteres
@@ -206,6 +230,8 @@ cierraregalo	}
 "{" { return symbol(ParserSym.ABREREGALO, yytext()); }
 "}" { return symbol(ParserSym.CIERRAREGALO, yytext()); }
 "," { return symbol(ParserSym.COMA, yytext()); }
+
+
 // "boolean" { return symbol(ParserSym.L_FATHERCHRISTMAS, yytext()); }
 
 
