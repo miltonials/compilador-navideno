@@ -1,7 +1,12 @@
+/**
+ * Clase principal de la aplicación que implementa un simple calculador con capacidad para leer desde un archivo o la entrada estándar.
+ */
 package com.compi;
 
 import java_cup.runtime.Symbol;
 import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
 import java.io.File;
 import java.io.Reader;
@@ -11,6 +16,9 @@ import java.util.concurrent.Callable;
 
 import static picocli.CommandLine.*;
 
+/**
+ * Clase principal de la aplicación con anotaciones de Picocli para la gestión de comandos.
+ */
 @Command(name = "calc", mixinStandardHelpOptions = true, version = "0.0.1",
         description = "Simple Calculator")
 public class App implements Callable<Integer> {
@@ -18,6 +26,11 @@ public class App implements Callable<Integer> {
     @Option(names = {"-f", "--file"}, description = "File to read")
     File file;
 
+    /**
+     * Método principal que se ejecuta al llamar a la aplicación.
+     * @return Código de salida.
+     * @throws Exception Excepción general que podría ocurrir durante la ejecución.
+     */
     @Override
     public Integer call() throws Exception {
         if (file != null) {
@@ -29,8 +42,8 @@ public class App implements Callable<Integer> {
             // Leer desde la entrada estándar
             Scanner scanner = new Scanner(System.in);
             System.out.print("Path: ");
-            String input = scanner.nextLine();
-            //String input = "miPrograma.txt";
+            //String input = scanner.nextLine();
+            String input = "miPrograma.txt";
 
             if (input.equalsIgnoreCase("exit")) {
                 return 0;
@@ -48,6 +61,11 @@ public class App implements Callable<Integer> {
         return 0;
     }
 
+    /**
+     * Método privado que realiza el análisis léxico y muestra los tokens obtenidos.
+     * @param reader Objeto Reader para leer el contenido del archivo.
+     * @throws Exception Excepción general que podría ocurrir durante el análisis.
+     */
     private void parseAndPrintTokens(Reader reader) throws Exception {
         // Crea un lexer y un parser
         IdLexer lexer = new IdLexer(reader);
@@ -79,6 +97,10 @@ public class App implements Callable<Integer> {
         System.out.println("Total: " + count + " tokens.");
     }
 
+    /**
+     * Método principal de la aplicación que instancia la clase App y ejecuta la aplicación mediante Picocli.
+     * @param args Argumentos de la línea de comandos.
+     */
     public static void main(String[] args) {
         // Ejecuta la aplicación
         int exitCode = new CommandLine(new App()).execute(args);

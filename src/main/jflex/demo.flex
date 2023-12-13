@@ -1,74 +1,69 @@
 package com.compi;
 
-/* JFlex example: partial Java language lexer specification */
+/* Ejemplo de JFlex: Especificación parcial de lexer para un lenguaje de programación personalizado en Java */
 import java_cup.runtime.*;
 
 /**
- * This class is a simple example lexer.
+ * Esta clase es un ejemplo simple de lexer para un lenguaje de programación personalizado.
+ * El lexer tokeniza la entrada según reglas específicas.
  */
 %%
 %public
 %class IdLexer
 %cup
-digit = [0-9] // digito
-digitnonzero = [1-9] // digito no cero
+// Expresiones regulares para tokens
+digit = [0-9] // dígito
+digitnonzero = [1-9] // dígito no cero
 entero = {digitnonzero}{digit}* // entero
-// decimales desde 0 hasta 999999...
 decimales = 0|{digitnonzero}{digit}* // decimales
 decimal = {decimales}("."{decimales})? // decimal
-// 
 letter = [a-zA-Z]
 whitespace = [ \t]
 LineTerminator = \r|\n|\r\n
-// boolean = true|false // booleano
-//if 
 if = if
 elif = elif
 else = else
 for = for
 do = do
 until = until
-return  = return 
+return = return
 break = break
 print = print
 read = read
 asignar = =;
 disparador = main;
-
-
-
-// Identifier = [a-zA-Z] [a-zA-Z0-9]* (?! (false | true) \b)  // identficador usado para declara a las personas, el identificador no puede ser true o false
-// Identifier = [a-zA-Z] [a-zA-Z0-9]* // identficador usado para declara a las personas
-Identifier = [a-zA-Z] [a-zA-Z0-9]* 
-
-
+Identifier = [a-zA-Z] [a-zA-Z0-9]* // identificador
 string = \"[^\"]*\" // cadena de caracteres
-character = \'[^\']\' // caracter
+character = \'[^\']\' // carácter
+LineTerminator = \r|\n|\r\n // salto de línea
+InputCharacter = [^\r\n] // carácter de entrada
 
-LineTerminator = \r|\n|\r\n // salto de linea
-InputCharacter = [^\r\n] // caracter de entrada
-
-/* Comentarios */
+// Comentarios
 comment = {ComentarioLinea}|{ComentarioBloque}
-// comentario de linea @
 ComentarioLinea = "@" {InputCharacter}* {LineTerminator}?
-// comentario de bloque /_ contenido_/
-ComentarioBloque = "/_" {CommentContent}* "_"+ "/"
-CommentContent = ( [^*] | ("*"+ [^/*]) )* 
+ComentarioBloque = "/_" {CommentContent}* "_/"
+CommentContent = ( [^*] | ("*"+ [^/*]) )*
 
-// Array de cualquier tipo de dato ejemplo: [1,2,3,4,5], ["hola","mundo"], [true,false]
-// Array = "[" {ArrayContent} "]"
-// ArrayContent = (ArrayElement ("," ArrayElement)*)?
-// ArrayElement = (boolean | entero | decimal | string | character | Identifier)
-Array =  "[" {ArrayContent}* "]" 
-ArrayContent = ( [^,] | ("," [^,]) )* // contenido del array separado por comas 
+// Definición de Array
+Array =  "[" {ArrayContent}* "]"
+ArrayContent = ( [^,] | ("," [^,]) )*
 
+/**
+ * Método para crear un símbolo solo con el tipo.
+ * @param type El tipo del símbolo.
+ * @return El símbolo creado.
+ */
 %{
-
 private Symbol symbol(int type) {
     return new Symbol(type, yyline, yycolumn);
 }
 
+/**
+ * Método para crear un símbolo con tipo y valor.
+ * @param type El tipo del símbolo.
+ * @param value El valor del símbolo.
+ * @return El símbolo creado.
+ */
 private Symbol symbol(int type, Object value) {
     return new Symbol(type, yyline, yycolumn, value);
 }
@@ -76,6 +71,7 @@ private Symbol symbol(int type, Object value) {
 
 %%
 
+// Definiciones de tokens
 {entero}+ { return symbol(ParserSym.L_SANTACLAUS, Integer.valueOf(yytext())); }
 "+" { return symbol(ParserSym.RUDOLPH, yytext()); }
 "-" { return symbol(ParserSym.DASHER, yytext()); }
@@ -98,7 +94,7 @@ private Symbol symbol(int type, Object value) {
 "|" { return symbol(ParserSym.FINREGALO, yytext()); }
 "=" { return symbol(ParserSym.ENTREGA, yytext()); }
 
-{whitespace}+ { /* skip white spaces */ }
+{whitespace}+ { /* omitir espacios en blanco */ }
 
 {LineTerminator} {
   yyline++;
@@ -113,9 +109,8 @@ L_KRISKRINGLE	Caracter
 L_DEDMOROZ	String
 L_PAPANOEL	Array
 */
-// <YYINITIAL> {boolean} { return symbol(ParserSym.L_FATHERCHRISTMAS, yytext()); } // booleano
-// <YYINITIAL> {Identifier} { return symbol(ParserSym.PERSONA, yytext()); }
 <YYINITIAL> {Identifier} {
+    // Verifica si es una palabra reservada
     if (yytext().equals("true") || yytext().equals("false")) {
         //yypushback(yytext().length()); // Vuelve atrás para que las palabras reservadas no se consuman
         return symbol(ParserSym.L_FATHERCHRISTMAS, yytext()); // Puedes definir un símbolo diferente para booleanos si es necesario
@@ -198,47 +193,37 @@ L_PAPANOEL	Array
         //yypushback(yytext().length()); // Vuelve atrás para que las palabras reservadas no se consuman
         return symbol(ParserSym.PAPANOEL, yytext()); // Puedes definir un símbolo diferente para booleanos si es necesario
     }
+    // Si no es una palabra reservada, es un identificador
     return symbol(ParserSym.PERSONA, yytext());
 }
-<YYINITIAL> {string} { return symbol(ParserSym.L_DEDMOROZ, yytext()); } // cadena de caracteres
-<YYINITIAL> {decimal}+ { return symbol(ParserSym.L_PERENOEL, Double.valueOf(yytext())); } // flotante
-<YYINITIAL> {character} { return symbol(ParserSym.L_KRISKRINGLE, yytext()); } // caracter
-// <YYINITIAL> {digit} { return symbol(ParserSym.L_PAPANOEL, yytext()); } // array
-<YYINITIAL> {Array} { return symbol(ParserSym.L_PAPANOEL, yytext()); } // array
-/* comentarios */
-/* comentario de linea @,
-comentario de bloque /_ contenido_/
-*/
-<YYINITIAL> {comment} { /* skip comments */ } // comentarios
-// comentario de bloque /_ contenido_/
-<YYINITIAL> "/_" {CommentContent}* "_/" { /* skip comments */ }
+// Token de cadena
+<YYINITIAL> {string} { return symbol(ParserSym.L_DEDMOROZ, yytext()); }
 
+// Token decimal
+<YYINITIAL> {decimal}+ { return symbol(ParserSym.L_PERENOEL, Double.valueOf(yytext())); }
 
-/*
-abrecuento	(
-cierrecuento	)
-abreempaque	[
-cierraempaque	]
-abreregalo	{
-cierraregalo	}
-*/
+// Token de carácter
+<YYINITIAL> {character} { return symbol(ParserSym.L_KRISKRINGLE, yytext()); }
 
-"(" { return symbol(ParserSym.ABRECUENTO, yytext()); }
-")" { return symbol(ParserSym.CIERRECUENTO, yytext()); }
-"[" { return symbol(ParserSym.ABREEMPAQUE, yytext()); }
-"]" { return symbol(ParserSym.CIERREEMPAQUE, yytext()); }
-"{" { return symbol(ParserSym.ABREREGALO, yytext()); }
-"}" { return symbol(ParserSym.CIERRAREGALO, yytext()); }
-"," { return symbol(ParserSym.COMA, yytext()); }
+// Token de Array
+<YYINITIAL> {Array} { return symbol(ParserSym.L_PAPANOEL, yytext()); }
 
+// Omitir comentarios
+<YYINITIAL> {comment} { /* omitir comentarios */ }
 
-// "boolean" { return symbol(ParserSym.L_FATHERCHRISTMAS, yytext()); }
+// Caracteres especiales
+<YYINITIAL> "(" { return symbol(ParserSym.ABRECUENTO, yytext()); }
+<YYINITIAL> ")" { return symbol(ParserSym.CIERRECUENTO, yytext()); }
+<YYINITIAL> "[" { return symbol(ParserSym.ABREEMPAQUE, yytext()); }
+<YYINITIAL> "]" { return symbol(ParserSym.CIERREEMPAQUE, yytext()); }
+<YYINITIAL> "{" { return symbol(ParserSym.ABREREGALO, yytext()); }
+<YYINITIAL> "}" { return symbol(ParserSym.CIERRAREGALO, yytext()); }
+<YYINITIAL> "," { return symbol(ParserSym.COMA, yytext()); }
 
-
+// Token de fin de archivo
 <<EOF>> { return symbol(ParserSym.EOF); }
 
+// Carácter ilegal
 . {
-    // throw new Error("Cadena ilegal <" + yytext() + ">"); 
-    System.err.println("Cadena ilegal <" + yytext() + ">");
-    //terminar el programaSystem.exit(1);
+    System.err.println("Carácter ilegal <" + yytext() + ">");
 }

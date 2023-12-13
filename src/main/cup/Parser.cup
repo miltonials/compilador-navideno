@@ -5,8 +5,14 @@ import java.io.*;
 import java.util.*;
 import java.lang.Math;
 
+/**
+ * Clase principal del compilador
+ */
 class Parser;
 
+/**
+ * Definicion de tokens terminales y no terminales
+ */
 /*L_SANTACLAUS	Entero
 L_PERENOEL	Flotante
 L_FATHERCHRISTMAS	Booleano
@@ -67,7 +73,10 @@ terminal RUDOLPH, DASHER, DANCER, PRANCER, VIXEN, COMET,
          CUPID, GRINCH, QUIEN, HERMEY, BUDDY, JINGLE,
          JANGLE, PEPPERMINT, WUNORSE, MELCHOR, GASPAR,
          BALTASAR, FINREGALO;
-         
+        
+/**
+ * Declaracion de predencoa para resolver conflictos de ambiguedad.
+ */
 /* Declaraciones de precedencia */
 precedence left RUDOLPH, DASHER;
 precedence left DANCER, PRANCER;
@@ -81,9 +90,12 @@ precedence left GASPAR;
 precedence left BALTASAR;
 precedence left FINREGALO;
 
-/* Símbolo inicial y producciones */
+/* Símbolo inicial y definocion de producciones gramaticales*/
 start with exprInt;
 
+/**
+ * Producciones para expresiones enteras
+ */
 exprInt ::= exprInt:e1 RUDOLPH exprInt:e2   {: RESULT = e1 + e2; :}
         | exprInt:e1 DASHER exprInt:e2 {: RESULT = e1 - e2; :}
         | exprInt:e1 DANCER exprInt:e2  {: RESULT = e1 / e2; :}
@@ -93,6 +105,9 @@ exprInt ::= exprInt:e1 RUDOLPH exprInt:e2   {: RESULT = e1 + e2; :}
         | QUIEN exprInt:e1  {: RESULT = e1 - 1; :}
         | L_SANTACLAUS:n              {: RESULT = n; :};
 
+/**
+ * Producciones para expresiones de punto flotante
+ */
 exprFloat ::= L_PERENOEL:e1 RUDOLPH L_PERENOEL:e2   {: RESULT = e1 + e2; :}
            | L_PERENOEL:e1 DASHER L_PERENOEL:e2 {: RESULT = e1 - e2; :}
            | L_PERENOEL:e1 DANCER L_PERENOEL:e2  {: RESULT = e1 / e2; :}
@@ -100,13 +115,26 @@ exprFloat ::= L_PERENOEL:e1 RUDOLPH L_PERENOEL:e2   {: RESULT = e1 + e2; :}
            | GRINCH L_PERENOEL:e1  {: RESULT = e1 + 1.0; :}
            | QUIEN L_PERENOEL:e1  {: RESULT = e1 - 1.0; :};
 
+/**
+ * Producciones para expresiones booleanas
+ */
 exprBol ::= L_FATHERCHRISTMAS:e1 PEPPERMINT L_FATHERCHRISTMAS:e2   {: RESULT = e1 && e2; :}
          | L_FATHERCHRISTMAS:e1 WUNORSE L_FATHERCHRISTMAS:e2 {: RESULT = e1 || e2; :}
          | MELCHOR L_FATHERCHRISTMAS:e1  {: RESULT = !e1; :};
+
+/**
+ * Producciones para expresiones de caracteres
+ */
 // Agregado para expresiones de caracteres
 exprInt ::= L_KRISKRINGLE:e1  {: RESULT = (int)e1; :};
+/**
+ * Producciones para expresiones de arrays
+ */
 // Agregado para expresiones de arrays
 exprInt ::= L_PAPANOEL:e1  {: RESULT = e1.length; :};
+/**
+ * Producciones para expresiones de cadenas
+ */
 // Agregado para expresiones de cadenas
 exprInt ::= L_DEDMOROZ:e1  {: RESULT = e1.length(); :};
 
