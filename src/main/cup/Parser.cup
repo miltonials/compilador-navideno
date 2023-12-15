@@ -62,6 +62,8 @@ terminal Integer ESCUCHA;//READ
 terminal Integer ENTREGA;//=
 // main
 terminal Integer MAIN;
+// definicion de funcion 
+terminal Integer REGALO; // FUNCION
 
 
 /* No terminales */

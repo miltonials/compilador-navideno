@@ -41,12 +41,15 @@ InputCharacter = [^\r\n] // carácter de entrada
 // Comentarios
 comment = {ComentarioLinea}|{ComentarioBloque}
 ComentarioLinea = "@" {InputCharacter}* {LineTerminator}?
+// ComentarioBloque = "/_" {CommentContent}* "_/"
+// CommentContent = ( [^*] | ("*"+ [^/*]) )*
 ComentarioBloque = "/_" {CommentContent}* "_/"
-CommentContent = ( [^*] | ("*"+ [^/*]) )*
+CommentContent = ( [^_] | ("_"+ [^/]) )*
 
 // Definición de Array
 Array =  "[" {ArrayContent}* "]"
-ArrayContent = ( [^,] | ("," [^,]) )*
+ArrayContent = ( [^"["] | ("," [^"]"]) )*
+
 
 /**
  * Método para crear un símbolo solo con el tipo.
@@ -192,6 +195,10 @@ L_PAPANOEL	Array
     if (yytext().equals("array")) {
         //yypushback(yytext().length()); // Vuelve atrás para que las palabras reservadas no se consuman
         return symbol(ParserSym.PAPANOEL, yytext()); // Puedes definir un símbolo diferente para booleanos si es necesario
+    }
+    if (yytext().equals("function")) {
+        //yypushback(yytext().length()); // Vuelve atrás para que las palabras reservadas no se consuman
+        return symbol(ParserSym.REGALO, yytext()); // Puedes definir un símbolo diferente para booleanos si es necesario
     }
     // Si no es una palabra reservada, es un identificador
     return symbol(ParserSym.PERSONA, yytext());
