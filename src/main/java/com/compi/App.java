@@ -55,7 +55,7 @@ public class App implements Callable<Integer> {
                     parseAndPrintTokens(reader);
                 }
             } else {
-                System.out.println("File not found.");
+                System.out.println("Archivo no encontrado.");
             }
         }
         return 0;

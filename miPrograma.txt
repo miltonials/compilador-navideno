@@ -54,3 +54,22 @@ main |
  array
 function
 ["hola"]
+/_
+["adios"]
+_/
+
+function int (param1, [lista,2,3,4]) {
+    @Soy un comentario nuevo
+    int miNumerito = 4|
+    int miDivisor = 2|
+
+    /_ SANTA SABE
+    HACER BLOQUES
+    DE CARBÓN PARA
+    LOS NIÑOS MALOS _/
+
+    print(miNumerito // miDivisor)|
+    return 359|@Día de navidad
+}
+
+@Feliz navidad🎅🤶🧑‍🎄
