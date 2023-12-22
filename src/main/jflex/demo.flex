@@ -14,9 +14,9 @@ import java_cup.runtime.*;
 // Expresiones regulares para tokens
 digit = [0-9] // dígito
 digitnonzero = [1-9] // dígito no cero
-entero = {digitnonzero}{digit}* // entero
+entero = -?{digitnonzero}{digit}* // entero
 decimales = 0|{digitnonzero}{digit}* // decimales
-decimal = {decimales}("."{decimales})? // decimal
+decimal = -?{decimales}("."{decimales})? // decimal
 letter = [a-zA-Z]
 whitespace = [ \t]
 LineTerminator = \r|\n|\r\n
@@ -45,10 +45,6 @@ ComentarioLinea = "@" {InputCharacter}* {LineTerminator}?
 // CommentContent = ( [^*] | ("*"+ [^/*]) )*
 ComentarioBloque = "/_" {CommentContent}* "_/"
 CommentContent = ( [^_] | ("_"+ [^/]) )*
-
-// Definición de Array
-Array =  "[" {ArrayContent}* "]"
-ArrayContent = ( [^"["] | ("," [^"]"]) )*
 
 
 /**
@@ -86,16 +82,16 @@ private Symbol symbol(int type, Object value) {
 "++" { return symbol(ParserSym.GRINCH, yytext()); }
 "--" { return symbol(ParserSym.QUIEN, yytext()); }
 "<" { return symbol(ParserSym.HERMEY, yytext()); }
-"<=" { return symbol(ParserSym.BUDDY, yytext()); }
+"=<" { return symbol(ParserSym.BUDDY, yytext()); }
 ">" { return symbol(ParserSym.JINGLE, yytext()); }
-">=" { return symbol(ParserSym.JANGLE, yytext()); }
+"=>" { return symbol(ParserSym.JANGLE, yytext()); }
 "==" { return symbol(ParserSym.PEPPERMINT, yytext()); }
 "!=" { return symbol(ParserSym.WUNORSE, yytext()); }
 "^" { return symbol(ParserSym.MELCHOR, yytext()); }
 "#" { return symbol(ParserSym.GASPAR, yytext()); }
 "!" { return symbol(ParserSym.BALTASAR, yytext()); }
 "|" { return symbol(ParserSym.FINREGALO, yytext()); }
-"=" { return symbol(ParserSym.ENTREGA, yytext()); }
+"<=" { return symbol(ParserSym.ENTREGA, yytext()); }
 
 {whitespace}+ { /* omitir espacios en blanco */ }
 
@@ -212,8 +208,6 @@ L_PAPANOEL	Array
 // Token de carácter
 <YYINITIAL> {character} { return symbol(ParserSym.L_KRISKRINGLE, yytext()); }
 
-// Token de Array
-<YYINITIAL> {Array} { return symbol(ParserSym.L_PAPANOEL, yytext()); }
 
 // Omitir comentarios
 <YYINITIAL> {comment} { /* omitir comentarios */ }
