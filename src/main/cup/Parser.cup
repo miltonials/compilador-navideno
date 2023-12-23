@@ -218,6 +218,10 @@ piezasflotantes ::= piezasflotantes RUDOLPH piezasflotantes // +
 // lógicos (and, or, etc)
 
 // unarios (incremento, decremento, etc)
+piezasunarias ::= GRINCH L_SANTACLAUS FINREGALO // ++
+                | QUIEN L_SANTACLAUS FINREGALO // --
+                | GRINCH L_PERENOEL FINREGALO // ++
+                | QUIEN L_PERENOEL FINREGALO // --
 
 // asignacion
 
