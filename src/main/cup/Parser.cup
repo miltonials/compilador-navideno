@@ -10,133 +10,283 @@ import java.lang.Math;
  */
 class Parser;
 
-/**
- * Definicion de tokens terminales y no terminales
- */
-/*L_SANTACLAUS	Entero
-L_PERENOEL	Flotante
-L_FATHERCHRISTMAS	Booleano
-L_KRISKRINGLE	Caracter
-L_DEDMOROZ	String
-L_PAPANOEL	Array
-abrecuento	(
-cierrecuento	)
-abreempaque	[
-cierraempaque	]
-abreregalo	{
-cierraregalo	}
-*/
-
 /* Terminales */
-terminal Integer L_SANTACLAUS;
-terminal Integer SANTACLAUS; // INT 
-terminal Double L_PERENOEL; // Agregado para exprFloat
-terminal Double PERENOEL; // FLOAT
-terminal Boolean L_FATHERCHRISTMAS; // Agregado para exprBol
-terminal Boolean FATHERCHRISTMAS; // BOOLEAN
-terminal Character L_KRISKRINGLE; // Agregado para expresiones de caracteres
-terminal Character KRISKRINGLE; // CHAR
-terminal String L_DEDMOROZ; // Agregado para expresiones de cadenas
-terminal String DEDMOROZ; // STRING
-terminal Integer[] L_PAPANOEL; // Agregado para expresiones de arrays
-terminal Integer[] PAPANOEL; // ARRAY
+
+// Operadores aritméticos binarios
+terminal RUDOLPH; // +
+terminal  DASHER; // -
+terminal  DANCER; // /
+terminal  PRANCER; // // (division entera)
+terminal  VIXEN; // *
+terminal  COMET; // ~
+terminal CUPID; // **
+// Operadores aritméticos unarios
+terminal  GRINCH; // ++
+terminal  QUIEN; // --
+// Operadores relacionales
+terminal  HERMEY; // <
+terminal  BUDDY; // =<
+terminal  JINGLE; // >
+terminal JANGLE; // >=
+terminal  PEPPERMINT; // ==
+terminal  WUNORSE; // !=
+// Operadores lógicos
+terminal  MELCHOR; // ^
+terminal  GASPAR; // #
+terminal BALTASAR; // !
+terminal  LOCAL; // !
+
+// Tipos
+terminal String PERSONA; // identificador
+terminal Integer SANTACLAUS; // int
+terminal Double PERENOEL; // float
+terminal Boolean FATHERCHRISTMAS; // boolean
+terminal Character KRISKRINGLE; // char
+terminal String DEDMOROZ; // string
+terminal Integer[] PAPANOEL; // array
+terminal Integer L_SANTACLAUS; // literal int
+terminal Double L_PERENOEL; // literal float
+terminal Boolean L_FATHERCHRISTMAS; // literal boolean
+terminal Character L_KRISKRINGLE; // literal char
+terminal String L_DEDMOROZ; // literal string
+terminal Integer[] L_PAPANOEL; // literal array
+
+// Parentesis
 terminal Integer ABRECUENTO; // (
 terminal Integer CIERRECUENTO; // )
 terminal Integer ABREEMPAQUE; // [
 terminal Integer CIERREEMPAQUE; // ]
 terminal Integer ABREREGALO; // {
 terminal Integer CIERRAREGALO; // }
-terminal String PERSONA; // indentificador
-// Coma ,
-terminal Integer COMA;
-terminal Integer ELFO;//IF
-terminal Integer HADA;//ELSE
-terminal Integer DUENDE;//ELSE
-terminal Integer ENVUELVE;//FOR
-terminal Integer HACE;//DO
-terminal Integer REVISA;//UNTIL
-terminal Integer ENVIA;//RETURN
-terminal Integer CORTA;//BREAK
+
+// Estructuras de control
+terminal Integer ELFO;//if
+terminal Integer HADA;//else
+terminal Integer DUENDE;//else
+terminal Integer ENVUELVE;//for
+terminal Integer HACE;//do
+terminal Integer REVISA;//until
+terminal Integer ENVIA;//return
+terminal Integer CORTA;//break
+
+// Entrada y salida
 terminal Integer NARRA;//print
-terminal Integer ESCUCHA;//READ 
-terminal Integer ENTREGA;//=
-// main
-terminal Integer MAIN;
-// definicion de funcion 
-terminal Integer REGALO; // FUNCION
+terminal Integer ESCUCHA;//read 
+
+// Fin de expresión
+terminal  FINREGALO; // |
+
+// Lexema separador
+terminal Integer COMA; //,
+
+// Asignación
+terminal Integer ENTREGA;//<=
+
+// Comentarios
+// son ignorados por el compilador
+
+// Funciones
+terminal Integer MAIN; //main
+//terminal Integer REGALO; // definicion de funcion 
+terminal Integer FUNCTION; // definicion de funcion 
+
+//-------------------------------------------------------------------------------------- NO Terminales
+non terminal navidad; // Símbolo inicial ✅
+non terminal bolsanavidena; // produccion para funciones ✅
+non terminal regalo; // produccion para expresiones
+non terminal regaloprin; // produccion para expresiones aritméticas ✅
+non terminal regalocomprado; // produccion para expresiones relacionales
+non terminal regalomanual; // produccion para expresiones lógicas ✅
+non terminal regalopersonalizado; // produccion para expresiones unarias ✅
+non terminal regaloespecial; // produccion para expresiones de asignacion y ciclos✅
+non terminal regaloscondicionales; // produccion para if-elif-else ✅
+non terminal condicionregalo; // produccion para condicion ✅
+non terminal bloqueregalado; // produccion para bloque ✅
 
 
-/* No terminales */
-non terminal Integer exprInt;
-non terminal Double exprFloat; // Nuevo no terminal para expresiones de punto flotante
-non terminal Boolean exprBol; // Nuevo no terminal para expresiones booleanas
 
-terminal RUDOLPH, DASHER, DANCER, PRANCER, VIXEN, COMET,
-         CUPID, GRINCH, QUIEN, HERMEY, BUDDY, JINGLE,
-         JANGLE, PEPPERMINT, WUNORSE, MELCHOR, GASPAR,
-         BALTASAR, FINREGALO;
-        
-/**
- * Declaracion de predencoa para resolver conflictos de ambiguedad.
- */
-/* Declaraciones de precedencia */
-precedence left RUDOLPH, DASHER;
-precedence left DANCER, PRANCER;
-precedence left VIXEN, COMET;
-precedence left CUPID;
-precedence left GRINCH, QUIEN;
-precedence left HERMEY, BUDDY, JINGLE, JANGLE;
-precedence left PEPPERMINT, WUNORSE;
-precedence left MELCHOR;
-precedence left GASPAR;
-precedence left BALTASAR;
-precedence left FINREGALO;
+//-------------------------------------------------------------------------------------- PRECEDENCIA
+precedence left RUDOLPH, DASHER; // suma y resta
+precedence left DANCER, PRANCER; // division y division entera
+precedence left VIXEN, COMET; // multiplicacion y modulo
+precedence left GRINCH, QUIEN; // incremento y decremento
+precedence left HERMEY, BUDDY, JINGLE, JANGLE, PEPPERMINT, WUNORSE; // operadores relacionales
+precedence left MELCHOR, GASPAR; // operadores lógicos
+precedence left BALTASAR; // operador lógico not
+precedence left ABRECUENTO, CIERRECUENTO; // parentesis
+precedence left ABREEMPAQUE, CIERREEMPAQUE; // corchetes
+precedence left ABREREGALO, CIERRAREGALO; // llaves
+precedence left ELFO, HADA, DUENDE, ENVUELVE, HACE, REVISA, ENVIA, CORTA; // estructuras de control
+precedence left NARRA, ESCUCHA; // entrada y salida
+precedence left FINREGALO; // fin de expresión
+precedence left COMA; // lexema separador
+precedence left ENTREGA; // asignacion
+precedence left MAIN; // main
+precedence left FUNCTION; // definicion de funcion
 
-/* Símbolo inicial y definocion de producciones gramaticales*/
-start with exprInt;
+//-------------------------------------------------------------------------------------- PRODUCCIONES
+/* Símbolo inicial y producciones gramaticales*/
+start with navidad;
 
-/**
- * Producciones para expresiones enteras
- */
-exprInt ::= exprInt:e1 RUDOLPH exprInt:e2   {: RESULT = e1 + e2; :}
-        | exprInt:e1 DASHER exprInt:e2 {: RESULT = e1 - e2; :}
-        | exprInt:e1 DANCER exprInt:e2  {: RESULT = e1 / e2; :}
-        | exprInt:e1 VIXEN exprInt:e2  {: RESULT = e1 * e2; :}
-        | exprInt:e1 COMET exprInt:e2  {: RESULT = e1 % e2; :}
-        | GRINCH exprInt:e1  {: RESULT = e1 + 1; :}
-        | QUIEN exprInt:e1  {: RESULT = e1 - 1; :}
-        | L_SANTACLAUS:n              {: RESULT = n; :};
+/* Producciones gramaticales */
 
-/**
- * Producciones para expresiones de punto flotante
- */
-exprFloat ::= L_PERENOEL:e1 RUDOLPH L_PERENOEL:e2   {: RESULT = e1 + e2; :}
-           | L_PERENOEL:e1 DASHER L_PERENOEL:e2 {: RESULT = e1 - e2; :}
-           | L_PERENOEL:e1 DANCER L_PERENOEL:e2  {: RESULT = e1 / e2; :}
-           | L_PERENOEL:e1 VIXEN L_PERENOEL:e2  {: RESULT = e1 * e2; :}
-           | GRINCH L_PERENOEL:e1  {: RESULT = e1 + 1.0; :}
-           | QUIEN L_PERENOEL:e1  {: RESULT = e1 - 1.0; :};
+navidad ::= bolsanavidena;
 
-/**
- * Producciones para expresiones booleanas
- */
-exprBol ::= L_FATHERCHRISTMAS:e1 PEPPERMINT L_FATHERCHRISTMAS:e2   {: RESULT = e1 && e2; :}
-         | L_FATHERCHRISTMAS:e1 WUNORSE L_FATHERCHRISTMAS:e2 {: RESULT = e1 || e2; :}
-         | MELCHOR L_FATHERCHRISTMAS:e1  {: RESULT = !e1; :};
+bolsanavidena ::= regalo regaloprincipal
+               | bolsanavidena regalo regaloprincipal;
 
-/**
- * Producciones para expresiones de caracteres
- */
-// Agregado para expresiones de caracteres
-exprInt ::= L_KRISKRINGLE:e1  {: RESULT = (int)e1; :};
-/**
- * Producciones para expresiones de arrays
- */
-// Agregado para expresiones de arrays
-exprInt ::= L_PAPANOEL:e1  {: RESULT = e1.length; :};
-/**
- * Producciones para expresiones de cadenas
- */
-// Agregado para expresiones de cadenas
-exprInt ::= L_DEDMOROZ:e1  {: RESULT = e1.length(); :};
+regaloprincipal ::= FUNCTION SANTACLAUS MAIN ABRECUENTO  CIERRECUENTO ABREREGALO
+                        juguetes
+                        garantia
+                    CIERRAREGALO;
 
+//Funciones
+regalo ::= FUNCTION tiposregalo PERSONA ABRECUENTO CIERRECUENTO ABREREGALO
+                juguetes
+                garantia
+           CIERRAREGALO
+        | FUNCTION tiposregalo PERSONA ABRECUENTO monnos CIERRECUENTO ABREREGALO
+                juguetes
+                garantia
+          CIERRAREGALO;
+
+garantia ::= ENTREGA L_SANTACLAUS FINREGALO
+        | ENTREGA L_PERENOEL FINREGALO
+        | ENTREGA L_FATHERCHRISTMAS FINREGALO
+        | ENTREGA L_KRISKRINGLE FINREGALO
+        | ENTREGA L_DEDMOROZ FINREGALO
+        | ENTREGA L_PAPANOEL FINREGALO;
+
+tiposregalo ::= SANTACLAUS // int
+            | PERENOEL // float
+            | FATHERCHRISTMAS // boolean
+            | KRISKRINGLE // char
+            | DEDMOROZ // string
+            | PAPANOEL; // array
+
+// Parámetros de la función
+monnos ::= tiposmonnos | tiposmonnos COMA monnos;
+
+// tiposmonnos son los diferentes tipos de parámetros de la función
+tiposmonnos ::= SANTACLAUS PERSONA // int identificador
+            | PERENOEL PERSONA // float identificador
+            | FATHERCHRISTMAS PERSONA // boolean identificador
+            | KRISKRINGLE PERSONA // char identificador
+            | DEDMOROZ PERSONA // string identificador
+            | PAPANOEL PERSONA; // array identificador
+
+//⚠️pendiente
+envolturas ::= ABRECUENTO juguetes CIERRECUENTO // (expr)
+         | ABREEMPAQUE juguetes CIERREEMPAQUE // [expr]
+         | ABREREGALO codigo CIERRAREGALO // {expr}
+         | ABRECUENTO CIERRECUENTO // ()
+         | ABREEMPAQUE CIERREEMPAQUE // []
+         | ABREREGALO CIERRAREGALO; // {}
+
+juguetes ::= tipojuguetes FINREGALO | tipojuguetes FINREGALO juguetes;
+
+tipojuguetes ::= juguetesaritmeticos // aritméticas (sumas, restas, etc)✅
+         | juguetesrelacionales // expresiones relacionales (menor, mayor, etc) 
+         | jugueteslogicos // expresiones lógicas (and, or, etc) 
+         | juguetesunarios // expresiones unarias (incremento, decremento, etc)
+         | jugueteasignacion // expresiones de asignacion y ciclos
+         | juguetesdecontrol; // producción para if-elif-else recursivo
+
+// aritméticas (sumas, restas, etc)
+juguetesaritmeticos ::= piezasenteras | piezasflotantes;
+
+piezasenteras ::= piezasenteras RUDOLPH piezasenteras // +
+                     |  piezasenteras DASHER piezasenteras // -
+                     |  piezasenteras DANCER piezasenteras // /
+                     |  piezasenteras PRANCER piezasenteras // //
+                     |  piezasenteras VIXEN piezasenteras // *
+                     |  piezasenteras COMET piezasenteras // ~
+                     |  piezasenteras CUPID piezasenteras // **
+                     |  L_SANTACLAUS;
+
+piezasflotantes ::= piezasflotantes RUDOLPH piezasflotantes // +
+                     |  piezasflotantes DASHER piezasflotantes // -
+                     |  piezasflotantes DANCER piezasflotantes // /
+                     |  piezasflotantes PRANCER piezasflotantes // //
+                     |  piezasflotantes VIXEN piezasflotantes // *
+                     |  piezasflotantes COMET piezasflotantes // ~
+                     |  piezasflotantes CUPID piezasflotantes // **
+                     |  L_PERENOEL;
+
+// relacionales (menor, mayor, etc)
+
+// lógicos (and, or, etc)
+
+// unarios (incremento, decremento, etc)
+
+// asignacion
+
+// estructuras de control
+
+//______________________________________________________
+regalo ::= regaloprin // aritméticas (sumas, restas, etc)✅
+         | regalocomprado // expresiones relacionales (menor, mayor, etc) ✅
+         | regalomanual // expresiones lógicas (and, or, etc) ✅
+         | regalopersonalizado // expresiones unarias (incremento, decremento, etc)✅
+         | regaloespecial // expresiones de asignacion y ciclos✅
+         | regaloscondicionales // producción para if-elif-else recursivo
+         | MAIN regalo
+         | FUNCTION regalo
+         | PERSONA regalo
+         | SANTACLAUS regalo
+         | PERENOEL regalo
+         | FATHERCHRISTMAS regalo
+         | KRISKRINGLE regalo
+         | DEDMOROZ regalo
+         | PAPANOEL regalo
+         | L_SANTACLAUS regalo
+         | L_PERENOEL regalo
+         | L_FATHERCHRISTMAS regalo
+         | L_KRISKRINGLE regalo
+         | L_DEDMOROZ regalo
+         | L_PAPANOEL regalo
+         | regalo FINREGALO // | (fin de expresión)
+         | ENVIA regalo; // return expr
+
+// aritméticas (sumas, restas, etc)
+regaloprin ::= RUDOLPH regalo // +
+            | DASHER regalo // -
+            | DANCER regalo // /
+            | PRANCER regalo // //
+            | VIXEN regalo // *
+            | COMET regalo // ~
+            | CUPID regalo; // **
+
+// expresiones relacionales (menor, mayor, etc)
+regalocomprado ::= regalo HERMEY regalo // <
+              | regalo BUDDY regalo // =<
+              | regalo JINGLE regalo // >
+              | regalo JANGLE regalo // >=
+              | regalo PEPPERMINT regalo // ==
+              | regalo WUNORSE regalo; // !=
+
+// expresiones lógicas (and, or, etc)
+regalomanual ::= regalo MELCHOR regalo // expr ^ expr
+              | regalo GASPAR regalo // expr # expr
+              | BALTASAR regalo; // !expr
+
+// expresiones unarias (incremento, decremento, etc)
+regalopersonalizado ::= GRINCH regalo // ++
+                    | QUIEN regalo; // --
+
+
+regaloespecial ::= NARRA regalo // print expr
+               | ESCUCHA regalo // read expr
+               | regalo COMA regalo // expr, expr
+               | LOCAL PERSONA ENTREGA regalo // local identificador <= expr
+               | HACE bloqueregalado REVISA condicionregalo FINREGALO// do bloque while condicion
+               | ENVUELVE condicionregalo bloqueregalado // for condicion bloque
+               | CORTA regalo; // break
+
+// if-elif-else
+regaloscondicionales ::= ELFO condicionregalo bloqueregalado // if condicion bloque
+                | regaloscondicionales HADA condicionregalo bloqueregalado // elif condicion bloque
+                | regaloscondicionales DUENDE bloqueregalado; // else bloque
+
+condicionregalo ::= ABRECUENTO L_FATHERCHRISTMAS CIERRECUENTO;
+bloqueregalado ::= ABREREGALO regalo CIERRAREGALO;
