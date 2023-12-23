@@ -214,18 +214,27 @@ piezasflotantes ::= piezasflotantes RUDOLPH piezasflotantes // +
                      |  L_PERENOEL;
 
 // relacionales (menor, mayor, etc)
+juguetesrelacionales ::= piezasenteras piezasrelacionales piezasenteras // enteros
+        | piezasflotantes piezasrelacionales piezasflotantes // flotantes
+        | piezasenteras piezasrelacionales piezasflotantes // enteros y flotantes
+        | piezasflotantes piezasrelacionales piezasenteras; // flotantes y enteros
+
+piezasrelacionales ::= HERMEY // <
+        | BUDDY // =<
+        | JINGLE // >
+        | JANGLE // >=
+        | PEPPERMINT // ==
+        | WUNORSE; // !=
 
 // lógicos (and, or, negacion)
-piezaslogicas ::= piezaslogicas MELCHOR piezaslogicas // ^
-                | piezaslogicas GASPAR piezaslogicas // #
-                | BALTASAR piezaslogicas // !
-                | L_FATHERCHRISTMAS;
+jugueteslogicos ::= jugueteslogicos MELCHOR jugueteslogicos // AND
+        | jugueteslogicos GASPAR jugueteslogicos // OR
+        | BALTASAR jugueteslogicos // NOT
+        | ABRECUENTO jugueteslogicos CIERRECUENTO; // (expr)
 
 // unarios (incremento, decremento, etc)
-piezasunarias ::= GRINCH L_SANTACLAUS FINREGALO // ++
-                | QUIEN L_SANTACLAUS FINREGALO // --
-                | GRINCH L_PERENOEL FINREGALO // ++
-                | QUIEN L_PERENOEL FINREGALO; // --
+piezasunarias ::= GRINCH juguetesaritmeticos FINREGALO // ++
+                | QUIEN juguetesaritmeticos FINREGALO; // --
 
 // asignacion <=
 jugueteasignacion ::= LOCAL SANTACLAUS PERSONA ENTREGA piezasenteras // enteros
