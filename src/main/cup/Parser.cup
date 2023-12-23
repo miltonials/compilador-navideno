@@ -215,17 +215,17 @@ piezasflotantes ::= piezasflotantes RUDOLPH piezasflotantes // +
 
 // relacionales (menor, mayor, etc)
 
-// lógicos (and, or, etc)
-jugueteslogicos ::= jugueteslogicos MELCHOR jugueteslogicos // AND
-        | jugueteslogicos GASPAR jugueteslogicos // OR
-        | BALTASAR jugueteslogicos // NOT
-        | ABRECUENTO jugueteslogicos CIERRECUENTO; // (expr)
+// lógicos (and, or, negacion)
+piezaslogicas ::= piezaslogicas MELCHOR piezaslogicas // ^
+                | piezaslogicas GASPAR piezaslogicas // #
+                | BALTASAR piezaslogicas // !
+                | L_FATHERCHRISTMAS;
 
 // unarios (incremento, decremento, etc)
 piezasunarias ::= GRINCH L_SANTACLAUS FINREGALO // ++
                 | QUIEN L_SANTACLAUS FINREGALO // --
                 | GRINCH L_PERENOEL FINREGALO // ++
-                | QUIEN L_PERENOEL FINREGALO // --
+                | QUIEN L_PERENOEL FINREGALO; // --
 
 // asignacion <=
 jugueteasignacion ::= LOCAL SANTACLAUS PERSONA ENTREGA piezasenteras // enteros
