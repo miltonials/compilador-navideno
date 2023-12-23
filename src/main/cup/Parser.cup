@@ -229,7 +229,23 @@ jugueteasignacion ::= LOCAL SANTACLAUS PERSONA ENTREGA piezasenteras // enteros
         | LOCAL FATHERCHRISTMAS PERSONA ENTREGA jugueteslogicos // booleanos
         | LOCAL KRISKRINGLE PERSONA ENTREGA L_KRISKRINGLE // caracteres
         | LOCAL DEDMOROZ PERSONA ENTREGA L_DEDMOROZ // strings ⚠️ valorar utilizar produccion de strings
-        | LOCAL PAPANOEL PERSONA ENTREGA L_PAPANOEL; // arrays ⚠️ valorar utilizar produccion de arreglos
+        | LOCAL PAPANOEL PERSONA ENTREGA ABREEMPAQUE arreglosarreglados CIERREEMPAQUE;
+
+arreglosarreglados ::= piezaarregloentero
+        | piezaarregloflotante
+        | piezaarreglobooleano
+        | piezaarreglochar
+        | piezaarreglostring
+        | piezaarregloarreglo;
+
+piezaarregloentero ::= piezasenteras | piezasenteras COMA piezaarregloentero;
+piezaarregloflotante ::= piezasflotantes | piezasflotantes COMA piezaarregloflotante;
+piezaarreglobooleano ::= jugueteslogicos | jugueteslogicos COMA piezaarreglobooleano;
+piezaarreglochar ::= L_KRISKRINGLE | L_KRISKRINGLE COMA piezaarreglochar;
+piezaarreglostring ::= L_DEDMOROZ | L_DEDMOROZ COMA piezaarreglostring;
+piezaarregloarreglo ::= ABREEMPAQUE arreglosarreglados CIERREEMPAQUE
+        | ABREEMPAQUE arreglosarreglados CIERREEMPAQUE COMA piezaarregloarreglo;
+
 
 // estructuras de control
 
