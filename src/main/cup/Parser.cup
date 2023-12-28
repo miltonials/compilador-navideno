@@ -102,6 +102,25 @@ non terminal regaloespecial; // produccion para expresiones de asignacion y cicl
 non terminal regaloscondicionales; // produccion para if-elif-else ✅
 non terminal condicionregalo; // produccion para condicion ✅
 non terminal bloqueregalado; // produccion para bloque ✅
+///-----------------------------------
+
+non terminal regaloprincipal; // produccion para main ✅
+non terminal juguetes; // produccion para expresiones ✅
+non terminal tipojuguetes; // produccion para expresiones ✅
+non terminal garantia; 
+non terminal tiposregalo; // produccion para expresiones ✅
+non terminal monnos; // produccion para parametros de funcion ✅
+non terminal tiposmonnos; // produccion para parametros de funcion ✅
+non terminal envolturas; // produccion para envolturas ✅
+non terminal juguetesaritmeticos; // produccion para expresiones aritméticas ✅
+non terminal piezasenteras; // produccion para expresiones aritméticas ✅
+non terminal piezasflotantes; // produccion para expresiones aritméticas ✅
+non terminal juguetesrelacionales; // produccion para expresiones relacionales
+non terminal jugueteslogicos; // produccion para expresiones lógicas ✅
+non terminal juguetesunarios; // produccion para expresiones unarias ✅
+non terminal jugueteasignacion; // produccion para expresiones de asignacion y ciclos✅
+non terminal juguetesdecontrol; // produccion para if-elif-else ✅
+
 
 
 
@@ -109,6 +128,7 @@ non terminal bloqueregalado; // produccion para bloque ✅
 precedence left RUDOLPH, DASHER; // suma y resta
 precedence left DANCER, PRANCER; // division y division entera
 precedence left VIXEN, COMET; // multiplicacion y modulo
+precedence left CUPID; // potencia
 precedence left GRINCH, QUIEN; // incremento y decremento
 precedence left HERMEY, BUDDY, JINGLE, JANGLE, PEPPERMINT, WUNORSE; // operadores relacionales
 precedence left MELCHOR, GASPAR; // operadores lógicos
@@ -123,6 +143,9 @@ precedence left COMA; // lexema separador
 precedence left ENTREGA; // asignacion
 precedence left MAIN; // main
 precedence left FUNCTION; // definicion de funcion
+precedence left SANTACLAUS, PERENOEL, FATHERCHRISTMAS, KRISKRINGLE, DEDMOROZ, PAPANOEL; // tipos
+precedence left PERSONA, L_SANTACLAUS, L_PERENOEL, L_FATHERCHRISTMAS, L_KRISKRINGLE, L_DEDMOROZ, L_PAPANOEL; // identificadores y literales
+
 
 //-------------------------------------------------------------------------------------- PRODUCCIONES
 /* Símbolo inicial y producciones gramaticales*/
@@ -178,7 +201,7 @@ tiposmonnos ::= SANTACLAUS PERSONA // int identificador
 //⚠️pendiente
 envolturas ::= ABRECUENTO juguetes CIERRECUENTO // (expr)
          | ABREEMPAQUE juguetes CIERREEMPAQUE // [expr]
-         | ABREREGALO codigo CIERRAREGALO // {expr}
+         | ABREREGALO juguetes CIERRAREGALO // {expr}
          | ABRECUENTO CIERRECUENTO // ()
          | ABREEMPAQUE CIERREEMPAQUE // []
          | ABREREGALO CIERRAREGALO; // {}
@@ -216,13 +239,13 @@ piezasflotantes ::= piezasflotantes RUDOLPH piezasflotantes // +
 // relacionales (menor, mayor, etc)
 
 // lógicos (and, or, negacion)
-piezaslogicas ::= piezaslogicas MELCHOR piezaslogicas // ^
-                | piezaslogicas GASPAR piezaslogicas // #
-                | BALTASAR piezaslogicas // !
+jugueteslogicos ::= jugueteslogicos MELCHOR jugueteslogicos // ^
+                | jugueteslogicos GASPAR jugueteslogicos // #
+                | BALTASAR jugueteslogicos // !
                 | L_FATHERCHRISTMAS;
 
 // unarios (incremento, decremento, etc)
-piezasunarias ::= GRINCH L_SANTACLAUS FINREGALO // ++
+juguetesunarios ::= GRINCH L_SANTACLAUS FINREGALO // ++
                 | QUIEN L_SANTACLAUS FINREGALO // --
                 | GRINCH L_PERENOEL FINREGALO // ++
                 | QUIEN L_PERENOEL FINREGALO; // --

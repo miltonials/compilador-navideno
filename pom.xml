@@ -82,13 +82,15 @@
         <version>11b-20160615-2</version>
         <executions>
           <execution>
+            <?m2e execute onConfiguration?>
+            <?m2e execute onConfiguration,onIncremental?>
             <goals>
               <goal>generate</goal>
             </goals>
           </execution>
         </executions>
         <configuration>
-          <outputDirectory>${project.build.directory}/generated-sources/cup</outputDirectory>
+          <outputDirectory>target/generated-sources/cup</outputDirectory>
         </configuration>
       </plugin>
 
