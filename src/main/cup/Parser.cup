@@ -10,6 +10,38 @@ import java.lang.Math;
  */
 class Parser;
 
+action code {:
+        public void hola() {
+            System.out.println("Hola");
+        }
+
+        public void error(String mensaje) {
+            System.out.println(mensaje);
+        }
+
+        public void error(String mensaje, int linea, int columna) {
+            System.out.println("Error en la linea " + linea + " columna " + columna + ": " + mensaje);
+        }
+
+        public void error(String mensaje, int linea, int columna, String token) {
+            System.out.println("Error en la linea " + linea + " columna " + columna + ": " + mensaje + " " + token);
+        }
+:}
+
+parser code {:
+        IdLexer miParser;
+
+        @SuppressWarnings("deprecation")
+        public Parser(IdLexer miParser) {
+                this.miParser = miParser;
+                this.symbolFactory = new DefaultSymbolFactory();
+        }
+:}
+
+init with {: :};
+
+scan with {: return miParser.next_token(); :};
+
 /* Terminales */
 
 // Operadores aritméticos binarios
@@ -34,7 +66,7 @@ terminal  WUNORSE; // !=
 terminal  MELCHOR; // ^
 terminal  GASPAR; // #
 terminal BALTASAR; // !
-terminal  LOCAL; // !
+terminal  LOCAL; // variable
 
 // Tipos
 terminal String PERSONA; // identificador
@@ -87,8 +119,8 @@ terminal Integer ENTREGA;//<=
 
 // Funciones
 terminal Integer MAIN; //main
-//terminal Integer REGALO; // definicion de funcion 
-terminal Integer FUNCTION; // definicion de funcion 
+terminal Integer REGALO; // definicion de funcion 
+//terminal Integer FUNCTION; // definicion de funcion 
 
 //-------------------------------------------------------------------------------------- NO Terminales
 non terminal navidad; // Símbolo inicial ✅
@@ -105,6 +137,7 @@ non terminal bloqueregalado; // produccion para bloque ✅
 ///-----------------------------------
 
 non terminal regaloprincipal; // produccion para main ✅
+non terminal regalofuncional; // produccion para funciones ✅
 non terminal juguetes; // produccion para expresiones ✅
 non terminal tipojuguetes; // produccion para expresiones ✅
 non terminal garantia; 
@@ -116,9 +149,17 @@ non terminal juguetesaritmeticos; // produccion para expresiones aritméticas �
 non terminal piezasenteras; // produccion para expresiones aritméticas ✅
 non terminal piezasflotantes; // produccion para expresiones aritméticas ✅
 non terminal juguetesrelacionales; // produccion para expresiones relacionales
+non terminal piezasrelacionales; // produccion para expresiones relacionales ✅
 non terminal jugueteslogicos; // produccion para expresiones lógicas ✅
 non terminal juguetesunarios; // produccion para expresiones unarias ✅
 non terminal jugueteasignacion; // produccion para expresiones de asignacion y ciclos✅
+non terminal arreglosarreglados; // produccion para arreglos ✅
+non terminal piezaarregloentero; // produccion para arreglos ✅
+non terminal piezaarregloflotante; // produccion para arreglos ✅
+non terminal piezaarreglobooleano; // produccion para arreglos ✅
+non terminal piezaarreglochar; // produccion para arreglos ✅
+non terminal piezaarreglostring; // produccion para arreglos ✅
+non terminal piezaarregloarreglo; // produccion para arreglos ✅
 non terminal juguetesdecontrol; // produccion para if-elif-else ✅
 
 
@@ -142,9 +183,10 @@ precedence left FINREGALO; // fin de expresión
 precedence left COMA; // lexema separador
 precedence left ENTREGA; // asignacion
 precedence left MAIN; // main
-precedence left FUNCTION; // definicion de funcion
+precedence left REGALO; // definicion de funcion
 precedence left SANTACLAUS, PERENOEL, FATHERCHRISTMAS, KRISKRINGLE, DEDMOROZ, PAPANOEL; // tipos
 precedence left PERSONA, L_SANTACLAUS, L_PERENOEL, L_FATHERCHRISTMAS, L_KRISKRINGLE, L_DEDMOROZ, L_PAPANOEL; // identificadores y literales
+
 
 
 //-------------------------------------------------------------------------------------- PRODUCCIONES
@@ -155,20 +197,20 @@ start with navidad;
 
 navidad ::= bolsanavidena;
 
-bolsanavidena ::= regalo regaloprincipal
-               | bolsanavidena regalo regaloprincipal;
+bolsanavidena ::=  regaloprincipal | regalofuncional regaloprincipal
+               | bolsanavidena regalofuncional regaloprincipal;
 
-regaloprincipal ::= FUNCTION SANTACLAUS MAIN ABRECUENTO  CIERRECUENTO ABREREGALO
+regaloprincipal ::= REGALO SANTACLAUS MAIN ABRECUENTO  CIERRECUENTO ABREREGALO
                         juguetes
                         garantia
                     CIERRAREGALO;
 
 //Funciones
-regalo ::= FUNCTION tiposregalo PERSONA ABRECUENTO CIERRECUENTO ABREREGALO
+regalofuncional ::= REGALO tiposregalo PERSONA ABRECUENTO CIERRECUENTO ABREREGALO
                 juguetes
                 garantia
            CIERRAREGALO
-        | FUNCTION tiposregalo PERSONA ABRECUENTO monnos CIERRECUENTO ABREREGALO
+        | REGALO tiposregalo PERSONA ABRECUENTO monnos CIERRECUENTO ABREREGALO
                 juguetes
                 garantia
           CIERRAREGALO;
@@ -287,70 +329,3 @@ piezaarregloarreglo ::= ABREEMPAQUE arreglosarreglados CIERREEMPAQUE
 
 // estructuras de control
 
-//______________________________________________________
-regalo ::= regaloprin // aritméticas (sumas, restas, etc)✅
-         | regalocomprado // expresiones relacionales (menor, mayor, etc) ✅
-         | regalomanual // expresiones lógicas (and, or, etc) ✅
-         | regalopersonalizado // expresiones unarias (incremento, decremento, etc)✅
-         | regaloespecial // expresiones de asignacion y ciclos✅
-         | regaloscondicionales // producción para if-elif-else recursivo
-         | MAIN regalo
-         | FUNCTION regalo
-         | PERSONA regalo
-         | SANTACLAUS regalo
-         | PERENOEL regalo
-         | FATHERCHRISTMAS regalo
-         | KRISKRINGLE regalo
-         | DEDMOROZ regalo
-         | PAPANOEL regalo
-         | L_SANTACLAUS regalo
-         | L_PERENOEL regalo
-         | L_FATHERCHRISTMAS regalo
-         | L_KRISKRINGLE regalo
-         | L_DEDMOROZ regalo
-         | L_PAPANOEL regalo
-         | regalo FINREGALO // | (fin de expresión)
-         | ENVIA regalo; // return expr
-
-// aritméticas (sumas, restas, etc)
-regaloprin ::= RUDOLPH regalo // +
-            | DASHER regalo // -
-            | DANCER regalo // /
-            | PRANCER regalo // //
-            | VIXEN regalo // *
-            | COMET regalo // ~
-            | CUPID regalo; // **
-
-// expresiones relacionales (menor, mayor, etc)
-regalocomprado ::= regalo HERMEY regalo // <
-              | regalo BUDDY regalo // =<
-              | regalo JINGLE regalo // >
-              | regalo JANGLE regalo // >=
-              | regalo PEPPERMINT regalo // ==
-              | regalo WUNORSE regalo; // !=
-
-// expresiones lógicas (and, or, etc)
-regalomanual ::= regalo MELCHOR regalo // expr ^ expr
-              | regalo GASPAR regalo // expr # expr
-              | BALTASAR regalo; // !expr
-
-// expresiones unarias (incremento, decremento, etc)
-regalopersonalizado ::= GRINCH regalo // ++
-                    | QUIEN regalo; // --
-
-
-regaloespecial ::= NARRA regalo // print expr
-               | ESCUCHA regalo // read expr
-               | regalo COMA regalo // expr, expr
-               | LOCAL PERSONA ENTREGA regalo // local identificador <= expr
-               | HACE bloqueregalado REVISA condicionregalo FINREGALO// do bloque while condicion
-               | ENVUELVE condicionregalo bloqueregalado // for condicion bloque
-               | CORTA regalo; // break
-
-// if-elif-else
-regaloscondicionales ::= ELFO condicionregalo bloqueregalado // if condicion bloque
-                | regaloscondicionales HADA condicionregalo bloqueregalado // elif condicion bloque
-                | regaloscondicionales DUENDE bloqueregalado; // else bloque
-
-condicionregalo ::= ABRECUENTO L_FATHERCHRISTMAS CIERRECUENTO;
-bloqueregalado ::= ABREREGALO regalo CIERRAREGALO;

@@ -37,6 +37,7 @@ public class App implements Callable<Integer> {
             // Leer desde el archivo si se proporciona
             try (Reader reader = Files.newBufferedReader(file.toPath())) {
                 parseAndPrintTokens(reader, file.getName());
+                parsear(reader, file.getAbsolutePath());
             }
         } else {
             // Leer desde la entrada estándar
@@ -54,6 +55,7 @@ public class App implements Callable<Integer> {
                 else if (inputFile.exists()) {
                     try (Reader reader = Files.newBufferedReader(inputFile.toPath())) {
                         parseAndPrintTokens(reader, input);
+                        parsear(reader, input);
                     }
                 } else {
                     System.out.println("Archivo no encontrado.");
@@ -61,6 +63,21 @@ public class App implements Callable<Integer> {
             }
         }
         return 0;
+    }
+
+    /**
+     * Método privado que parsea el archivo de entrada y muestra el resultado.
+     * @param reader
+     * @param filename
+     * @throws Exception
+     */
+    private void parsear(Reader reader, String filename) throws Exception {
+        // Crea un lexer y un parser
+        IdLexer lexer = new IdLexer(reader);
+        Parser parser = new Parser(lexer);
+        System.out.println("PARSEANDO............");
+        // Parsea la entrada
+        parser.parse();
     }
 
     /**

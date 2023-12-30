@@ -72,6 +72,7 @@ private Symbol symbol(int type, Object value) {
 
 // Definiciones de tokens
 {entero}+ { return symbol(ParserSym.L_SANTACLAUS, Integer.valueOf(yytext())); }
+"local" { return symbol(ParserSym.LOCAL, yytext()); }
 "+" { return symbol(ParserSym.RUDOLPH, yytext()); }
 "-" { return symbol(ParserSym.DASHER, yytext()); }
 "/" { return symbol(ParserSym.DANCER, yytext()); }
