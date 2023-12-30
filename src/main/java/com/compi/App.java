@@ -9,7 +9,9 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.Reader;
+import java.io.StringReader;
 import java.nio.file.Files;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
@@ -37,7 +39,7 @@ public class App implements Callable<Integer> {
             // Leer desde el archivo si se proporciona
             try (Reader reader = Files.newBufferedReader(file.toPath())) {
                 parseAndPrintTokens(reader, file.getName());
-                parsear(reader, file.getAbsolutePath());
+                parsear(file.getAbsolutePath());
             }
         } else {
             // Leer desde la entrada estándar
@@ -55,7 +57,7 @@ public class App implements Callable<Integer> {
                 else if (inputFile.exists()) {
                     try (Reader reader = Files.newBufferedReader(inputFile.toPath())) {
                         parseAndPrintTokens(reader, input);
-                        parsear(reader, input);
+                        parsear(input);
                     }
                 } else {
                     System.out.println("Archivo no encontrado.");
@@ -71,13 +73,11 @@ public class App implements Callable<Integer> {
      * @param filename
      * @throws Exception
      */
-    private void parsear(Reader reader, String filename) throws Exception {
-        // Crea un lexer y un parser
-        IdLexer lexer = new IdLexer(reader);
-        Parser parser = new Parser(lexer);
-        System.out.println("PARSEANDO............");
-        // Parsea la entrada
-        parser.parse();
+    private void parsear(String filename) throws Exception {
+        IdLexer lexer = new IdLexer(new FileReader(filename));
+        Parser p = new Parser(lexer);
+        p.parse();
+        System.out.println("¡¡¡Se puede compilar!!! 😀");
     }
 
     /**
