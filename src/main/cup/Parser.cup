@@ -128,6 +128,7 @@ non terminal bolsanavidena; // produccion para funciones ✅
 //non terminal regalo; // produccion para expresiones
 non terminal regaloprincipal; // produccion para main ✅
 non terminal regalofuncional; // produccion para funciones ✅
+non terminal regalofuncionaltipado; // produccion para funciones ✅
 non terminal juguetes; // produccion para expresiones ✅
 non terminal tipojuguetes; // produccion para expresiones ✅
 //non terminal garantia;
@@ -147,10 +148,10 @@ non terminal dedicatoriasencadenadas; // produccion para " return string| } "
 non terminal dedicatoriasarregladas; // produccion para  " return array| } "
 non terminal monnos; // produccion para parametros de funcion ✅
 non terminal tiposmonnos; // produccion para parametros de funcion ✅
-non terminal envolturas; // produccion para envolturas ✅
+//non terminal envolturas; // produccion para envolturas ✅
 non terminal juguetesaritmeticos; // produccion para expresiones aritméticas ✅
 non terminal piezasenteras; // produccion para expresiones aritméticas ✅
-non terminal piezasunarias; // producción para expresiones unarias ✅
+//non terminal piezasunarias; // producción para expresiones unarias ✅
 non terminal piezasflotantes; // produccion para expresiones aritméticas ✅
 non terminal juguetesrelacionales; // produccion para expresiones relacionales
 non terminal piezasrelacionales; // produccion para expresiones relacionales ✅
@@ -170,6 +171,12 @@ non terminal juguetesdecontrol; // produccion para if-elif-else ✅
 
 
 //-------------------------------------------------------------------------------------- PRECEDENCIA
+// sirve para definir la precedencia de los operadores
+// por ejemplo, si se define que * tiene mayor precedencia que +, entonces
+// 2 + 3 * 4 = 14
+// (2 + 3) * 4 = 20
+// 2 + (3 * 4) = 14
+// 2 * 3 + 4 = 10
 precedence left RUDOLPH, DASHER; // suma y resta
 precedence left DANCER, PRANCER; // division y division entera
 precedence left VIXEN, COMET; // multiplicacion y modulo
@@ -190,6 +197,7 @@ precedence left MAIN; // main
 precedence left REGALO; // definicion de funcion
 precedence left SANTACLAUS, PERENOEL, FATHERCHRISTMAS, KRISKRINGLE, DEDMOROZ, PAPANOEL; // tipos
 precedence left PERSONA, L_SANTACLAUS, L_PERENOEL, L_FATHERCHRISTMAS, L_KRISKRINGLE, L_DEDMOROZ, L_PAPANOEL; // identificadores y literales
+
 
 
 
@@ -220,14 +228,12 @@ regalofuncionalcharmander ::= REGALO KRISKRINGLE encabezadoregalofuncional jugue
 regalofuncionalencadenado ::= REGALO DEDMOROZ encabezadoregalofuncional juguetes dedicatoriasencadenadas;
 regalofuncionalarreglado ::= REGALO PAPANOEL encabezadoregalofuncional juguetes dedicatoriasarregladas;
 
-dedicatoriasenteras ::= ENVIA L_SANTACLAUS FINREGALO  CIERRAREGALO | ENVIA PERSONA FINREGALO CIERRAREGALO;
-dedicatoriasflotantes ::= ENVIA L_PERENOEL FINREGALO CIERRAREGALO | ENVIA PERSONA FINREGALO CIERRAREGALO;
+dedicatoriasenteras ::= ENVIA piezasenteras FINREGALO  CIERRAREGALO;
+dedicatoriasflotantes ::= ENVIA piezasflotantes FINREGALO CIERRAREGALO;
 dedicatoriasdelaverdad ::= ENVIA L_FATHERCHRISTMAS FINREGALO CIERRAREGALO | ENVIA PERSONA FINREGALO CIERRAREGALO;
 dedicatoriascharmander ::= ENVIA L_KRISKRINGLE FINREGALO CIERRAREGALO | ENVIA PERSONA FINREGALO CIERRAREGALO;
 dedicatoriasencadenadas ::= ENVIA L_DEDMOROZ FINREGALO CIERRAREGALO | ENVIA PERSONA FINREGALO CIERRAREGALO;
 dedicatoriasarregladas ::= ENVIA L_PAPANOEL FINREGALO CIERRAREGALO | ENVIA PERSONA FINREGALO CIERRAREGALO;
-
-
 
 //para parametros
 encabezadoregalofuncional ::= PERSONA ABRECUENTO CIERRECUENTO ABREREGALO
@@ -246,13 +252,14 @@ tiposmonnos ::= SANTACLAUS PERSONA // int identificador
             | PAPANOEL PERSONA; // array identificador
 
 //⚠️pendiente
+/*
 envolturas ::= ABRECUENTO juguetes CIERRECUENTO // (expr)
          | ABREEMPAQUE juguetes CIERREEMPAQUE // [expr]
          | ABREREGALO juguetes CIERRAREGALO // {expr}
          | ABRECUENTO CIERRECUENTO // ()
          | ABREEMPAQUE CIERREEMPAQUE // []
          | ABREREGALO CIERRAREGALO; // {}
-
+*/
 juguetes ::= tipojuguetes FINREGALO | tipojuguetes FINREGALO juguetes;
 
 tipojuguetes ::= juguetesaritmeticos // aritméticas (sumas, restas, etc)✅
@@ -272,6 +279,9 @@ piezasenteras ::= piezasenteras RUDOLPH piezasenteras // +
                      |  piezasenteras VIXEN piezasenteras // *
                      |  piezasenteras COMET piezasenteras // ~
                      |  piezasenteras CUPID piezasenteras // **
+                     |  ABRECUENTO piezasenteras CIERRECUENTO // (expr)
+                     |  ABRECUENTO piezasenteras CIERRECUENTO piezasenteras // (expr) + expr
+                     |  PERSONA
                      |  L_SANTACLAUS;
 
 piezasflotantes ::= piezasflotantes RUDOLPH piezasflotantes // +
@@ -281,6 +291,9 @@ piezasflotantes ::= piezasflotantes RUDOLPH piezasflotantes // +
                      |  piezasflotantes VIXEN piezasflotantes // *
                      |  piezasflotantes COMET piezasflotantes // ~
                      |  piezasflotantes CUPID piezasflotantes // **
+                     |  ABRECUENTO piezasflotantes CIERRECUENTO // (expr)
+                     |  ABRECUENTO piezasflotantes CIERRECUENTO piezasflotantes // (expr) + expr
+                     //|  PERSONA // produce conflicto con piezasenteras
                      |  L_PERENOEL;
 
 // relacionales (menor, mayor, etc)
@@ -300,15 +313,25 @@ piezasrelacionales ::= HERMEY // <
 jugueteslogicos ::= jugueteslogicos MELCHOR jugueteslogicos // AND
         | jugueteslogicos GASPAR jugueteslogicos // OR
         | BALTASAR jugueteslogicos // NOT
-        | ABRECUENTO jugueteslogicos CIERRECUENTO; // (expr)
+        | ABRECUENTO jugueteslogicos CIERRECUENTO // (expr)
+        | ABRECUENTO jugueteslogicos CIERRECUENTO jugueteslogicos // (expr) op expr
+        | jugueteslogicos ABRECUENTO jugueteslogicos CIERRECUENTO // expr op (expr)
+        | FATHERCHRISTMAS;
 
 // unarios (incremento, decremento, etc)
-piezasunarias ::= GRINCH juguetesaritmeticos FINREGALO // ++
+juguetesunarios ::= GRINCH juguetesaritmeticos FINREGALO // ++
                 | QUIEN juguetesaritmeticos FINREGALO; // --
+                //| GRINCH ABRECUENTO juguetesaritmeticos CIERRECUENTO FINREGALO // ++(expr)
+                //| QUIEN ABRECUENTO juguetesaritmeticos CIERRECUENTO FINREGALO; // --(expr)
+
 
 // asignacion <=
 jugueteasignacion ::= LOCAL SANTACLAUS PERSONA ENTREGA piezasenteras // enteros
+        | LOCAL SANTACLAUS PERSONA ENTREGA GRINCH piezasenteras// ++enteros
+        | LOCAL SANTACLAUS PERSONA ENTREGA QUIEN piezasenteras// --enteros
         | LOCAL PERENOEL PERSONA ENTREGA piezasflotantes // flotantes
+        | LOCAL PERENOEL PERSONA ENTREGA GRINCH piezasflotantes// ++flotantes
+        | LOCAL PERENOEL PERSONA ENTREGA QUIEN piezasflotantes// --flotantes
         | LOCAL FATHERCHRISTMAS PERSONA ENTREGA jugueteslogicos // booleanos
         | LOCAL KRISKRINGLE PERSONA ENTREGA L_KRISKRINGLE // caracteres
         | LOCAL DEDMOROZ PERSONA ENTREGA L_DEDMOROZ // strings ⚠️ valorar utilizar produccion de strings
@@ -328,8 +351,6 @@ piezaarreglochar ::= L_KRISKRINGLE | L_KRISKRINGLE COMA piezaarreglochar;
 piezaarreglostring ::= L_DEDMOROZ | L_DEDMOROZ COMA piezaarreglostring;
 piezaarregloarreglo ::= ABREEMPAQUE arreglosarreglados CIERREEMPAQUE
         | ABREEMPAQUE arreglosarreglados CIERREEMPAQUE COMA piezaarregloarreglo;
-
-
 
 
 // estructuras de control
