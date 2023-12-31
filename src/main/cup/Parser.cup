@@ -198,29 +198,19 @@ precedence left PERSONA, L_SANTACLAUS, L_PERENOEL, L_FATHERCHRISTMAS, L_KRISKRIN
 start with navidad;
 
 /* Producciones gramaticales */
-
 navidad ::= bolsanavidena;
 
-bolsanavidena ::=  regaloprincipal | regalofuncional regaloprincipal
-               | bolsanavidena regalofuncional regaloprincipal;
+bolsanavidena ::=  regaloprincipal | regalofuncional regaloprincipal;
+//               | bolsanavidena regalofuncional regaloprincipal;
 
 regaloprincipal ::= REGALO SANTACLAUS MAIN ABRECUENTO  CIERRECUENTO ABREREGALO
                         juguetes
                         dedicatoriasenteras;
 
 //Funciones
-/*
-regalofuncional ::= REGALO tiposregalo PERSONA ABRECUENTO CIERRECUENTO ABREREGALO
-                juguetes
-                garantia
-           CIERRAREGALO
-        | REGALO tiposregalo PERSONA ABRECUENTO monnos CIERRECUENTO ABREREGALO
-                juguetes
-                garantia
-          CIERRAREGALO;
-*/
+regalofuncional ::= regalofuncionaltipado | regalofuncional regalofuncionaltipado;
 
-regalofuncional ::= regalofuncionalentero | regalofuncionalflotante | regalofuncionaldelaverdad
+regalofuncionaltipado ::= regalofuncionalentero | regalofuncionalflotante | regalofuncionaldelaverdad
                 | regalofuncionalcharmander | regalofuncionalencadenado | regalofuncionalarreglado;
 
 regalofuncionalentero ::= REGALO SANTACLAUS encabezadoregalofuncional juguetes dedicatoriasenteras;
@@ -243,20 +233,6 @@ dedicatoriasarregladas ::= ENVIA L_PAPANOEL FINREGALO CIERRAREGALO | ENVIA PERSO
 encabezadoregalofuncional ::= PERSONA ABRECUENTO CIERRECUENTO ABREREGALO
                 | PERSONA ABRECUENTO monnos CIERRECUENTO ABREREGALO;
 
-
-//garantia ::= ENVIA L_SANTACLAUS FINREGALO
-//        | ENVIA L_PERENOEL FINREGALO
-//        | ENVIA L_FATHERCHRISTMAS FINREGALO
-//        | ENVIA L_KRISKRINGLE FINREGALO
-//        | ENVIA L_DEDMOROZ FINREGALO
-//        | ENVIA L_PAPANOEL FINREGALO;
-
-//tiposregalo ::= SANTACLAUS // int
-//            | PERENOEL // float
-//            | FATHERCHRISTMAS // boolean
-//            | KRISKRINGLE // char
-//            | DEDMOROZ // string
-//            | PAPANOEL; // array
 
 // Parámetros de la función
 monnos ::= tiposmonnos | tiposmonnos COMA monnos;
