@@ -125,28 +125,32 @@ terminal Integer REGALO; // definicion de funcion
 //-------------------------------------------------------------------------------------- NO Terminales
 non terminal navidad; // Símbolo inicial ✅
 non terminal bolsanavidena; // produccion para funciones ✅
-non terminal regalo; // produccion para expresiones
-non terminal regaloprin; // produccion para expresiones aritméticas ✅
-non terminal regalocomprado; // produccion para expresiones relacionales
-non terminal regalomanual; // produccion para expresiones lógicas ✅
-non terminal regalopersonalizado; // produccion para expresiones unarias ✅
-non terminal regaloespecial; // produccion para expresiones de asignacion y ciclos✅
-non terminal regaloscondicionales; // produccion para if-elif-else ✅
-non terminal condicionregalo; // produccion para condicion ✅
-non terminal bloqueregalado; // produccion para bloque ✅
-///-----------------------------------
-
+//non terminal regalo; // produccion para expresiones
 non terminal regaloprincipal; // produccion para main ✅
 non terminal regalofuncional; // produccion para funciones ✅
 non terminal juguetes; // produccion para expresiones ✅
 non terminal tipojuguetes; // produccion para expresiones ✅
-non terminal garantia; 
-non terminal tiposregalo; // produccion para expresiones ✅
+//non terminal garantia;
+//non terminal tiposregalo; // produccion para expresiones ✅
+non terminal regalofuncionalentero; // produccion para funciones int
+non terminal regalofuncionalflotante; // produccion para funciones float
+non terminal regalofuncionaldelaverdad; // produccion para funciones boolean
+non terminal regalofuncionalcharmander; // produccion para funciones char
+non terminal regalofuncionalencadenado; // produccion para funciones string
+non terminal regalofuncionalarreglado; // produccion para funciones array
+non terminal encabezadoregalofuncional; // produccion para "nombreFuncion params {"
+non terminal dedicatoriasenteras; // produccion para " return int| } "
+non terminal dedicatoriasflotantes; // produccion para  " return float| } "
+non terminal dedicatoriasdelaverdad; // produccion para " return boolean| } "
+non terminal dedicatoriascharmander; // produccion para  " return char| } "
+non terminal dedicatoriasencadenadas; // produccion para " return string| } "
+non terminal dedicatoriasarregladas; // produccion para  " return array| } "
 non terminal monnos; // produccion para parametros de funcion ✅
 non terminal tiposmonnos; // produccion para parametros de funcion ✅
 non terminal envolturas; // produccion para envolturas ✅
 non terminal juguetesaritmeticos; // produccion para expresiones aritméticas ✅
 non terminal piezasenteras; // produccion para expresiones aritméticas ✅
+non terminal piezasunarias; // producción para expresiones unarias ✅
 non terminal piezasflotantes; // produccion para expresiones aritméticas ✅
 non terminal juguetesrelacionales; // produccion para expresiones relacionales
 non terminal piezasrelacionales; // produccion para expresiones relacionales ✅
@@ -202,10 +206,10 @@ bolsanavidena ::=  regaloprincipal | regalofuncional regaloprincipal
 
 regaloprincipal ::= REGALO SANTACLAUS MAIN ABRECUENTO  CIERRECUENTO ABREREGALO
                         juguetes
-                        garantia
-                    CIERRAREGALO;
+                        dedicatoriasenteras;
 
 //Funciones
+/*
 regalofuncional ::= REGALO tiposregalo PERSONA ABRECUENTO CIERRECUENTO ABREREGALO
                 juguetes
                 garantia
@@ -214,20 +218,45 @@ regalofuncional ::= REGALO tiposregalo PERSONA ABRECUENTO CIERRECUENTO ABREREGAL
                 juguetes
                 garantia
           CIERRAREGALO;
+*/
 
-garantia ::= ENVIA L_SANTACLAUS FINREGALO
-        | ENVIA L_PERENOEL FINREGALO
-        | ENVIA L_FATHERCHRISTMAS FINREGALO
-        | ENVIA L_KRISKRINGLE FINREGALO
-        | ENVIA L_DEDMOROZ FINREGALO
-        | ENVIA L_PAPANOEL FINREGALO;
+regalofuncional ::= regalofuncionalentero | regalofuncionalflotante | regalofuncionaldelaverdad
+                | regalofuncionalcharmander | regalofuncionalencadenado | regalofuncionalarreglado;
 
-tiposregalo ::= SANTACLAUS // int
-            | PERENOEL // float
-            | FATHERCHRISTMAS // boolean
-            | KRISKRINGLE // char
-            | DEDMOROZ // string
-            | PAPANOEL; // array
+regalofuncionalentero ::= REGALO SANTACLAUS encabezadoregalofuncional juguetes dedicatoriasenteras;
+regalofuncionalflotante ::= REGALO PERENOEL encabezadoregalofuncional juguetes dedicatoriasflotantes;
+regalofuncionaldelaverdad ::= REGALO FATHERCHRISTMAS encabezadoregalofuncional juguetes dedicatoriasdelaverdad;
+regalofuncionalcharmander ::= REGALO KRISKRINGLE encabezadoregalofuncional juguetes dedicatoriascharmander;
+regalofuncionalencadenado ::= REGALO DEDMOROZ encabezadoregalofuncional juguetes dedicatoriasencadenadas;
+regalofuncionalarreglado ::= REGALO PAPANOEL encabezadoregalofuncional juguetes dedicatoriasarregladas;
+
+dedicatoriasenteras ::= ENVIA L_SANTACLAUS FINREGALO  CIERRAREGALO | ENVIA PERSONA FINREGALO CIERRAREGALO;
+dedicatoriasflotantes ::= ENVIA L_PERENOEL FINREGALO CIERRAREGALO | ENVIA PERSONA FINREGALO CIERRAREGALO;
+dedicatoriasdelaverdad ::= ENVIA L_FATHERCHRISTMAS FINREGALO CIERRAREGALO | ENVIA PERSONA FINREGALO CIERRAREGALO;
+dedicatoriascharmander ::= ENVIA L_KRISKRINGLE FINREGALO CIERRAREGALO | ENVIA PERSONA FINREGALO CIERRAREGALO;
+dedicatoriasencadenadas ::= ENVIA L_DEDMOROZ FINREGALO CIERRAREGALO | ENVIA PERSONA FINREGALO CIERRAREGALO;
+dedicatoriasarregladas ::= ENVIA L_PAPANOEL FINREGALO CIERRAREGALO | ENVIA PERSONA FINREGALO CIERRAREGALO;
+
+
+
+//para parametros
+encabezadoregalofuncional ::= PERSONA ABRECUENTO CIERRECUENTO ABREREGALO
+                | PERSONA ABRECUENTO monnos CIERRECUENTO ABREREGALO;
+
+
+//garantia ::= ENVIA L_SANTACLAUS FINREGALO
+//        | ENVIA L_PERENOEL FINREGALO
+//        | ENVIA L_FATHERCHRISTMAS FINREGALO
+//        | ENVIA L_KRISKRINGLE FINREGALO
+//        | ENVIA L_DEDMOROZ FINREGALO
+//        | ENVIA L_PAPANOEL FINREGALO;
+
+//tiposregalo ::= SANTACLAUS // int
+//            | PERENOEL // float
+//            | FATHERCHRISTMAS // boolean
+//            | KRISKRINGLE // char
+//            | DEDMOROZ // string
+//            | PAPANOEL; // array
 
 // Parámetros de la función
 monnos ::= tiposmonnos | tiposmonnos COMA monnos;
