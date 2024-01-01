@@ -13,6 +13,7 @@ public class ParserTest {
   private String funInt = "function int hola () {";
   private String funfloat = "function int hola () {";
   private String funBool = "function bool hola () {";
+  private String funChar = "function char hola () {";
 
   private Symbol testHelper (String christmasCode) throws Exception {
     System.out.println(christmasCode);
@@ -95,9 +96,28 @@ public class ParserTest {
     //program += "local bool res5 <= res1 || res2|";
     //program += "local bool res6 <= res1 && res2 || res3|";
     //program += "local bool res7 <= res1 && res2 || res3 && res4|";
-    program += "return true|}";
+    program += "return res4|}";
     //program = "function bool hola () {local int res <= 1+3|return true|}";
     program += funMain;
+    Integer resultado = (Integer) testHelper(program).value;
+    System.out.println(resultado);
+  }
+  
+  @Test
+  public void testCharmander() throws Exception {
+    String program = funChar;
+    program += "local char res1 <= 'a'|";
+    program += "local char res2 <= 'b'|";
+    program += "local char res3 <= 'c'|";
+    program += "local char res4 <= 'd'|";
+    program += "local char res5 <= 'e'|";
+    program += "local char res6 <= 'f'|";
+    program += "local char res7 <= 'g'|";
+    program += "local char res8 <= 'h'|";
+    program += "return res8|";
+    program += "}";
+    program += funMain;
+
     Integer resultado = (Integer) testHelper(program).value;
     System.out.println(resultado);
   }
