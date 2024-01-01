@@ -109,6 +109,7 @@ L_KRISKRINGLE	Caracter
 L_DEDMOROZ	String
 L_PAPANOEL	Array
 */
+
 <YYINITIAL> {Identifier} {
     // Verifica si es una palabra reservada
     if (yytext().equals("true") || yytext().equals("false")) {

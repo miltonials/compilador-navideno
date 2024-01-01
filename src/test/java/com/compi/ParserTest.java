@@ -14,6 +14,7 @@ public class ParserTest {
   private String funfloat = "function int hola () {";
   private String funBool = "function bool hola () {";
   private String funChar = "function char hola () {";
+  private String funArr = "function array hola () {";
 
   private Symbol testHelper (String christmasCode) throws Exception {
     System.out.println(christmasCode);
@@ -116,6 +117,18 @@ public class ParserTest {
     program += "local char res8 <= 'h'|";
     program += "return res8|";
     program += "}";
+    program += funMain;
+
+    Integer resultado = (Integer) testHelper(program).value;
+    System.out.println(resultado);
+  }
+
+  @Test void testArr() throws Exception {
+    String program = funArr;
+    program += "local array x <= [1]|";
+    program += "local array y <= [1,2]|";
+    program += "local array z <= [1,2]|";
+    program += "return [1,x,y,z]|}";
     program += funMain;
 
     Integer resultado = (Integer) testHelper(program).value;

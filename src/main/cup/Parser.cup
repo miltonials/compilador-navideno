@@ -169,6 +169,7 @@ non terminal juguetesdecontrol; // produccion para if-elif-else ✅
 non terminal dedicatoriasaritmeticas;
 non terminal piezaarregloaritmetico;
 non terminal juguetesaritmeticos_operadores;
+non terminal piezaarreglo_id;
 
 //-------------------------------------------------------------------------------------- PRECEDENCIA
 // sirve para definir la precedencia de los operadores
@@ -235,7 +236,7 @@ dedicatoriasaritmeticas ::= ENVIA juguetesaritmeticos FINREGALO CIERRAREGALO;
 dedicatoriasdelaverdad ::= ENVIA jugueteslogicos FINREGALO CIERRAREGALO | ENVIA PERSONA FINREGALO CIERRAREGALO;
 dedicatoriascharmander ::= ENVIA L_KRISKRINGLE FINREGALO CIERRAREGALO | ENVIA PERSONA FINREGALO CIERRAREGALO;
 dedicatoriasencadenadas ::= ENVIA L_DEDMOROZ FINREGALO CIERRAREGALO | ENVIA PERSONA FINREGALO CIERRAREGALO;
-dedicatoriasarregladas ::= ENVIA L_PAPANOEL FINREGALO CIERRAREGALO | ENVIA PERSONA FINREGALO CIERRAREGALO;
+dedicatoriasarregladas ::= ENVIA ABREEMPAQUE arreglosarreglados CIERREEMPAQUE FINREGALO CIERRAREGALO | ENVIA PERSONA FINREGALO CIERRAREGALO;
 
 //para parametros
 encabezadoregalofuncional ::= PERSONA ABRECUENTO CIERRECUENTO ABREREGALO
@@ -371,10 +372,11 @@ arreglosarreglados ::= piezaarregloaritmetico
         | piezaarreglobooleano
         | piezaarreglochar
         | piezaarreglostring
-        | piezaarregloarreglo;
+        | piezaarregloarreglo
+        | piezaarreglo_id;
 
 //piezaarregloentero ::= piezasenteras | piezasenteras COMA piezaarregloentero;
-piezaarregloaritmetico ::= juguetesaritmeticos | juguetesaritmeticos COMA piezaarregloentero;
+piezaarregloaritmetico ::= juguetesaritmeticos | juguetesaritmeticos COMA piezaarregloaritmetico;
 //piezaarregloflotante ::= piezasflotantes | piezasflotantes COMA piezaarregloflotante;
 //piezaarregloflotante ::= juguetesaritmeticos | juguetesaritmeticos COMA piezaarregloflotante;
 piezaarreglobooleano ::= jugueteslogicos | jugueteslogicos COMA piezaarreglobooleano;
@@ -382,7 +384,7 @@ piezaarreglochar ::= L_KRISKRINGLE | L_KRISKRINGLE COMA piezaarreglochar;
 piezaarreglostring ::= L_DEDMOROZ | L_DEDMOROZ COMA piezaarreglostring;
 piezaarregloarreglo ::= ABREEMPAQUE arreglosarreglados CIERREEMPAQUE
         | ABREEMPAQUE arreglosarreglados CIERREEMPAQUE COMA piezaarregloarreglo;
-
+piezaarreglo_id ::= PERSONA COMA arreglosarreglados;
 
 // estructuras de control
 
