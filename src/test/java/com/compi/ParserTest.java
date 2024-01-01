@@ -33,6 +33,7 @@ public class ParserTest {
   @Test
   public void testInt() throws Exception {
     String program = funInt;
+    program += "local int res <= 1|";
     program += "local int res1 <= ++(1)|";
     program += "local int res2 <= ++(((1)*(2)))|";
     program += "local int res3 <= ++((1))|";
@@ -47,6 +48,33 @@ public class ParserTest {
     program += "local int res11 <= ++((res1)-23+res3**res6*5) + 4|";
     program += "local int res11 <= 3 - ((res1)-23+res3**res6*5) + 4|";
     program += "return ((res1)-23+res3**res6*5)|}";//res1+res2+res3
+    //program += "return 3|}";
+    program += funMain;
+    System.out.println(program);
+    
+    Integer resultado = (Integer) testHelper(program).value;
+    System.out.println(resultado);
+  }
+
+  @Test
+  public void testFloat() throws Exception {
+    String program = funInt;
+    program += "local float res <= 1.3|";
+    program += "local float res1 <= ++(1.34)|";
+    program += "local float res2 <= ++(((1.3)*(0.3)))|";
+    program += "local float res3 <= ++((1))|";
+    program += "local float res4 <= ++((1)-23+1**2*5)|";
+    program += "local float res5 <= (1+3)|";
+    program += "local float res6 <= res1|";
+    program += "local float res7 <= (res1)|";
+    program += "local float res8 <= res1 + res2 + res3|";
+    program += "local float res9 <= ++((res1)-23+res3**res6*5)|";
+    program += "local float res10 <= ((res1)-23+res3**res6*5)|";
+    program += "local float res11 <= ((res1)-23+res3**res6*5) + 4|";
+    program += "local float res11 <= ++((res1)-23+res3**res6*5) + 4|";
+    program += "local float res11 <= 3 - ((res1)-23+res3**res6*5) + 4|";
+    program += "return ((res1)-23+res3**res6*5)|}";//res1+res2+res3
+    //program += "return 3.4|}";
     program += funMain;
     System.out.println(program);
     
