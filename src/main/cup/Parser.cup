@@ -151,7 +151,7 @@ non terminal tiposmonnos; // produccion para parametros de funcion ✅
 //non terminal envolturas; // produccion para envolturas ✅
 non terminal juguetesaritmeticos; // produccion para expresiones aritméticas ✅
 //non terminal piezasenteras; // produccion para expresiones aritméticas ✅
-//non terminal piezasunarias; // producción para expresiones unarias ✅
+non terminal piezasunarias; // producción para expresiones unarias ✅
 //non terminal piezasflotantes; // produccion para expresiones aritméticas ✅
 non terminal juguetesrelacionales; // produccion para expresiones relacionales
 non terminal piezasrelacionales; // produccion para expresiones relacionales ✅
@@ -168,7 +168,7 @@ non terminal piezaarregloarreglo; // produccion para arreglos ✅
 non terminal juguetesdecontrol; // produccion para if-elif-else ✅
 non terminal dedicatoriasaritmeticas;
 non terminal piezaarregloaritmetico;
-
+non terminal juguetesaritmeticos_operadores;
 
 //-------------------------------------------------------------------------------------- PRECEDENCIA
 // sirve para definir la precedencia de los operadores
@@ -267,7 +267,7 @@ juguetes ::= tipojuguetes FINREGALO | tipojuguetes FINREGALO juguetes;
 tipojuguetes ::= juguetesaritmeticos // aritméticas (sumas, restas, etc)✅
          | juguetesrelacionales // expresiones relacionales (menor, mayor, etc) 
          | jugueteslogicos // expresiones lógicas (and, or, etc) 
-         | juguetesunarios // expresiones unarias (incremento, decremento, etc)
+         //| juguetesunarios // expresiones unarias (incremento, decremento, etc)
          | jugueteasignacion // expresiones de asignacion y ciclos
          | juguetesdecontrol; // producción para if-elif-else recursivo
 
@@ -281,10 +281,20 @@ juguetesaritmeticos ::= juguetesaritmeticos RUDOLPH juguetesaritmeticos // +
                      |  juguetesaritmeticos COMET juguetesaritmeticos // ~
                      |  juguetesaritmeticos CUPID juguetesaritmeticos // **
                      |  ABRECUENTO juguetesaritmeticos CIERRECUENTO // (expr)
-                     |  ABRECUENTO juguetesaritmeticos CIERRECUENTO juguetesaritmeticos // (expr) + expr
+                     |  ABRECUENTO juguetesaritmeticos CIERRECUENTO juguetesaritmeticos_operadores juguetesaritmeticos // (expr) + expr
+                     |  juguetesaritmeticos juguetesaritmeticos_operadores ABRECUENTO juguetesaritmeticos CIERRECUENTO // (expr) + expr
+                     | juguetesunarios // ++ o --
                      |  PERSONA
                      |  L_PERENOEL
                      |  L_SANTACLAUS;
+
+juguetesaritmeticos_operadores ::= RUDOLPH
+                |  DASHER
+                |  DANCER
+                |  PRANCER
+                |  VIXEN
+                |  COMET
+                |  CUPID;
 
 /*
 piezasenteras ::= piezasenteras RUDOLPH piezasenteras // +
@@ -329,16 +339,18 @@ piezasrelacionales ::= HERMEY // <
 jugueteslogicos ::= jugueteslogicos MELCHOR jugueteslogicos // AND
         | jugueteslogicos GASPAR jugueteslogicos // OR
         | BALTASAR jugueteslogicos // NOT
-        | ABRECUENTO jugueteslogicos CIERRECUENTO // (expr)
+        //| ABRECUENTO jugueteslogicos CIERRECUENTO // (expr)
         | ABRECUENTO jugueteslogicos CIERRECUENTO jugueteslogicos // (expr) op expr
         | jugueteslogicos ABRECUENTO jugueteslogicos CIERRECUENTO // expr op (expr)
-        | FATHERCHRISTMAS;
+        //| PERSONA // identificador
+        | L_FATHERCHRISTMAS;
 
 // unarios (incremento, decremento, etc)
-juguetesunarios ::= GRINCH juguetesaritmeticos FINREGALO // ++
-                | QUIEN juguetesaritmeticos FINREGALO; // --
+juguetesunarios ::= piezasunarias juguetesaritmeticos; // ++ o --
                 //| GRINCH ABRECUENTO juguetesaritmeticos CIERRECUENTO FINREGALO // ++(expr)
                 //| QUIEN ABRECUENTO juguetesaritmeticos CIERRECUENTO FINREGALO; // --(expr)
+
+piezasunarias ::=  GRINCH | QUIEN;
 
 
 // asignacion <=

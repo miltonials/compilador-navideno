@@ -1,5 +1,6 @@
 function string hola () {
     local string res <= ""|
+    local float preres <= ++++1.1|
     return 2|@esto no se debe permitir porque es una funcion string
 }
 
