@@ -87,8 +87,9 @@ public class ParserTest {
   public void testBool() throws Exception {
     String program = funBool;
     program += "local bool res1 <= true|";
-    //program += "local bool res1 <= true|";
-    //program += "local bool res2 <= false|";
+    program += "local bool res2 <= true|";
+    program += "local bool res3 <= true ^ false|";
+    program += "local bool res4 <= true # false|";
     //program += "local bool res3 <= res1|";
     //program += "local bool res4 <= res1 && res2|";
     //program += "local bool res5 <= res1 || res2|";

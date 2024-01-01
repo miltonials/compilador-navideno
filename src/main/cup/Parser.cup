@@ -339,7 +339,7 @@ piezasrelacionales ::= HERMEY // <
 jugueteslogicos ::= jugueteslogicos MELCHOR jugueteslogicos // AND
         | jugueteslogicos GASPAR jugueteslogicos // OR
         | BALTASAR jugueteslogicos // NOT
-        //| ABRECUENTO jugueteslogicos CIERRECUENTO // (expr)
+        | ABRECUENTO jugueteslogicos CIERRECUENTO // (expr)
         | ABRECUENTO jugueteslogicos CIERRECUENTO jugueteslogicos // (expr) op expr
         | jugueteslogicos ABRECUENTO jugueteslogicos CIERRECUENTO // expr op (expr)
         //| PERSONA // identificador
