@@ -159,7 +159,7 @@ non terminal jugueteslogicos; // produccion para expresiones lógicas ✅
 non terminal juguetesunarios; // produccion para expresiones unarias ✅
 non terminal jugueteasignacion; // produccion para expresiones de asignacion y ciclos✅
 non terminal arreglosarreglados; // produccion para arreglos ✅
-non terminal piezaarregloentero; // produccion para arreglos ✅
+//non terminal piezaarregloentero; // produccion para arreglos ✅
 //non terminal piezaarregloflotante; // produccion para arreglos ✅
 non terminal piezaarreglobooleano; // produccion para arreglos ✅
 non terminal piezaarreglochar; // produccion para arreglos ✅
@@ -170,6 +170,7 @@ non terminal dedicatoriasaritmeticas;
 non terminal piezaarregloaritmetico;
 non terminal juguetesaritmeticos_operadores;
 non terminal piezaarreglo_id;
+non terminal juguetesdefinidos;
 
 //-------------------------------------------------------------------------------------- PRECEDENCIA
 // sirve para definir la precedencia de los operadores
@@ -186,18 +187,18 @@ precedence left GRINCH, QUIEN; // incremento y decremento
 precedence left HERMEY, BUDDY, JINGLE, JANGLE, PEPPERMINT, WUNORSE; // operadores relacionales
 precedence left MELCHOR, GASPAR; // operadores lógicos
 precedence left BALTASAR; // operador lógico not
-precedence left ABRECUENTO, CIERRECUENTO; // parentesis
-precedence left ABREEMPAQUE, CIERREEMPAQUE; // corchetes
-precedence left ABREREGALO, CIERRAREGALO; // llaves
-precedence left ELFO, HADA, DUENDE, ENVUELVE, HACE, REVISA, ENVIA, CORTA; // estructuras de control
-precedence left NARRA, ESCUCHA; // entrada y salida
-precedence left FINREGALO; // fin de expresión
+//precedence left ABRECUENTO, CIERRECUENTO; // parentesis
+//precedence left ABREEMPAQUE, CIERREEMPAQUE; // corchetes
+//precedence left ABREREGALO, CIERRAREGALO; // llaves
+//precedence left ELFO, HADA, DUENDE, ENVUELVE, HACE, REVISA, ENVIA, CORTA; // estructuras de control
+//precedence left NARRA, ESCUCHA; // entrada y salida
+//precedence left FINREGALO; // fin de expresión
 precedence left COMA; // lexema separador
-precedence left ENTREGA; // asignacion
-precedence left MAIN; // main
-precedence left REGALO; // definicion de funcion
-precedence left SANTACLAUS, PERENOEL, FATHERCHRISTMAS, KRISKRINGLE, DEDMOROZ, PAPANOEL; // tipos
-precedence left PERSONA, L_SANTACLAUS, L_PERENOEL, L_FATHERCHRISTMAS, L_KRISKRINGLE, L_DEDMOROZ, L_PAPANOEL; // identificadores y literales
+//precedence left ENTREGA; // asignacion
+//precedence left MAIN; // main
+//precedence left REGALO; // definicion de funcion
+//precedence left SANTACLAUS, PERENOEL, FATHERCHRISTMAS, KRISKRINGLE, DEDMOROZ, PAPANOEL; // tipos
+//precedence left PERSONA, L_SANTACLAUS, L_PERENOEL, L_FATHERCHRISTMAS, L_KRISKRINGLE, L_DEDMOROZ, L_PAPANOEL; // identificadores y literales
 
 
 
@@ -269,6 +270,7 @@ tipojuguetes ::= juguetesaritmeticos // aritméticas (sumas, restas, etc)✅
          | juguetesrelacionales // expresiones relacionales (menor, mayor, etc) 
          | jugueteslogicos // expresiones lógicas (and, or, etc) 
          //| juguetesunarios // expresiones unarias (incremento, decremento, etc)
+         | juguetesdefinidos // expresiones de definicion de variables
          | jugueteasignacion // expresiones de asignacion y ciclos
          | juguetesdecontrol; // producción para if-elif-else recursivo
 
@@ -342,7 +344,7 @@ jugueteslogicos ::= jugueteslogicos MELCHOR jugueteslogicos // AND
         | BALTASAR jugueteslogicos // NOT
         | ABRECUENTO jugueteslogicos CIERRECUENTO // (expr)
         | ABRECUENTO jugueteslogicos CIERRECUENTO jugueteslogicos // (expr) op expr
-        | jugueteslogicos ABRECUENTO jugueteslogicos CIERRECUENTO // expr op (expr)
+        //| jugueteslogicos ABRECUENTO jugueteslogicos CIERRECUENTO // expr op (expr)
         //| PERSONA // identificador
         | L_FATHERCHRISTMAS;
 
@@ -365,6 +367,8 @@ jugueteasignacion ::= LOCAL SANTACLAUS PERSONA ENTREGA juguetesaritmeticos // en
         | LOCAL KRISKRINGLE PERSONA ENTREGA L_KRISKRINGLE // caracteres
         | LOCAL DEDMOROZ PERSONA ENTREGA L_DEDMOROZ // strings ⚠️ valorar utilizar produccion de strings
         | LOCAL PAPANOEL PERSONA ENTREGA ABREEMPAQUE arreglosarreglados CIERREEMPAQUE;
+
+juguetesdefinidos ::= LOCAL tiposmonnos;
 
 arreglosarreglados ::= piezaarregloaritmetico
         //| piezaarregloentero

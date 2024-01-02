@@ -11,7 +11,7 @@ public class ParserTest {
   private String funMain = "function int main () { local int res <= 1+3|return res|@comentario\n}";
   private String funStr = "function string hola () {local string res <= \"hola\"|return \"3\"|}" + funMain;
   private String funInt = "function int hola () {";
-  private String funfloat = "function int hola () {";
+  private String funfloat = "function int hola (int x, char y) {";
   private String funBool = "function bool hola () {";
   private String funChar = "function char hola () {";
   private String funArr = "function array hola () {";
@@ -125,9 +125,10 @@ public class ParserTest {
 
   @Test void testArr() throws Exception {
     String program = funArr;
-    program += "local array x <= [1]|";
-    program += "local array y <= [1,2]|";
-    program += "local array z <= [1,2]|";
+    //program += "local array x <= [1]|";
+    program += "local int m|";
+    //program += "local array y <= [1,2]|";
+    //program += "local array z <= [1,2]|";
     program += "return [1,x,y,z]|}";
     program += funMain;
 
