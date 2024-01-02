@@ -4,6 +4,8 @@ import java_cup.runtime.*;
 import java.io.*;
 import java.util.*;
 import java.lang.Math;
+import java_cup.runtime.Symbol;
+import java.util.Stack;
 
 /**
  * Clase principal del compilador
@@ -36,6 +38,15 @@ parser code {:
                 this.miParser = miParser;
                 this.symbolFactory = new DefaultSymbolFactory();
         }
+
+        public void syntax_error(Symbol s){
+                System.out.println("Error R de sintaxis: "+ s.value +" Linea "+(s.left+1)+" columna "+(s.right+1) );
+        }
+
+        public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
+                System.out.println("Error NR de sintaxis: "+ s.value +" Linea "+(s.left+1)+" columna "+(s.right+1) );
+        }
+
 :}
 
 init with {: :};
