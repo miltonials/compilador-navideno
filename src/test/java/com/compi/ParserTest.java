@@ -125,11 +125,13 @@ public class ParserTest {
 
   @Test void testArr() throws Exception {
     String program = funArr;
-    //program += "local array x <= [1]|";
+    program += "local array x <= [1]|";
     program += "local int m|";
-    program += "m <= 123|";
-    //program += "local array y <= [1,2]|";
-    //program += "local array z <= [1,2]|";
+    program += "m <= [123]|";
+    program += "local array y <= [[2],[[2],[2]]]|";
+    program += "local array z <= [\"d\"]|";
+    program += "local array w <= [variable, 3]|";
+    program += "local array w <= [variable, \"string\"]|";
     program += "return [1,x,y,z]|}";
     program += funMain;
 
