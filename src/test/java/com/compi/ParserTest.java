@@ -127,6 +127,7 @@ public class ParserTest {
     String program = funArr;
     //program += "local array x <= [1]|";
     program += "local int m|";
+    program += "m <= 123|";
     //program += "local array y <= [1,2]|";
     //program += "local array z <= [1,2]|";
     program += "return [1,x,y,z]|}";

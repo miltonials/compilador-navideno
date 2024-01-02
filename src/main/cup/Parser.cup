@@ -366,7 +366,15 @@ jugueteasignacion ::= LOCAL SANTACLAUS PERSONA ENTREGA juguetesaritmeticos // en
         | LOCAL FATHERCHRISTMAS PERSONA ENTREGA jugueteslogicos // booleanos
         | LOCAL KRISKRINGLE PERSONA ENTREGA L_KRISKRINGLE // caracteres
         | LOCAL DEDMOROZ PERSONA ENTREGA L_DEDMOROZ // strings ⚠️ valorar utilizar produccion de strings
-        | LOCAL PAPANOEL PERSONA ENTREGA ABREEMPAQUE arreglosarreglados CIERREEMPAQUE;
+        | LOCAL PAPANOEL PERSONA ENTREGA ABREEMPAQUE arreglosarreglados CIERREEMPAQUE
+        | PERSONA ENTREGA juguetesaritmeticos // enteros
+        | PERSONA ENTREGA GRINCH juguetesaritmeticos// ++enteros
+        | PERSONA ENTREGA QUIEN juguetesaritmeticos// --enteros
+        | PERSONA ENTREGA jugueteslogicos // booleanos
+        | PERSONA ENTREGA L_KRISKRINGLE // caracteres
+        | PERSONA ENTREGA L_DEDMOROZ // strings ⚠️ valorar utilizar produccion de strings
+        | PERSONA ENTREGA ABREEMPAQUE arreglosarreglados CIERREEMPAQUE;
+        
 
 juguetesdefinidos ::= LOCAL tiposmonnos;
 
