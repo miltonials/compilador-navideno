@@ -11,6 +11,8 @@ import java_cup.runtime.*;
 %public
 %class IdLexer
 %cup
+//%line
+%column
 // Expresiones regulares para tokens
 digit = [0-9] // dígito
 digitnonzero = [1-9] // dígito no cero
