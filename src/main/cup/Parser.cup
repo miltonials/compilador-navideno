@@ -184,6 +184,8 @@ non terminal piezaarreglo_id;
 non terminal juguetesdefinidos;
 non terminal controldejuguete;
 non terminal adicionalesdecontrol;
+non terminal iteradordejuguetes;
+non terminal parametrosdeenvoltura;
 
 //-------------------------------------------------------------------------------------- PRECEDENCIA
 // sirve para definir la precedencia de los operadores
@@ -285,7 +287,8 @@ tipojuguetes ::= juguetesaritmeticos FINREGALO // aritméticas (sumas, restas, e
          //| juguetesunarios // expresiones unarias (incremento, decremento, etc)
          | juguetesdefinidos FINREGALO // expresiones de definicion de variables
          | jugueteasignacion FINREGALO // expresiones de asignacion y ciclos
-         | juguetesdecontrol; // producción para if-elif-else recursivo
+         | juguetesdecontrol
+         | iteradordejuguetes; // producción para if-elif-else recursivo
 
 // aritméticas (sumas, restas, etc)
 //juguetesaritmeticos ::= piezasenteras | piezasflotantes;
@@ -388,7 +391,6 @@ jugueteasignacion ::= LOCAL SANTACLAUS PERSONA ENTREGA juguetesaritmeticos // en
         | PERSONA ENTREGA L_DEDMOROZ // strings ⚠️ valorar utilizar produccion de strings
         | PERSONA ENTREGA ABREEMPAQUE arreglosarreglados CIERREEMPAQUE;
 
-
 juguetesdefinidos ::= LOCAL tiposmonnos;
 
 arreglosarreglados ::= piezaarregloaritmetico
@@ -417,3 +419,8 @@ adicionalesdecontrol ::= HADA ABRECUENTO controldejuguete CIERRECUENTO ABREREGAL
 
 
 controldejuguete ::= juguetesrelacionales | jugueteslogicos;
+
+iteradordejuguetes ::= ENVUELVE ABRECUENTO parametrosdeenvoltura CIERRECUENTO ABREREGALO juguetes CIERRAREGALO
+                | HACE ABREREGALO juguetes CIERRAREGALO REVISA ABRECUENTO controldejuguete CIERRECUENTO FINREGALO;
+
+parametrosdeenvoltura ::= jugueteasignacion FINREGALO controldejuguete FINREGALO juguetesunarios;

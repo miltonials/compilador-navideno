@@ -9,7 +9,7 @@ import java_cup.runtime.Symbol;
 
 public class ParserTest {
   private String funMain = "function int main () { local int res <= 1+3|return res|@comentario\n}";
-  private String funStr = "function string hola () {local string res <= \"hola\"|return \"3\"|}" + funMain;
+  private String funStr = "function string hola () {local string res <= \"hola\"|return \"3\"|}";
   private String funInt = "function int hola () {";
   private String funfloat = "function int hola (int x, char y) {";
   private String funBool = "function bool hola () {";
@@ -30,6 +30,7 @@ public class ParserTest {
 
   @Test
   public void testStr() throws Exception {
+    funStr += funMain;
     Integer resultado = (Integer) testHelper(funStr).value;
     System.out.println(resultado);
   }
@@ -178,6 +179,28 @@ public class ParserTest {
     program += "else {";
     program += "local int m|";
     program += "m <= [123]|}";
+    
+    program += "return [1,x,y,z]|}";
+    program += funMain;
+
+    Integer resultado = (Integer) testHelper(program).value;
+    System.out.println(resultado);
+  }
+
+  @Test
+  public void testLoops() throws Exception{
+    String program = funArr + "\n";
+    program += "local array x <= [1]|";
+    //for
+    program += "for (local int res <= 1| 2<5 | ++i) {";
+    program += "local int m|";
+    program += "m <= [123]|}";
+
+    // do while
+    program += "do {";
+    program += "local int m|";
+    program += "m <= [123]|}";
+    program += "until (true)|";
     
     program += "return [1,x,y,z]|}";
     program += funMain;
