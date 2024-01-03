@@ -194,6 +194,12 @@ public class ParserTest {
     //for
     program += "for (local int res <= 1| 2<5 | ++i) {";
     program += "local int m|";
+
+    program += "if (true) {";
+    program += "local int m|";
+    program += "break|";
+    program += "m <= [123]|}";
+
     program += "m <= [123]|}";
 
     // do while

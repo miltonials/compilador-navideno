@@ -40,11 +40,11 @@ parser code {:
         }
 
         public void syntax_error(Symbol s) {
-                System.out.println("Error R de sintaxis: "+ s.value +" Linea "+(s.left+1)+" columna "+(s.right+1) );
+                System.err.println("Error R de sintaxis: "+ s.value +" Linea "+(s.left+1)+" columna "+(s.right+1) );
         }
 
         public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
-                System.out.println("Error NR de sintaxis: "+ s.value +" Linea "+(s.left+1)+" columna "+(s.right+1) );
+                System.err.println("Error NR de sintaxis: "+ s.value +" Linea "+(s.left+1)+" columna "+(s.right+1) );
         }
 
 :}
@@ -188,6 +188,7 @@ non terminal iteradordejuguetes;
 non terminal parametrosdeenvoltura;
 non terminal jugueteparlanchin;
 non terminal juguetechismoso;
+non terminal etiquetanavidena;
 
 //-------------------------------------------------------------------------------------- PRECEDENCIA
 // sirve para definir la precedencia de los operadores
@@ -281,7 +282,11 @@ envolturas ::= ABRECUENTO juguetes CIERRECUENTO // (expr)
          | ABREREGALO CIERRAREGALO; // {}
 */
 //juguetes ::= tipojuguetes FINREGALO | tipojuguetes FINREGALO juguetes;
-juguetes ::= tipojuguetes | tipojuguetes juguetes;
+juguetes ::= etiquetanavidena
+        | etiquetanavidena CORTA FINREGALO
+        | etiquetanavidena CORTA FINREGALO etiquetanavidena;
+
+etiquetanavidena ::= tipojuguetes | tipojuguetes etiquetanavidena;
 
 tipojuguetes ::= juguetesaritmeticos FINREGALO // aritméticas (sumas, restas, etc)✅
          | juguetesrelacionales FINREGALO // expresiones relacionales (menor, mayor, etc) 
@@ -427,6 +432,7 @@ juguetesdecontrol ::= ELFO ABRECUENTO controldejuguete CIERRECUENTO ABREREGALO j
 adicionalesdecontrol ::= HADA ABRECUENTO controldejuguete CIERRECUENTO ABREREGALO juguetes CIERRAREGALO 
                 | HADA ABRECUENTO controldejuguete CIERRECUENTO ABREREGALO juguetes CIERRAREGALO adicionalesdecontrol
                 | DUENDE ABREREGALO juguetes CIERRAREGALO;
+
 
 
 controldejuguete ::= juguetesrelacionales | jugueteslogicos;
