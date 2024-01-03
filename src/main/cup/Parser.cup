@@ -186,6 +186,8 @@ non terminal controldejuguete;
 non terminal adicionalesdecontrol;
 non terminal iteradordejuguetes;
 non terminal parametrosdeenvoltura;
+non terminal jugueteparlanchin;
+non terminal juguetechismoso;
 
 //-------------------------------------------------------------------------------------- PRECEDENCIA
 // sirve para definir la precedencia de los operadores
@@ -288,7 +290,16 @@ tipojuguetes ::= juguetesaritmeticos FINREGALO // aritméticas (sumas, restas, e
          | juguetesdefinidos FINREGALO // expresiones de definicion de variables
          | jugueteasignacion FINREGALO // expresiones de asignacion y ciclos
          | juguetesdecontrol
-         | iteradordejuguetes; // producción para if-elif-else recursivo
+         | iteradordejuguetes
+         | jugueteparlanchin FINREGALO
+         | juguetechismoso FINREGALO;
+
+jugueteparlanchin ::= NARRA ABRECUENTO PERSONA CIERRECUENTO | NARRA ABRECUENTO L_DEDMOROZ CIERRECUENTO;//TODO: concatenación de strings
+juguetechismoso ::= ESCUCHA ABRECUENTO L_DEDMOROZ CIERRECUENTO
+                | ESCUCHA ABRECUENTO CIERRECUENTO
+                | ESCUCHA ABRECUENTO PERSONA CIERRECUENTO
+                | LOCAL DEDMOROZ PERSONA ENTREGA ESCUCHA ABRECUENTO L_DEDMOROZ CIERRECUENTO
+                | LOCAL DEDMOROZ PERSONA ENTREGA ESCUCHA ABRECUENTO CIERRECUENTO;
 
 // aritméticas (sumas, restas, etc)
 //juguetesaritmeticos ::= piezasenteras | piezasflotantes;

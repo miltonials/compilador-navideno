@@ -208,4 +208,24 @@ public class ParserTest {
     Integer resultado = (Integer) testHelper(program).value;
     System.out.println(resultado);
   }
+
+  @Test
+  public void testIO() throws Exception{
+    String program = funArr + "\n";
+    
+    program += "print(\"hola\")|";
+    program += "print(variable)|";
+
+    program += "read(variable)|";
+    program += "read(\"ingrese algo:\")|";
+    program += "local string identificador <= read()|";
+    program += "local string identificador <= read(\"ingrese algo:\")|";
+
+    program += "local array x <= [1]|";
+    program += "return [1]|}";
+    program += funMain;
+
+    Integer resultado = (Integer) testHelper(program).value;
+    System.out.println(resultado);
+  }
 }
