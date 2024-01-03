@@ -39,7 +39,7 @@ parser code {:
                 this.symbolFactory = new DefaultSymbolFactory();
         }
 
-        public void syntax_error(Symbol s){
+        public void syntax_error(Symbol s) {
                 System.out.println("Error R de sintaxis: "+ s.value +" Linea "+(s.left+1)+" columna "+(s.right+1) );
         }
 
@@ -182,6 +182,8 @@ non terminal piezaarregloaritmetico;
 non terminal juguetesaritmeticos_operadores;
 non terminal piezaarreglo_id;
 non terminal juguetesdefinidos;
+non terminal controldejuguete;
+non terminal adicionalesdecontrol;
 
 //-------------------------------------------------------------------------------------- PRECEDENCIA
 // sirve para definir la precedencia de los operadores
@@ -266,7 +268,6 @@ tiposmonnos ::= SANTACLAUS PERSONA // int identificador
             | DEDMOROZ PERSONA // string identificador
             | PAPANOEL PERSONA; // array identificador
 
-//⚠️pendiente
 /*
 envolturas ::= ABRECUENTO juguetes CIERRECUENTO // (expr)
          | ABREEMPAQUE juguetes CIERREEMPAQUE // [expr]
@@ -275,14 +276,15 @@ envolturas ::= ABRECUENTO juguetes CIERRECUENTO // (expr)
          | ABREEMPAQUE CIERREEMPAQUE // []
          | ABREREGALO CIERRAREGALO; // {}
 */
-juguetes ::= tipojuguetes FINREGALO | tipojuguetes FINREGALO juguetes;
+//juguetes ::= tipojuguetes FINREGALO | tipojuguetes FINREGALO juguetes;
+juguetes ::= tipojuguetes | tipojuguetes juguetes;
 
-tipojuguetes ::= juguetesaritmeticos // aritméticas (sumas, restas, etc)✅
-         | juguetesrelacionales // expresiones relacionales (menor, mayor, etc) 
-         | jugueteslogicos // expresiones lógicas (and, or, etc) 
+tipojuguetes ::= juguetesaritmeticos FINREGALO // aritméticas (sumas, restas, etc)✅
+         | juguetesrelacionales FINREGALO // expresiones relacionales (menor, mayor, etc) 
+         | jugueteslogicos FINREGALO// expresiones lógicas (and, or, etc) 
          //| juguetesunarios // expresiones unarias (incremento, decremento, etc)
-         | juguetesdefinidos // expresiones de definicion de variables
-         | jugueteasignacion // expresiones de asignacion y ciclos
+         | juguetesdefinidos FINREGALO // expresiones de definicion de variables
+         | jugueteasignacion FINREGALO // expresiones de asignacion y ciclos
          | juguetesdecontrol; // producción para if-elif-else recursivo
 
 // aritméticas (sumas, restas, etc)
@@ -401,8 +403,17 @@ piezaarreglobooleano ::= jugueteslogicos | jugueteslogicos COMA piezaarreglobool
 piezaarreglochar ::= L_KRISKRINGLE | L_KRISKRINGLE COMA piezaarreglochar;
 piezaarreglostring ::= L_DEDMOROZ | L_DEDMOROZ COMA piezaarreglostring;
 piezaarregloarreglo ::= ABREEMPAQUE arreglosarreglados CIERREEMPAQUE
-        | ABREEMPAQUE arreglosarreglados CIERREEMPAQUE COMA piezaarregloarreglo;
+        | ABREEMPAQUE arreglosarreglados CIERREEMPAQUE COMA arreglosarreglados
+        ;
 piezaarreglo_id ::= PERSONA COMA arreglosarreglados;
 
 // estructuras de control
+juguetesdecontrol ::= ELFO ABRECUENTO controldejuguete CIERRECUENTO ABREREGALO juguetes CIERRAREGALO
+                | ELFO ABRECUENTO controldejuguete CIERRECUENTO ABREREGALO juguetes CIERRAREGALO adicionalesdecontrol;
 
+adicionalesdecontrol ::= HADA ABRECUENTO controldejuguete CIERRECUENTO ABREREGALO juguetes CIERRAREGALO 
+                | HADA ABRECUENTO controldejuguete CIERRECUENTO ABREREGALO juguetes CIERRAREGALO adicionalesdecontrol
+                | DUENDE ABREREGALO juguetes CIERRAREGALO;
+
+
+controldejuguete ::= juguetesrelacionales | jugueteslogicos;

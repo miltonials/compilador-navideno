@@ -124,7 +124,7 @@ public class ParserTest {
   }
 
   @Test void testArr() throws Exception {
-    String program = funArr;
+    String program = funArr + "\n";
     program += "local array x <= [1]|";
     program += "local int m|";
     program += "m <= [123]|";
@@ -132,6 +132,53 @@ public class ParserTest {
     program += "local array z <= [\"d\"]|";
     program += "local array w <= [variable, 3]|";
     program += "local array w <= [variable, \"string\"]|";
+    program += "local array w <= [[1], variable]|";
+    program += "return [1,x,y,z]|}";
+    program += funMain;
+
+    Integer resultado = (Integer) testHelper(program).value;
+    System.out.println(resultado);
+  }
+
+  @Test void testStructures() throws Exception {
+    String program = funArr + "\n";
+    program += "local array x <= [1]|";
+    //if
+    program += "if (true) {";
+    program += "local int m|";
+    program += "m <= [123]|}";
+    //if else
+    program += "if (true) {";
+    program += "local int m|";
+    program += "m <= [123]|}";
+    program += "else {";
+    program += "local int m|";
+    program += "m <= [123]|}";
+    //if else if
+    program += "if (true) {";
+    program += "local int m|";
+    program += "m <= [123]|}";
+    program += "elif (true) {";
+    program += "local int m|";
+    program += "m <= [123]|}";
+    program += "else {";
+    program += "local int m|";
+    program += "m <= [123]|}";
+
+    //if dentro de if
+    program += "if (true) {";
+    program += "local int m|";
+    program += "m <= [123]|";
+    program += "if (true) {";
+    program += "local int m|";
+    program += "m <= [123]|}}";
+    program += "elif (true) {";
+    program += "local int m|";
+    program += "m <= [123]|}";
+    program += "else {";
+    program += "local int m|";
+    program += "m <= [123]|}";
+    
     program += "return [1,x,y,z]|}";
     program += funMain;
 
