@@ -9,7 +9,7 @@ import java_cup.runtime.Symbol;
 
 public class ParserTest {
   private String funMain = "function int main () { local int res <= 1+3|return res|@comentario\n}";
-  private String funStr = "function string hola () {local string res <= \"hola\"|return \"3\"|}";
+  private String funStr = "function int hola () {local string res <= \"hola\"|return 3|}";
   private String funInt = "function int hola () {";
   private String funfloat = "function int hola (int x, char y) {";
   private String funBool = "function bool hola () {";
@@ -125,7 +125,7 @@ public class ParserTest {
   }
 
   @Test void testArr() throws Exception {
-    String program = funArr + "\n";
+    String program = funInt + "\n";
     program += "local array x <= [1]|";
     program += "local int m|";
     program += "m <= [123]|";
@@ -134,7 +134,7 @@ public class ParserTest {
     program += "local array w <= [variable, 3]|";
     program += "local array w <= [variable, \"string\"]|";
     program += "local array w <= [[1], variable]|";
-    program += "return [1,x,y,z]|}";
+    program += "return 1|}";
     program += funMain;
 
     Integer resultado = (Integer) testHelper(program).value;
@@ -142,7 +142,7 @@ public class ParserTest {
   }
 
   @Test void testStructures() throws Exception {
-    String program = funArr + "\n";
+    String program = funInt + "\n";
     program += "local array x <= [1]|";
     //if
     program += "if (true) {";
@@ -180,7 +180,7 @@ public class ParserTest {
     program += "local int m|";
     program += "m <= [123]|}";
     
-    program += "return [1,x,y,z]|}";
+    program += "return 2|}";
     program += funMain;
 
     Integer resultado = (Integer) testHelper(program).value;
@@ -189,7 +189,7 @@ public class ParserTest {
 
   @Test
   public void testLoops() throws Exception{
-    String program = funArr + "\n";
+    String program = funChar + "\n";
     program += "local array x <= [1]|";
     //for
     program += "for (local int res <= 1| 2<5 | ++i) {";
@@ -208,7 +208,7 @@ public class ParserTest {
     program += "m <= [123]|}";
     program += "until (true)|";
     
-    program += "return [1,x,y,z]|}";
+    program += "return '5'|}";
     program += funMain;
 
     Integer resultado = (Integer) testHelper(program).value;
@@ -217,7 +217,7 @@ public class ParserTest {
 
   @Test
   public void testIO() throws Exception{
-    String program = funArr + "\n";
+    String program = funInt + "\n";
     
     program += "print(\"hola\")|";
     program += "print(variable)|";
@@ -228,7 +228,7 @@ public class ParserTest {
     program += "local string identificador <= read(\"ingrese algo:\")|";
 
     program += "local array x <= [1]|";
-    program += "return [1]|}";
+    program += "return 1|}";
     program += funMain;
 
     Integer resultado = (Integer) testHelper(program).value;
