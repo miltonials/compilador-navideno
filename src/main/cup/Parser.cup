@@ -92,7 +92,7 @@ terminal Double L_PERENOEL; // literal float
 terminal Boolean L_FATHERCHRISTMAS; // literal boolean
 terminal Character L_KRISKRINGLE; // literal char
 terminal String L_DEDMOROZ; // literal string
-terminal Integer[] L_PAPANOEL; // literal array
+//terminal Integer[] L_PAPANOEL; // literal array
 
 // Parentesis
 terminal Integer ABRECUENTO; // (
@@ -149,8 +149,8 @@ non terminal regalofuncionalflotante; // produccion para funciones float
 non terminal regalofuncionaldelaverdad; // produccion para funciones boolean
 non terminal regalofuncionalcharmander; // produccion para funciones char
 non terminal encabezadoregalofuncional; // produccion para "nombreFuncion params {"
-//non terminal dedicatoriasenteras; // produccion para " return int| } "
-//non terminal dedicatoriasflotantes; // produccion para  " return float| } "
+non terminal dedicatoriasenteras; // produccion para " return int| } "
+non terminal dedicatoriasflotantes; // produccion para  " return float| } "
 non terminal dedicatoriasdelaverdad; // produccion para " return boolean| } "
 non terminal dedicatoriascharmander; // produccion para  " return char| } "
 non terminal monnos; // produccion para parametros de funcion ✅
@@ -158,7 +158,7 @@ non terminal tiposmonnos; // produccion para parametros de funcion ✅
 //non terminal envolturas; // produccion para envolturas ✅
 non terminal juguetesaritmeticos; // produccion para expresiones aritméticas ✅
 //non terminal piezasenteras; // produccion para expresiones aritméticas ✅
-non terminal piezasunarias; // producción para expresiones unarias ✅
+//non terminal piezasunarias; // producción para expresiones unarias ✅
 //non terminal piezasflotantes; // produccion para expresiones aritméticas ✅
 non terminal juguetesrelacionales; // produccion para expresiones relacionales
 non terminal piezasrelacionales; // produccion para expresiones relacionales ✅
@@ -166,17 +166,17 @@ non terminal jugueteslogicos; // produccion para expresiones lógicas ✅
 non terminal juguetesunarios; // produccion para expresiones unarias ✅
 non terminal jugueteasignacion; // produccion para expresiones de asignacion y ciclos✅
 non terminal arreglosarreglados; // produccion para arreglos ✅
-//non terminal piezaarregloentero; // produccion para arreglos ✅
-//non terminal piezaarregloflotante; // produccion para arreglos ✅
-non terminal piezaarreglobooleano; // produccion para arreglos ✅
-non terminal piezaarreglochar; // produccion para arreglos ✅
-non terminal piezaarreglostring; // produccion para arreglos ✅
-non terminal piezaarregloarreglo; // produccion para arreglos ✅
+
+
+
+
+
+
 non terminal juguetesdecontrol; // produccion para if-elif-else ✅
-non terminal dedicatoriasaritmeticas;
-non terminal piezaarregloaritmetico;
+//non terminal dedicatoriasaritmeticas;
+
 non terminal juguetesaritmeticos_operadores;
-non terminal piezaarreglo_id;
+
 non terminal juguetesdefinidos;
 non terminal controldejuguete;
 non terminal adicionalesdecontrol;
@@ -186,6 +186,12 @@ non terminal jugueteparlanchin;
 non terminal juguetechismoso;
 non terminal etiquetanavidena;
 
+non terminal piezasenteras;
+non terminal piezasflotantes;
+non terminal jugueteasignacion_entera;
+non terminal jugueteasignacion_flotante;
+non terminal piezaarregloentero;
+non terminal piezaarreglochar;
 //-------------------------------------------------------------------------------------- PRECEDENCIA
 // sirve para definir la precedencia de los operadores
 // por ejemplo, si se define que * tiene mayor precedencia que +, entonces
@@ -229,7 +235,7 @@ bolsanavidena ::=  regaloprincipal | regalofuncional regaloprincipal;
 
 regaloprincipal ::= REGALO SANTACLAUS MAIN ABRECUENTO  CIERRECUENTO ABREREGALO
                         juguetes
-                        dedicatoriasaritmeticas;
+                        dedicatoriasenteras;
 
 //Funciones
 regalofuncional ::= regalofuncionaltipado | regalofuncional regalofuncionaltipado;
@@ -237,18 +243,20 @@ regalofuncional ::= regalofuncionaltipado | regalofuncional regalofuncionaltipad
 regalofuncionaltipado ::= regalofuncionalentero | regalofuncionalflotante | regalofuncionaldelaverdad
                 | regalofuncionalcharmander;// | regalofuncionalencadenado | regalofuncionalarreglado;
 
-regalofuncionalentero ::= REGALO SANTACLAUS encabezadoregalofuncional juguetes dedicatoriasaritmeticas;
-regalofuncionalflotante ::= REGALO PERENOEL encabezadoregalofuncional juguetes dedicatoriasaritmeticas;
+regalofuncionalentero ::= REGALO SANTACLAUS encabezadoregalofuncional juguetes dedicatoriasenteras;
+regalofuncionalflotante ::= REGALO PERENOEL encabezadoregalofuncional juguetes dedicatoriasflotantes;
 regalofuncionaldelaverdad ::= REGALO FATHERCHRISTMAS encabezadoregalofuncional juguetes dedicatoriasdelaverdad;
 regalofuncionalcharmander ::= REGALO KRISKRINGLE encabezadoregalofuncional juguetes dedicatoriascharmander;
 
 
-dedicatoriasaritmeticas ::= ENVIA juguetesaritmeticos FINREGALO CIERRAREGALO;
+dedicatoriasenteras ::= ENVIA piezasenteras FINREGALO CIERRAREGALO; // | ENVIA PERSONA FINREGALO CIERRAREGALO;
+dedicatoriasflotantes ::= ENVIA piezasflotantes FINREGALO CIERRAREGALO; // | ENVIA PERSONA FINREGALO CIERRAREGALO;
 dedicatoriasdelaverdad ::= ENVIA jugueteslogicos FINREGALO CIERRAREGALO | ENVIA PERSONA FINREGALO CIERRAREGALO;
 dedicatoriascharmander ::= ENVIA L_KRISKRINGLE FINREGALO CIERRAREGALO | ENVIA PERSONA FINREGALO CIERRAREGALO;
 
 //para parametros
-encabezadoregalofuncional ::= PERSONA ABRECUENTO CIERRECUENTO ABREREGALO
+encabezadoregalofuncional ::= PERSONA:funName ABRECUENTO CIERRECUENTO ABREREGALO
+                                {: RESULT=funName; System.out.println("Función: " + RESULT); :}
                 | PERSONA ABRECUENTO monnos CIERRECUENTO ABREREGALO;
 
 
@@ -288,7 +296,14 @@ juguetechismoso ::= ESCUCHA ABRECUENTO L_DEDMOROZ CIERRECUENTO
                 | LOCAL DEDMOROZ PERSONA ENTREGA ESCUCHA ABRECUENTO CIERRECUENTO;
 
 // aritméticas (sumas, restas, etc)
-juguetesaritmeticos ::= juguetesaritmeticos RUDOLPH juguetesaritmeticos // +
+juguetesaritmeticos ::= piezasenteras | piezasflotantes;
+
+/*
+juguetesaritmeticos ::= juguetesaritmeticos:e1 RUDOLPH juguetesaritmeticos:e2
+                        {:
+                            System.out.print("-------------" + e1 + "\t");
+                            System.out.println(e2);
+                          :} // +
                      |  juguetesaritmeticos DASHER juguetesaritmeticos // -
                      |  juguetesaritmeticos DANCER juguetesaritmeticos // /
                      |  juguetesaritmeticos PRANCER juguetesaritmeticos // //
@@ -301,47 +316,36 @@ juguetesaritmeticos ::= juguetesaritmeticos RUDOLPH juguetesaritmeticos // +
                      | juguetesunarios // ++ o --
                      |  PERSONA
                      |  L_PERENOEL
-                     |  L_SANTACLAUS;
+                     |  L_SANTACLAUS:e
+                        {:
+                            RESULT=e;
+                        :}; // +;
 
-juguetesaritmeticos_operadores ::= RUDOLPH
-                |  DASHER
-                |  DANCER
-                |  PRANCER
-                |  VIXEN
-                |  COMET
-                |  CUPID;
-
-/*
-piezasenteras ::= piezasenteras RUDOLPH piezasenteras // +
-                     |  piezasenteras DASHER piezasenteras // -
-                     |  piezasenteras DANCER piezasenteras // /
-                     |  piezasenteras PRANCER piezasenteras // //
-                     |  piezasenteras VIXEN piezasenteras // *
-                     |  piezasenteras COMET piezasenteras // ~
-                     |  piezasenteras CUPID piezasenteras // **
-                     |  ABRECUENTO piezasenteras CIERRECUENTO // (expr)
-                     |  ABRECUENTO piezasenteras CIERRECUENTO piezasenteras // (expr) + expr
-                     |  PERSONA
-                     |  L_SANTACLAUS;
-
-piezasflotantes ::= piezasflotantes RUDOLPH piezasflotantes // +
-                     |  piezasflotantes DASHER piezasflotantes // -
-                     |  piezasflotantes DANCER piezasflotantes // /
-                     |  piezasflotantes PRANCER piezasflotantes // //
-                     |  piezasflotantes VIXEN piezasflotantes // *
-                     |  piezasflotantes COMET piezasflotantes // ~
-                     |  piezasflotantes CUPID piezasflotantes // **
-                     |  ABRECUENTO piezasflotantes CIERRECUENTO // (expr)
-                     |  ABRECUENTO piezasflotantes CIERRECUENTO piezasflotantes // (expr) + expr
-                     //|  PERSONA // produce conflicto con piezasenteras
-                     |  L_PERENOEL;
 */
+juguetesaritmeticos_operadores ::= RUDOLPH // +
+                |  DASHER // -
+                |  DANCER // /
+                |  PRANCER // //
+                |  VIXEN // *
+                |  COMET // ~
+                |  CUPID; // **
+
+piezasenteras ::= piezasenteras juguetesaritmeticos_operadores piezasenteras
+                |  ABRECUENTO piezasenteras CIERRECUENTO // (expr)
+                |  ABRECUENTO piezasenteras CIERRECUENTO juguetesaritmeticos_operadores piezasenteras // (expr) + expr
+                |  PERSONA
+                |  L_SANTACLAUS;
+
+
+piezasflotantes ::= piezasflotantes juguetesaritmeticos_operadores piezasflotantes
+                     |  ABRECUENTO piezasflotantes CIERRECUENTO // (expr)
+                     |  ABRECUENTO piezasflotantes CIERRECUENTO juguetesaritmeticos_operadores piezasflotantes // (expr) + expr
+                     | PERSONA VIXEN L_PERENOEL // produce conflicto con piezasenteras
+                     |  L_PERENOEL;
 
 // relacionales (menor, mayor, etc)
-juguetesrelacionales ::= juguetesaritmeticos piezasrelacionales juguetesaritmeticos; // enteros
-        //| juguetesaritmeticos piezasrelacionales juguetesaritmeticos; // flotantes
-        //| piezasenteras piezasrelacionales piezasflotantes // enteros y flotantes
-        //| piezasflotantes piezasrelacionales piezasenteras; // flotantes y enteros
+juguetesrelacionales ::= piezasenteras piezasrelacionales piezasenteras // enteros
+        | piezasflotantes piezasrelacionales piezasflotantes; // flotantes
 
 piezasrelacionales ::= HERMEY // <
         | BUDDY // =<
@@ -361,49 +365,32 @@ jugueteslogicos ::= jugueteslogicos MELCHOR jugueteslogicos // AND
         | L_FATHERCHRISTMAS;
 
 // unarios (incremento, decremento, etc)
-juguetesunarios ::= piezasunarias juguetesaritmeticos; // ++ o --
-                //| GRINCH ABRECUENTO juguetesaritmeticos CIERRECUENTO FINREGALO // ++(expr)
-                //| QUIEN ABRECUENTO juguetesaritmeticos CIERRECUENTO FINREGALO; // --(expr)
-
-piezasunarias ::=  GRINCH | QUIEN;
-
+juguetesunarios ::= GRINCH juguetesaritmeticos // ++
+                | QUIEN juguetesaritmeticos; // --
 
 // asignacion <=
-jugueteasignacion ::= LOCAL SANTACLAUS PERSONA ENTREGA juguetesaritmeticos // enteros
-        | LOCAL SANTACLAUS PERSONA ENTREGA GRINCH juguetesaritmeticos// ++enteros
-        | LOCAL SANTACLAUS PERSONA ENTREGA QUIEN juguetesaritmeticos// --enteros
-        | LOCAL PERENOEL PERSONA ENTREGA juguetesaritmeticos // flotantes
-        | LOCAL PERENOEL PERSONA ENTREGA GRINCH juguetesaritmeticos// ++flotantes
-        | LOCAL PERENOEL PERSONA ENTREGA QUIEN juguetesaritmeticos// --flotantes
+jugueteasignacion_entera ::= PERSONA ENTREGA piezasenteras | PERSONA ENTREGA GRINCH piezasenteras | PERSONA ENTREGA QUIEN piezasenteras;
+jugueteasignacion_flotante ::= PERSONA ENTREGA piezasflotantes | PERSONA ENTREGA GRINCH piezasflotantes | PERSONA ENTREGA QUIEN piezasflotantes;
+
+jugueteasignacion ::= LOCAL SANTACLAUS jugueteasignacion_entera // enteros
+        | LOCAL PERENOEL jugueteasignacion_flotante // flotantes
+        |jugueteasignacion_entera
+        |jugueteasignacion_flotante
+
         | LOCAL FATHERCHRISTMAS PERSONA ENTREGA jugueteslogicos // booleanos
         | LOCAL KRISKRINGLE PERSONA ENTREGA L_KRISKRINGLE // caracteres
         | LOCAL DEDMOROZ PERSONA ENTREGA L_DEDMOROZ // strings ⚠️ valorar utilizar produccion de strings
         | LOCAL PAPANOEL PERSONA ENTREGA ABREEMPAQUE arreglosarreglados CIERREEMPAQUE
-        | PERSONA ENTREGA juguetesaritmeticos // enteros
-        | PERSONA ENTREGA GRINCH juguetesaritmeticos// ++enteros
-        | PERSONA ENTREGA QUIEN juguetesaritmeticos// --enteros
+
         | PERSONA ENTREGA jugueteslogicos // booleanos
         | PERSONA ENTREGA L_KRISKRINGLE // caracteres
         | PERSONA ENTREGA L_DEDMOROZ // strings ⚠️ valorar utilizar produccion de strings
         | PERSONA ENTREGA ABREEMPAQUE arreglosarreglados CIERREEMPAQUE;
 
 juguetesdefinidos ::= LOCAL tiposmonnos;
-
-arreglosarreglados ::= piezaarregloaritmetico
-        | piezaarreglobooleano
-        | piezaarreglochar
-        | piezaarreglostring
-        | piezaarregloarreglo
-        | piezaarreglo_id;
-
-piezaarregloaritmetico ::= juguetesaritmeticos | juguetesaritmeticos COMA piezaarregloaritmetico;
-piezaarreglobooleano ::= jugueteslogicos | jugueteslogicos COMA piezaarreglobooleano;
-piezaarreglochar ::= L_KRISKRINGLE | L_KRISKRINGLE COMA piezaarreglochar;
-piezaarreglostring ::= L_DEDMOROZ | L_DEDMOROZ COMA piezaarreglostring;
-piezaarregloarreglo ::= ABREEMPAQUE arreglosarreglados CIERREEMPAQUE
-        | ABREEMPAQUE arreglosarreglados CIERREEMPAQUE COMA arreglosarreglados
-        ;
-piezaarreglo_id ::= PERSONA COMA arreglosarreglados;
+arreglosarreglados ::= piezaarregloentero | piezaarreglochar;
+piezaarregloentero ::= piezasenteras | piezasenteras COMA piezaarregloentero;
+piezaarreglochar ::= KRISKRINGLE | L_KRISKRINGLE COMA piezaarreglochar;
 
 // estructuras de control
 juguetesdecontrol ::= ELFO ABRECUENTO controldejuguete CIERRECUENTO ABREREGALO juguetes CIERRAREGALO
@@ -415,9 +402,10 @@ adicionalesdecontrol ::= HADA ABRECUENTO controldejuguete CIERRECUENTO ABREREGAL
 
 
 
-controldejuguete ::= juguetesrelacionales | jugueteslogicos;
 
 iteradordejuguetes ::= ENVUELVE ABRECUENTO parametrosdeenvoltura CIERRECUENTO ABREREGALO juguetes CIERRAREGALO
                 | HACE ABREREGALO juguetes CIERRAREGALO REVISA ABRECUENTO controldejuguete CIERRECUENTO FINREGALO;
 
-parametrosdeenvoltura ::= jugueteasignacion FINREGALO controldejuguete FINREGALO juguetesunarios;
+parametrosdeenvoltura ::= LOCAL SANTACLAUS jugueteasignacion_entera FINREGALO controldejuguete FINREGALO juguetesunarios;
+
+controldejuguete ::= juguetesrelacionales | jugueteslogicos;
