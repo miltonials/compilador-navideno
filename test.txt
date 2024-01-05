@@ -1,7 +1,9 @@
-function string hola () {
-    local string res <= ""|
+function int hola () {
+    local string res <= 3|
     local float preres <= ++++1.1|
-    return 2|@esto no se debe permitir porque es una funcion string
+    local char prueba <= 3 |
+    local int res2 <= 1.2+3|
+    return 3.3|@esto no se debe permitir porque es una funcion string
 }
 
 function int main () {

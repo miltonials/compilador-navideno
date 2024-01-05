@@ -12,9 +12,10 @@ import java.util.Stack;
  */
 class Parser;
 
+
 action code {:
         public void hola() {
-            System.out.println("Hola");
+            System.out.println("Hola"); 
         }
 
         public void error(String mensaje) {
@@ -32,22 +33,64 @@ action code {:
 
 parser code {:
         IdLexer miParser;
+        // Habilitar la depuración
+        boolean _cup_debug = true;
+        List<String> syntaxErrors = new ArrayList<>();
+
+        String tipoRetornoActual = null;
+
+        public void setTipoRetorno(String tipo) {
+                tipoRetornoActual = tipo;
+        }
+
+        public void checkTipoRetorno(String tipoReal) {
+                if (tipoRetornoActual != null && !tipoRetornoActual.equals(tipoReal)) {
+                        System.err.println("Tipo de retorno incorrecto. Se esperaba: " + tipoRetornoActual + ", pero se encontró: " + tipoReal);
+                }
+        }
+
+        // Agregar un método para obtener la lista de errores después del análisis
+        public List<String> getSyntaxErrors() {
+                return syntaxErrors;
+        }
 
         @SuppressWarnings("deprecation")
         public Parser(IdLexer miParser) {
                 this.miParser = miParser;
                 this.symbolFactory = new DefaultSymbolFactory();
         }
-
+        /*
         public void syntax_error(Symbol s) {
-                System.err.println("Error R de sintaxis: "+ s.value +" Linea "+(s.left+2)+" columna "+(s.right+1) );
+                System.err.println("Error R de sintaxis: "+ s.value +" Linea "+(s.left+1)+" columna "+(s.right+1) );
         }
-
+        */
+        /*
         public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
+                getSyntaxErrors();
                 System.err.println("Error NR de sintaxis: "+ s.value +" Linea "+(s.left+2)+" columna "+(s.right+1) );
         }
+        */
+        public void syntax_error(Symbol s) {
+                try {
+                        String errorMessage = "Error de sintaxis: " + s.value + " en la línea " + (s.left + 1) + " columna " + (s.right + 1);
+                        System.err.println(errorMessage);
+                        // Agregar lógica adicional si es necesario para errores recuperables
+                        //throw new Exception("Error recuperable");
+                } catch (Exception e) {
+                        System.err.println("Hola");
+                        System.err.println("Error de sintaxis: " + e.getMessage());
+                }
+        }
 
+        public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception {
+                String errorMessage = "Error de sintaxis no recuperable: " + s.value + " en la línea " + (s.left + 1) + " columna " + (s.right + 1);
+                System.err.println(errorMessage);
+
+                // Agregar lógica adicional si es necesario para errores no recuperables
+                // throw new Exception("Error no recuperable");
+        }
 :}
+
 
 init with {: :};
 
@@ -192,6 +235,7 @@ non terminal jugueteasignacion_entera;
 non terminal jugueteasignacion_flotante;
 non terminal piezaarregloentero;
 non terminal piezaarreglochar;
+non terminal error_production; // produccion para errores ✅
 //-------------------------------------------------------------------------------------- PRECEDENCIA
 // sirve para definir la precedencia de los operadores
 // por ejemplo, si se define que * tiene mayor precedencia que +, entonces
@@ -235,21 +279,29 @@ bolsanavidena ::=  regaloprincipal | regalofuncional regaloprincipal;
 
 regaloprincipal ::= REGALO SANTACLAUS MAIN ABRECUENTO  CIERRECUENTO ABREREGALO
                         juguetes
-                        dedicatoriasenteras;
+                        dedicatoriasenteras
+                        | error_production; //{: System.out.println("Error en la expresión de regaloprincipal"); :};
 
 //Funciones
 regalofuncional ::= regalofuncionaltipado | regalofuncional regalofuncionaltipado;
 
 regalofuncionaltipado ::= regalofuncionalentero | regalofuncionalflotante | regalofuncionaldelaverdad
-                | regalofuncionalcharmander;// | regalofuncionalencadenado | regalofuncionalarreglado;
+                | regalofuncionalcharmander// | regalofuncionalencadenado | regalofuncionalarreglado;
+                | error_production; //{: System.out.println("Error en la expresión de regalofuncionaltipado"); :};
 
-regalofuncionalentero ::= REGALO SANTACLAUS encabezadoregalofuncional juguetes dedicatoriasenteras;
+// regalofuncionalentero ::= REGALO SANTACLAUS encabezadoregalofuncional juguetes dedicatoriasenteras;
+regalofuncionalentero ::= REGALO SANTACLAUS encabezadoregalofuncional juguetes dedicatoriasenteras
+                        {: setTipoRetorno("int"); :};
+
 regalofuncionalflotante ::= REGALO PERENOEL encabezadoregalofuncional juguetes dedicatoriasflotantes;
 regalofuncionaldelaverdad ::= REGALO FATHERCHRISTMAS encabezadoregalofuncional juguetes dedicatoriasdelaverdad;
 regalofuncionalcharmander ::= REGALO KRISKRINGLE encabezadoregalofuncional juguetes dedicatoriascharmander;
 
 
-dedicatoriasenteras ::= ENVIA piezasenteras FINREGALO CIERRAREGALO; // | ENVIA PERSONA FINREGALO CIERRAREGALO;
+// dedicatoriasenteras ::= ENVIA piezasenteras FINREGALO CIERRAREGALO; // | ENVIA PERSONA FINREGALO CIERRAREGALO;
+dedicatoriasenteras ::= ENVIA piezasenteras FINREGALO CIERRAREGALO {: checkTipoRetorno("int"); :};
+                //      | ENVIA PERSONA FINREGALO CIERRAREGALO;
+
 dedicatoriasflotantes ::= ENVIA piezasflotantes FINREGALO CIERRAREGALO; // | ENVIA PERSONA FINREGALO CIERRAREGALO;
 dedicatoriasdelaverdad ::= ENVIA jugueteslogicos FINREGALO CIERRAREGALO | ENVIA PERSONA FINREGALO CIERRAREGALO;
 dedicatoriascharmander ::= ENVIA L_KRISKRINGLE FINREGALO CIERRAREGALO | ENVIA PERSONA FINREGALO CIERRAREGALO;
@@ -257,7 +309,7 @@ dedicatoriascharmander ::= ENVIA L_KRISKRINGLE FINREGALO CIERRAREGALO | ENVIA PE
 //para parametros
 encabezadoregalofuncional ::= PERSONA:funName ABRECUENTO CIERRECUENTO ABREREGALO
                                 {: RESULT=funName; System.out.println("Función: " + RESULT); :}
-                | PERSONA ABRECUENTO monnos CIERRECUENTO ABREREGALO;
+                | PERSONA ABRECUENTO monnos CIERRECUENTO ABREREGALO; //{: System.out.println("Error en la expresión de encabezadoregalofuncional"); :};
 
 
 // Parámetros de la función
@@ -269,11 +321,14 @@ tiposmonnos ::= SANTACLAUS PERSONA // int identificador
             | FATHERCHRISTMAS PERSONA // boolean identificador
             | KRISKRINGLE PERSONA // char identificador
             | DEDMOROZ PERSONA // string identificador
-            | PAPANOEL PERSONA; // array identificador
+            | PAPANOEL PERSONA // array identificador
+            | error_production; //{: System.out.println("Error en la expresión de tiposmonnos"); :};
 
 juguetes ::= etiquetanavidena
         | etiquetanavidena CORTA FINREGALO
-        | etiquetanavidena CORTA FINREGALO etiquetanavidena;
+        | etiquetanavidena CORTA FINREGALO etiquetanavidena
+        | error_production; //{: System.out.println("Error en la expresión de juguetes"); };
+
 
 etiquetanavidena ::= tipojuguetes | tipojuguetes etiquetanavidena;
 
@@ -293,7 +348,8 @@ juguetechismoso ::= ESCUCHA ABRECUENTO L_DEDMOROZ CIERRECUENTO
                 | ESCUCHA ABRECUENTO CIERRECUENTO
                 | ESCUCHA ABRECUENTO PERSONA CIERRECUENTO
                 | LOCAL DEDMOROZ PERSONA ENTREGA ESCUCHA ABRECUENTO L_DEDMOROZ CIERRECUENTO
-                | LOCAL DEDMOROZ PERSONA ENTREGA ESCUCHA ABRECUENTO CIERRECUENTO;
+                | LOCAL DEDMOROZ PERSONA ENTREGA ESCUCHA ABRECUENTO CIERRECUENTO
+                | error_production; //{: System.out.println("Error en la expresión de juguetechismoso"); :};
 
 // aritméticas (sumas, restas, etc)
 juguetesaritmeticos ::= piezasenteras | piezasflotantes;
@@ -409,3 +465,9 @@ iteradordejuguetes ::= ENVUELVE ABRECUENTO parametrosdeenvoltura CIERRECUENTO AB
 parametrosdeenvoltura ::= LOCAL SANTACLAUS jugueteasignacion_entera FINREGALO controldejuguete FINREGALO juguetesunarios;
 
 controldejuguete ::= juguetesrelacionales | jugueteslogicos;
+
+// produccion de recuperacion de errores
+
+error_production ::= error //{ System.out.println("Error: " + this.preceding().left + " - " + this.current_left()); }
+                | error COMA error; //{ System.out.println("Error: cierre de llaves"); }
+                

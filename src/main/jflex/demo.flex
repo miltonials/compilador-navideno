@@ -2,6 +2,7 @@ package com.compi;
 
 /* Ejemplo de JFlex: Especificación parcial de lexer para un lenguaje de programación personalizado en Java */
 import java_cup.runtime.*;
+import java_cup.runtime.Symbol;
 
 /**
  * Esta clase es un ejemplo simple de lexer para un lenguaje de programación personalizado.
@@ -217,13 +218,13 @@ L_PAPANOEL	Array
 <YYINITIAL> {comment} { /* omitir comentarios */ }
 
 // Caracteres especiales
-<YYINITIAL> "(" { return symbol(ParserSym.ABRECUENTO, yytext()); }
-<YYINITIAL> ")" { return symbol(ParserSym.CIERRECUENTO, yytext()); }
-<YYINITIAL> "[" { return symbol(ParserSym.ABREEMPAQUE, yytext()); }
-<YYINITIAL> "]" { return symbol(ParserSym.CIERREEMPAQUE, yytext()); }
-<YYINITIAL> "{" { return symbol(ParserSym.ABREREGALO, yytext()); }
-<YYINITIAL> "}" { return symbol(ParserSym.CIERRAREGALO, yytext()); }
-<YYINITIAL> "," { return symbol(ParserSym.COMA, yytext()); }
+<YYINITIAL> "(" { return new Symbol(ParserSym.ABRECUENTO, yytext()); }
+<YYINITIAL> ")" { return new Symbol(ParserSym.CIERRECUENTO, yytext()); }
+<YYINITIAL> "[" { return new Symbol(ParserSym.ABREEMPAQUE, yytext()); }
+<YYINITIAL> "]" { return new Symbol(ParserSym.CIERREEMPAQUE, yytext()); }
+<YYINITIAL> "{" { return new Symbol(ParserSym.ABREREGALO, yytext()); }
+<YYINITIAL> "}" { return new Symbol(ParserSym.CIERRAREGALO, yytext()); }
+<YYINITIAL> "," { return new Symbol(ParserSym.COMA, yytext()); }
 
 // Token de fin de archivo
 <<EOF>> { return symbol(ParserSym.EOF); }
