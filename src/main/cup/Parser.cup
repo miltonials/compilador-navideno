@@ -342,32 +342,32 @@ monnos ::= tiposmonnos | tiposmonnos COMA monnos;
 tiposmonnos ::= SANTACLAUS PERSONA:idParam // int identificador
                 {:
                 //int
-                    listaTablasSimbolos.get(currentHash).add("int : " + idParam);
+                    listaTablasSimbolos.get(currentHash).add("Parámetro int : " + idParam);
                 :}   
             | PERENOEL PERSONA:idParam // float identificador
                 {:
                 //float
-                    listaTablasSimbolos.get(currentHash).add("float : " + idParam);
+                    listaTablasSimbolos.get(currentHash).add("Parámetro float : " + idParam);
                 :}   
             | FATHERCHRISTMAS PERSONA:idParam // boolean identificador
                 {:
                 //boolean
-                    listaTablasSimbolos.get(currentHash).add("boolean : " + idParam);
+                    listaTablasSimbolos.get(currentHash).add("Parámetro boolean : " + idParam);
                 :}   
             | KRISKRINGLE PERSONA:idParam // char identificador
                 {:
                 //char
-                    listaTablasSimbolos.get(currentHash).add("char : " + idParam);
+                    listaTablasSimbolos.get(currentHash).add("Parámetro char : " + idParam);
                 :}   
             | DEDMOROZ PERSONA:idParam // string identificador
                 {:
                 //string
-                    listaTablasSimbolos.get(currentHash).add("string : " + idParam);
+                    listaTablasSimbolos.get(currentHash).add("Parámetro string : " + idParam);
                 :}   
             | PAPANOEL PERSONA:idParam // array identificador
                 {:
                 //array
-                    listaTablasSimbolos.get(currentHash).add("array : " + idParam);
+                    listaTablasSimbolos.get(currentHash).add("Parámetro array : " + idParam);
                 :}   
             | error_production; //{: System.out.println("Error en la expresión de tiposmonnos"); :};
 
@@ -616,7 +616,10 @@ jugueteasignacion ::= LOCAL SANTACLAUS jugueteasignacion_entera // enteros
             {:
                 listaTablasSimbolos.get(currentHash).add("variable char (" + vName + ") : " + vValueCharmander.charAt(1));
             :}
-        | LOCAL DEDMOROZ PERSONA ENTREGA L_DEDMOROZ // strings ⚠️ valorar utilizar produccion de strings
+        | LOCAL DEDMOROZ PERSONA:vName ENTREGA L_DEDMOROZ:vValue // strings ⚠️ valorar utilizar produccion de strings
+            {:
+                listaTablasSimbolos.get(currentHash).add("variable string (" + vName + ") : " + vValue);
+            :}
         | LOCAL PAPANOEL PERSONA ENTREGA ABREEMPAQUE arreglosarreglados CIERREEMPAQUE
 
         | PERSONA:vName ENTREGA jugueteslogicos:vValue // booleanos
@@ -628,6 +631,9 @@ jugueteasignacion ::= LOCAL SANTACLAUS jugueteasignacion_entera // enteros
                 listaTablasSimbolos.get(currentHash).add("variable char (" + vName + ") : " + vValueCharmander.charAt(1));
             :}
         | PERSONA ENTREGA L_DEDMOROZ // strings ⚠️ valorar utilizar produccion de strings
+            {:
+                listaTablasSimbolos.get(currentHash).add("variable string (" + vName + ") : " + vValue);
+            :}
         | PERSONA ENTREGA ABREEMPAQUE arreglosarreglados CIERREEMPAQUE;
 
 juguetesdefinidos ::= LOCAL tiposmonnos;
