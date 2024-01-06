@@ -14,7 +14,6 @@ public class ParserTest {
   private String funfloat = "function float hola (int x, char y) {";
   private String funBool = "function bool hola () {";
   private String funChar = "function char hola () {";
-  private String funArr = "function array hola () {";
 
   private Symbol testHelper (String christmasCode) throws Exception {
     System.out.println(christmasCode);
@@ -118,12 +117,15 @@ public class ParserTest {
 
   @Test void testArr() throws Exception {
     String program = funInt + "\n";
-    program += "local array x <= [1]|";
+    //program += "local int[2] x|";
+    program += "local int[3] x <= [1, variable, 2,3, variable2 ,5, xyz]|";
+    program += "local char[3] x <= ['1',variable, '2','3','4']|";
+    //program += "local char[3] x <= [1, 's']|";
     program += "local int m|";
-    program += "m <= [123]|";
-    program += "local array y <= [2, tres, cuatro]|";
-    program += "local array w <= [variable, 3]|";
-    program += "local array w <= [mil, variable]|";
+    //program += "m <= [123]|";
+    //program += "local array y <= [2, tres, cuatro]|";
+    //program += "local array w <= [variable, 3]|";
+    //program += "local array w <= [mil, variable]|";
     program += "return 1|}";
     program += funMain;
 
@@ -132,7 +134,7 @@ public class ParserTest {
 
   @Test void testStructures() throws Exception {
     String program = funInt + "\n";
-    program += "local array x <= [1]|";
+    program += "local int[1] x <= [1]|";
     //if
     program += "if (true) {";
     program += "local int m|";
@@ -178,7 +180,7 @@ public class ParserTest {
   @Test
   public void testLoops() throws Exception{
     String program = funChar + "\n";
-    program += "local array x <= [1]|";
+    program += "local int[1] x <= [1]|";
     //for
     program += "for (local int res <= 1| 2<5 | ++res) {";
     program += "local int m|";
@@ -213,7 +215,7 @@ public class ParserTest {
     //program += "local string identificador <= read()|";
     //program += "local string identificador <= read(\"ingrese algo:\")|";
 
-    program += "local array x <= [1]|";
+    program += "local int[1] x <= [1]|";
     program += "return 1|}";
     program += funMain;
 

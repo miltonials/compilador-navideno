@@ -188,7 +188,7 @@ terminal Integer ESCUCHA;//read
 terminal  FINREGALO; // |
 
 // Lexema separador
-terminal Integer COMA; //,
+terminal String COMA; //,
 
 // Asignación
 terminal Integer ENTREGA;//<=
@@ -620,7 +620,14 @@ jugueteasignacion ::= LOCAL SANTACLAUS jugueteasignacion_entera // enteros
             {:
                 listaTablasSimbolos.get(currentHash).add("variable string (" + vName + ") : " + vValue);
             :}
-        | LOCAL PAPANOEL PERSONA ENTREGA ABREEMPAQUE arreglosarreglados CIERREEMPAQUE
+        | LOCAL SANTACLAUS ABREEMPAQUE L_SANTACLAUS CIERREEMPAQUE PERSONA:vName ENTREGA ABREEMPAQUE piezaarregloentero:vValue CIERREEMPAQUE
+            {:
+                listaTablasSimbolos.get(currentHash).add("variable array int (" + vName + ") : [" + vValue + "]");
+            :}
+        | LOCAL KRISKRINGLE ABREEMPAQUE L_SANTACLAUS CIERREEMPAQUE PERSONA:vName ENTREGA ABREEMPAQUE piezaarreglochar:vValue CIERREEMPAQUE
+            {:
+                listaTablasSimbolos.get(currentHash).add("variable array char (" + vName + ") : [" + vValue + "]");
+            :}
 
         | PERSONA:vName ENTREGA jugueteslogicos:vValue // booleanos
             {:
@@ -630,16 +637,59 @@ jugueteasignacion ::= LOCAL SANTACLAUS jugueteasignacion_entera // enteros
             {:
                 listaTablasSimbolos.get(currentHash).add("variable char (" + vName + ") : " + vValueCharmander.charAt(1));
             :}
-        | PERSONA ENTREGA L_DEDMOROZ // strings ⚠️ valorar utilizar produccion de strings
+        | PERSONA:vName ENTREGA L_DEDMOROZ:vValue // strings ⚠️ valorar utilizar produccion de strings
             {:
                 listaTablasSimbolos.get(currentHash).add("variable string (" + vName + ") : " + vValue);
             :}
-        | PERSONA ENTREGA ABREEMPAQUE arreglosarreglados CIERREEMPAQUE;
+        | PERSONA:vName ENTREGA ABREEMPAQUE arreglosarreglados:vValue CIERREEMPAQUE
+            {:
+                listaTablasSimbolos.get(currentHash).add("variable array (" + vName + ") : [" + vValue + "]");
+            :}
+        ;
 
 juguetesdefinidos ::= LOCAL tiposmonnos;
-arreglosarreglados ::= piezaarregloentero | piezaarreglochar;
-piezaarregloentero ::= piezasenteras | piezasenteras COMA piezaarregloentero;
-piezaarreglochar ::= KRISKRINGLE | L_KRISKRINGLE COMA piezaarreglochar;
+arreglosarreglados ::= piezaarregloentero:value
+                        {:
+                            RESULT = value;
+                            vValue = RESULT.toString();
+                        :}
+                    | piezaarreglochar:value
+                    {:
+                        RESULT = value;
+                        vValue = RESULT.toString();
+                    :}
+                    ;
+piezaarregloentero ::= piezasenteras:value
+                        {:
+                            RESULT = value;
+                            vValue = RESULT.toString();
+                        :}
+                    | piezasenteras:valueA COMA:coma piezaarregloentero:valueB
+                        {:
+                            RESULT = valueA + " " + coma + " " + valueB;
+                            vValue = RESULT.toString();
+                        :}
+                    ;
+
+piezaarreglochar ::= L_KRISKRINGLE:value
+                        {:
+                            RESULT = value;
+                            //vValueCharmander = RESULT.toString().charAt(0);
+                            vValue = RESULT.toString();
+                        :}
+                    | L_KRISKRINGLE:valueA COMA:coma piezaarreglochar:valueB
+                        {:
+                            RESULT = valueA + " " + coma + " " + valueB;
+                            //vValueCharmander = RESULT.toString().charAt(0);
+                            vValue = RESULT.toString();
+                        :}
+                    | PERSONA:valueA COMA:coma piezaarreglochar:valueB
+                        {:
+                            RESULT = valueA + " " + coma + " " + valueB;
+                            //vValueCharmander = RESULT.toString().charAt(0);
+                            vValue = RESULT.toString();
+                        :}
+                        ;
 
 // estructuras de control
 juguetesdecontrol ::= ELFO ABRECUENTO controldejuguete CIERRECUENTO ABREREGALO juguetes CIERRAREGALO
