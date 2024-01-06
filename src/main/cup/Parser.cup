@@ -26,6 +26,7 @@ action code {:
         boolean compila = true;
         String vName;
         String vValue;
+        char vValueCharmander;
 
         public void imprimirTablaSimbolos () {
             System.out.println("_________________________Tablas de símbolos_________________________");
@@ -155,8 +156,9 @@ terminal String DEDMOROZ; // string
 terminal Integer[] PAPANOEL; // array
 terminal Integer L_SANTACLAUS; // literal int
 terminal Double L_PERENOEL; // literal float
-terminal Boolean L_FATHERCHRISTMAS; // literal boolean
-terminal Character L_KRISKRINGLE; // literal char
+//terminal Boolean L_FATHERCHRISTMAS; // literal boolean
+terminal String L_FATHERCHRISTMAS; // literal boolean
+terminal String L_KRISKRINGLE; // literal char
 terminal String L_DEDMOROZ; // literal string
 //terminal Integer[] L_PAPANOEL; // literal array
 
@@ -514,14 +516,41 @@ piezasrelacionales ::= HERMEY // <
         | WUNORSE; // !=
 
 // lógicos (and, or, negacion)
-jugueteslogicos ::= jugueteslogicos MELCHOR jugueteslogicos // AND
-        | jugueteslogicos GASPAR jugueteslogicos // OR
-        | BALTASAR jugueteslogicos // NOT
-        | ABRECUENTO jugueteslogicos CIERRECUENTO // (expr)
-        | ABRECUENTO jugueteslogicos CIERRECUENTO jugueteslogicos // (expr) op expr
-        //| jugueteslogicos ABRECUENTO jugueteslogicos CIERRECUENTO // expr op (expr)
-        //| PERSONA // identificador
-        | L_FATHERCHRISTMAS;
+jugueteslogicos ::= jugueteslogicos:valueA MELCHOR jugueteslogicos:valueB // AND
+                    {:
+                        RESULT = valueA + " ^ " + valueB;
+                        vValue = RESULT.toString();
+                    :}
+        | jugueteslogicos:valueA GASPAR jugueteslogicos:valueB // OR
+                    {:
+                        RESULT = valueA + " # " + valueB;
+                        vValue = RESULT.toString();
+                    :}
+        | BALTASAR jugueteslogicos:valueA // NOT
+                    {:
+                        RESULT = "! " + valueA;
+                        vValue = RESULT.toString();
+                    :}
+        | ABRECUENTO:lParen jugueteslogicos:valueA CIERRECUENTO:rParen // (expr)
+                    {:
+                        RESULT = lParen + " " + valueA + " " + rParen;
+                        vValue = RESULT.toString();
+                    :}
+        | ABRECUENTO:lParen jugueteslogicos:valueA CIERRECUENTO:rParen jugueteslogicos // (expr) op expr
+                    {:
+                        RESULT = lParen + " " + valueA + " " + rParen;
+                        vValue = RESULT.toString();
+                    :}
+        | PERSONA:valueA GASPAR L_FATHERCHRISTMAS:valueB // identificador
+                    {:
+                        RESULT = valueA + " # " + valueB;
+                        vValue = RESULT.toString();
+                    :}
+        | L_FATHERCHRISTMAS:valueA // literal boolean
+                    {:
+                        RESULT = valueA;
+                        vValue = RESULT.toString();
+                    :};
 
 // unarios (incremento, decremento, etc)
 juguetesunarios ::= GRINCH juguetesaritmeticos // ++
@@ -560,6 +589,7 @@ jugueteasignacion_flotante ::= PERSONA:name ENTREGA piezasflotantes:value
                                     vValue = value.toString();
                                 :};
 
+
 jugueteasignacion ::= LOCAL SANTACLAUS jugueteasignacion_entera // enteros
                         {:
                             listaTablasSimbolos.get(currentHash).add("variable int (" + vName + ") : " + vValue);
@@ -578,13 +608,25 @@ jugueteasignacion ::= LOCAL SANTACLAUS jugueteasignacion_entera // enteros
             :}
         
 
-        | LOCAL FATHERCHRISTMAS PERSONA ENTREGA jugueteslogicos // booleanos
-        | LOCAL KRISKRINGLE PERSONA ENTREGA L_KRISKRINGLE // caracteres
+        | LOCAL FATHERCHRISTMAS PERSONA:vName ENTREGA jugueteslogicos:vValue // booleanos
+            {:
+                listaTablasSimbolos.get(currentHash).add("variable boolean (" + vName + ") : " + vValue);
+            :}
+        | LOCAL KRISKRINGLE PERSONA:vName ENTREGA L_KRISKRINGLE:vValueCharmander // caracteres
+            {:
+                listaTablasSimbolos.get(currentHash).add("variable char (" + vName + ") : " + vValueCharmander.charAt(1));
+            :}
         | LOCAL DEDMOROZ PERSONA ENTREGA L_DEDMOROZ // strings ⚠️ valorar utilizar produccion de strings
         | LOCAL PAPANOEL PERSONA ENTREGA ABREEMPAQUE arreglosarreglados CIERREEMPAQUE
 
-        | PERSONA ENTREGA jugueteslogicos // booleanos
-        | PERSONA ENTREGA L_KRISKRINGLE // caracteres
+        | PERSONA:vName ENTREGA jugueteslogicos:vValue // booleanos
+            {:
+                listaTablasSimbolos.get(currentHash).add("variable boolean (" + vName + ") : " + vValue);
+            :}
+        | PERSONA:vName ENTREGA L_KRISKRINGLE:vValueCharmander // caracteres
+            {:
+                listaTablasSimbolos.get(currentHash).add("variable char (" + vName + ") : " + vValueCharmander.charAt(1));
+            :}
         | PERSONA ENTREGA L_DEDMOROZ // strings ⚠️ valorar utilizar produccion de strings
         | PERSONA ENTREGA ABREEMPAQUE arreglosarreglados CIERREEMPAQUE;
 

@@ -62,6 +62,7 @@ public class ParserTest {
     String program = funfloat;
     program += "local float multiUnario <= 5.1 + 1.1|";
     program += "local float res <= 1.3|";
+    program += "res <= 2.2|";
     program += "local float res1 <= ++(1.34)|";
     program += "local float res2 <= ++(((1.3)*(0.3)))|";
     program += "local float res3 <= ++((1.1))|";
@@ -85,11 +86,11 @@ public class ParserTest {
     program += "local bool res3 <= true ^ false|";
     program += "local bool res4 <= true # false|";
     program += "local int res5 <= 12 + 21|";
-    //program += "local bool res3 <= res1|";
-    //program += "local bool res4 <= res1 && res2|";
-    //program += "local bool res5 <= res1 || res2|";
-    //program += "local bool res6 <= res1 && res2 || res3|";
-    //program += "local bool res7 <= res1 && res2 || res3 && res4|";
+    program += "res3 <= res1#false|";
+    program += "local bool res4 <= res1#false ^ res2#false|";
+    program += "local bool res5 <= res1#false # res2#false|";
+    program += "local bool res6 <= res1#false ^ res2#false # res3#false|";
+    program += "local bool res7 <= res1#false ^ res2#false # res3#false ^ res4#false|";
     program += "return res4|}";
     //program = "function bool hola () {local int res <= 1+3|return true|}";
     program += funMain;
@@ -107,6 +108,7 @@ public class ParserTest {
     program += "local char res6 <= 'f'|";
     program += "local char res7 <= 'g'|";
     program += "local char res8 <= 'h'|";
+    program += "res8 <= 'h'|";
     program += "return res8|";
     program += "}";
     program += funMain;
