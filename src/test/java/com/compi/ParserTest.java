@@ -9,7 +9,7 @@ import java_cup.runtime.Symbol;
 
 public class ParserTest {
   private String funMain = "function int main () { local int res <= 1+3|return res|@comentario\n}";
-  private String funStr = "function int hola () {local string res <= \"hola\"|return 3|}";
+  private String funStr = "function int hola (string paramA, int paramB, char paramC) {local string res <= \"hola\"|return 3|}";
   private String funInt = "function int hola () {";
   private String funfloat = "function float hola (int x, char y) {";
   private String funBool = "function bool hola () {";

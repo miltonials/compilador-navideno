@@ -7,6 +7,10 @@ import java.lang.Math;
 import java_cup.runtime.Symbol;
 import java.util.Stack;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ArrayList;
+
 /**
  * Clase principal del compilador
  */
@@ -14,8 +18,28 @@ class Parser;
 
 
 action code {:
-        public void hola() {
-            System.out.println("Hola"); 
+        HashMap<String, ArrayList<String>> listaTablasSimbolos = new HashMap<String, ArrayList<String>>();
+        String currentHash;
+
+        public void imprimirTablaSimbolos () {
+            System.out.println("_________________________Tablas de símbolos_________________________");
+            for(String key: listaTablasSimbolos.keySet()) {
+                System.out.println("Tabla de símbolos: " + key);
+                System.out.println("valores: ");
+                for (String item : listaTablasSimbolos.get(key)) {
+                    System.out.println(item);
+                }
+                System.out.println("");
+            }
+            System.out.println("______________________________________________________________________");
+        }
+
+        public void agregarTablaSimbolos (String tipo, String nombreFuncion) {
+            String tipoTabla = "Tipo: " + tipo;
+            ArrayList<String> funcionMain = new ArrayList<String>();
+            currentHash = nombreFuncion;
+            funcionMain.add(tipoTabla);
+            listaTablasSimbolos.put(currentHash, funcionMain);
         }
 
         public void error(String mensaje) {
@@ -124,10 +148,10 @@ terminal  LOCAL; // variable
 
 // Tipos
 terminal String PERSONA; // identificador
-terminal Integer SANTACLAUS; // int
-terminal Double PERENOEL; // float
-terminal Boolean FATHERCHRISTMAS; // boolean
-terminal Character KRISKRINGLE; // char
+terminal String SANTACLAUS; // int
+terminal String PERENOEL; // float
+terminal String FATHERCHRISTMAS; // boolean
+terminal String KRISKRINGLE; // char
 terminal String DEDMOROZ; // string
 terminal Integer[] PAPANOEL; // array
 terminal Integer L_SANTACLAUS; // literal int
@@ -174,19 +198,15 @@ terminal Integer ENTREGA;//<=
 // Funciones
 terminal Integer MAIN; //main
 terminal Integer REGALO; // definicion de funcion 
-//terminal Integer FUNCTION; // definicion de funcion 
 
 //-------------------------------------------------------------------------------------- NO Terminales
 non terminal navidad; // Símbolo inicial ✅
 non terminal bolsanavidena; // produccion para funciones ✅
-//non terminal regalo; // produccion para expresiones
 non terminal regaloprincipal; // produccion para main ✅
 non terminal regalofuncional; // produccion para funciones ✅
 non terminal regalofuncionaltipado; // produccion para funciones ✅
 non terminal juguetes; // produccion para expresiones ✅
 non terminal tipojuguetes; // produccion para expresiones ✅
-//non terminal garantia;
-//non terminal tiposregalo; // produccion para expresiones ✅
 non terminal regalofuncionalentero; // produccion para funciones int
 non terminal regalofuncionalflotante; // produccion para funciones float
 non terminal regalofuncionaldelaverdad; // produccion para funciones boolean
@@ -198,28 +218,15 @@ non terminal dedicatoriasdelaverdad; // produccion para " return boolean| } "
 non terminal dedicatoriascharmander; // produccion para  " return char| } "
 non terminal monnos; // produccion para parametros de funcion ✅
 non terminal tiposmonnos; // produccion para parametros de funcion ✅
-//non terminal envolturas; // produccion para envolturas ✅
 non terminal juguetesaritmeticos; // produccion para expresiones aritméticas ✅
-//non terminal piezasenteras; // produccion para expresiones aritméticas ✅
-//non terminal piezasunarias; // producción para expresiones unarias ✅
-//non terminal piezasflotantes; // produccion para expresiones aritméticas ✅
 non terminal juguetesrelacionales; // produccion para expresiones relacionales
 non terminal piezasrelacionales; // produccion para expresiones relacionales ✅
 non terminal jugueteslogicos; // produccion para expresiones lógicas ✅
 non terminal juguetesunarios; // produccion para expresiones unarias ✅
 non terminal jugueteasignacion; // produccion para expresiones de asignacion y ciclos✅
 non terminal arreglosarreglados; // produccion para arreglos ✅
-
-
-
-
-
-
 non terminal juguetesdecontrol; // produccion para if-elif-else ✅
-//non terminal dedicatoriasaritmeticas;
-
 non terminal juguetesaritmeticos_operadores;
-
 non terminal juguetesdefinidos;
 non terminal controldejuguete;
 non terminal adicionalesdecontrol;
@@ -228,7 +235,6 @@ non terminal parametrosdeenvoltura;
 non terminal jugueteparlanchin;
 non terminal juguetechismoso;
 non terminal etiquetanavidena;
-
 non terminal piezasenteras;
 non terminal piezasflotantes;
 non terminal jugueteasignacion_entera;
@@ -237,12 +243,6 @@ non terminal piezaarregloentero;
 non terminal piezaarreglochar;
 non terminal error_production; // produccion para errores ✅
 //-------------------------------------------------------------------------------------- PRECEDENCIA
-// sirve para definir la precedencia de los operadores
-// por ejemplo, si se define que * tiene mayor precedencia que +, entonces
-// 2 + 3 * 4 = 14
-// (2 + 3) * 4 = 20
-// 2 + (3 * 4) = 14
-// 2 * 3 + 4 = 10
 precedence left RUDOLPH, DASHER; // suma y resta
 precedence left DANCER, PRANCER; // division y division entera
 precedence left VIXEN, COMET; // multiplicacion y modulo
@@ -251,18 +251,8 @@ precedence left GRINCH, QUIEN; // incremento y decremento
 precedence left HERMEY, BUDDY, JINGLE, JANGLE, PEPPERMINT, WUNORSE; // operadores relacionales
 precedence left MELCHOR, GASPAR; // operadores lógicos
 precedence left BALTASAR; // operador lógico not
-//precedence left ABRECUENTO, CIERRECUENTO; // parentesis
-//precedence left ABREEMPAQUE, CIERREEMPAQUE; // corchetes
-//precedence left ABREREGALO, CIERRAREGALO; // llaves
-//precedence left ELFO, HADA, DUENDE, ENVUELVE, HACE, REVISA, ENVIA, CORTA; // estructuras de control
-//precedence left NARRA, ESCUCHA; // entrada y salida
-//precedence left FINREGALO; // fin de expresión
 precedence left COMA; // lexema separador
-//precedence left ENTREGA; // asignacion
-//precedence left MAIN; // main
-//precedence left REGALO; // definicion de funcion
-//precedence left SANTACLAUS, PERENOEL, FATHERCHRISTMAS, KRISKRINGLE, DEDMOROZ, PAPANOEL; // tipos
-//precedence left PERSONA, L_SANTACLAUS, L_PERENOEL, L_FATHERCHRISTMAS, L_KRISKRINGLE, L_DEDMOROZ, L_PAPANOEL; // identificadores y literales
+
 
 
 
@@ -272,30 +262,56 @@ precedence left COMA; // lexema separador
 start with navidad;
 
 /* Producciones gramaticales */
-navidad ::= bolsanavidena;
+navidad ::= 
+        bolsanavidena
+        {:
+            imprimirTablaSimbolos();
+            System.out.println("Fin de ejecución");
+        :}
+        ;
 
-bolsanavidena ::=  regaloprincipal | regalofuncional regaloprincipal;
-//               | bolsanavidena regalofuncional regaloprincipal;
+bolsanavidena ::=  regaloprincipal
+                | regalofuncional regaloprincipal;
 
 regaloprincipal ::= REGALO SANTACLAUS MAIN ABRECUENTO  CIERRECUENTO ABREREGALO
                         juguetes
                         dedicatoriasenteras
+                    {:
+                        agregarTablaSimbolos("int", "main");
+                    :}
                         | error_production; //{: System.out.println("Error en la expresión de regaloprincipal"); :};
 
 //Funciones
 regalofuncional ::= regalofuncionaltipado | regalofuncional regalofuncionaltipado;
 
 regalofuncionaltipado ::= regalofuncionalentero | regalofuncionalflotante | regalofuncionaldelaverdad
-                | regalofuncionalcharmander// | regalofuncionalencadenado | regalofuncionalarreglado;
+                | regalofuncionalcharmander
                 | error_production; //{: System.out.println("Error en la expresión de regalofuncionaltipado"); :};
 
-// regalofuncionalentero ::= REGALO SANTACLAUS encabezadoregalofuncional juguetes dedicatoriasenteras;
-regalofuncionalentero ::= REGALO SANTACLAUS encabezadoregalofuncional juguetes dedicatoriasenteras
-                        {: setTipoRetorno("int"); :};
 
-regalofuncionalflotante ::= REGALO PERENOEL encabezadoregalofuncional juguetes dedicatoriasflotantes;
-regalofuncionaldelaverdad ::= REGALO FATHERCHRISTMAS encabezadoregalofuncional juguetes dedicatoriasdelaverdad;
-regalofuncionalcharmander ::= REGALO KRISKRINGLE encabezadoregalofuncional juguetes dedicatoriascharmander;
+regalofuncionalentero ::= REGALO SANTACLAUS:tFunc PERSONA:funName
+                        {:
+                            agregarTablaSimbolos(tFunc.toString(), funName.toString());setTipoRetorno("int");
+                        :}
+                            encabezadoregalofuncional juguetes dedicatoriasenteras;
+
+regalofuncionalflotante ::= REGALO PERENOEL:tFunc PERSONA:funName
+                            {:
+                                agregarTablaSimbolos(tFunc.toString(), funName.toString());
+                            :}
+                            encabezadoregalofuncional juguetes dedicatoriasflotantes;
+
+regalofuncionaldelaverdad ::= REGALO FATHERCHRISTMAS:tFunc PERSONA:funName
+                            {:
+                                agregarTablaSimbolos(tFunc.toString(), funName.toString());
+                            :}
+                            encabezadoregalofuncional juguetes dedicatoriasdelaverdad;
+
+regalofuncionalcharmander ::= REGALO KRISKRINGLE:tFunc PERSONA:funName
+                            {:
+                                agregarTablaSimbolos(tFunc.toString(), funName.toString());
+                            :}
+                            encabezadoregalofuncional juguetes dedicatoriascharmander;
 
 
 // dedicatoriasenteras ::= ENVIA piezasenteras FINREGALO CIERRAREGALO; // | ENVIA PERSONA FINREGALO CIERRAREGALO;
@@ -307,21 +323,45 @@ dedicatoriasdelaverdad ::= ENVIA jugueteslogicos FINREGALO CIERRAREGALO | ENVIA 
 dedicatoriascharmander ::= ENVIA L_KRISKRINGLE FINREGALO CIERRAREGALO | ENVIA PERSONA FINREGALO CIERRAREGALO;
 
 //para parametros
-encabezadoregalofuncional ::= PERSONA:funName ABRECUENTO CIERRECUENTO ABREREGALO
-                                {: RESULT=funName; System.out.println("Función: " + RESULT); :}
-                | PERSONA ABRECUENTO monnos CIERRECUENTO ABREREGALO; //{: System.out.println("Error en la expresión de encabezadoregalofuncional"); :};
+encabezadoregalofuncional ::= ABRECUENTO CIERRECUENTO ABREREGALO
+                            | ABRECUENTO monnos CIERRECUENTO ABREREGALO
+                ; //{: System.out.println("Error en la expresión de encabezadoregalofuncional"); :};
 
 
 // Parámetros de la función
 monnos ::= tiposmonnos | tiposmonnos COMA monnos;
 
 // tiposmonnos son los diferentes tipos de parámetros de la función
-tiposmonnos ::= SANTACLAUS PERSONA // int identificador
-            | PERENOEL PERSONA // float identificador
-            | FATHERCHRISTMAS PERSONA // boolean identificador
-            | KRISKRINGLE PERSONA // char identificador
-            | DEDMOROZ PERSONA // string identificador
-            | PAPANOEL PERSONA // array identificador
+tiposmonnos ::= SANTACLAUS PERSONA:idParam // int identificador
+                {:
+                //int
+                    listaTablasSimbolos.get(currentHash).add("int : " + idParam);
+                :}   
+            | PERENOEL PERSONA:idParam // float identificador
+                {:
+                //float
+                    listaTablasSimbolos.get(currentHash).add("float : " + idParam);
+                :}   
+            | FATHERCHRISTMAS PERSONA:idParam // boolean identificador
+                {:
+                //boolean
+                    listaTablasSimbolos.get(currentHash).add("boolean : " + idParam);
+                :}   
+            | KRISKRINGLE PERSONA:idParam // char identificador
+                {:
+                //char
+                    listaTablasSimbolos.get(currentHash).add("char : " + idParam);
+                :}   
+            | DEDMOROZ PERSONA:idParam // string identificador
+                {:
+                //string
+                    listaTablasSimbolos.get(currentHash).add("string : " + idParam);
+                :}   
+            | PAPANOEL PERSONA:idParam // array identificador
+                {:
+                //array
+                    listaTablasSimbolos.get(currentHash).add("array : " + idParam);
+                :}   
             | error_production; //{: System.out.println("Error en la expresión de tiposmonnos"); :};
 
 juguetes ::= etiquetanavidena
