@@ -20,6 +20,7 @@ class Parser;
 action code {:
         HashMap<String, ArrayList<String>> listaTablasSimbolos = new HashMap<String, ArrayList<String>>();
         String currentHash;
+        boolean compila = true;
 
         public void imprimirTablaSimbolos () {
             System.out.println("_________________________Tablas de símbolos_________________________");
@@ -44,14 +45,6 @@ action code {:
 
         public void error(String mensaje) {
             System.out.println(mensaje);
-        }
-
-        public void error(String mensaje, int linea, int columna) {
-            System.out.println("Error en la linea " + linea + " columna " + columna + ": " + mensaje);
-        }
-
-        public void error(String mensaje, int linea, int columna, String token) {
-            System.out.println("Error en la linea " + linea + " columna " + columna + ": " + mensaje + " " + token);
         }
 :}
 
@@ -85,7 +78,8 @@ parser code {:
         }
         /*
         public void syntax_error(Symbol s) {
-                System.err.println("Error R de sintaxis: "+ s.value +" Linea "+(s.left+1)+" columna "+(s.right+1) );
+            compila = false;
+            System.err.println("Error R de sintaxis: "+ s.value +" Linea "+(s.left+1)+" columna "+(s.right+1) );
         }
         */
         /*
@@ -267,6 +261,12 @@ navidad ::=
         {:
             imprimirTablaSimbolos();
             System.out.println("Fin de ejecución");
+            
+            if (compila) {
+                System.out.println("Compilación exitosa");
+            } else {
+                System.out.println("Compilación fallida");
+            }
         :}
         ;
 
@@ -374,8 +374,7 @@ etiquetanavidena ::= tipojuguetes | tipojuguetes etiquetanavidena;
 
 tipojuguetes ::= juguetesaritmeticos FINREGALO // aritméticas (sumas, restas, etc)✅
          | juguetesrelacionales FINREGALO // expresiones relacionales (menor, mayor, etc) 
-         | jugueteslogicos FINREGALO// expresiones lógicas (and, or, etc) 
-         //| juguetesunarios // expresiones unarias (incremento, decremento, etc)
+         | jugueteslogicos FINREGALO// expresiones lógicas (and, or, etc)
          | juguetesdefinidos FINREGALO // expresiones de definicion de variables
          | jugueteasignacion FINREGALO // expresiones de asignacion y ciclos
          | juguetesdecontrol

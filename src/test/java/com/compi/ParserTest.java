@@ -25,14 +25,12 @@ public class ParserTest {
   @Test
   public void testMain() throws Exception {
     Integer resultado = (Integer) testHelper(funMain).value;
-    System.out.println(resultado);
   }
 
   @Test
   public void testStr() throws Exception {
     funStr += funMain;
     Integer resultado = (Integer) testHelper(funStr).value;
-    System.out.println(resultado);
   }
 
   @Test
@@ -57,7 +55,6 @@ public class ParserTest {
     program += funMain;
     
     Integer resultado = (Integer) testHelper(program).value;
-    System.out.println(resultado);
   }
 
   @Test
@@ -78,7 +75,6 @@ public class ParserTest {
     program += funMain;
     
     Integer resultado = (Integer) testHelper(program).value;
-    System.out.println(resultado);
   }
 
   @Test
@@ -98,7 +94,6 @@ public class ParserTest {
     //program = "function bool hola () {local int res <= 1+3|return true|}";
     program += funMain;
     Integer resultado = (Integer) testHelper(program).value;
-    System.out.println(resultado);
   }
   
   @Test
@@ -117,7 +112,6 @@ public class ParserTest {
     program += funMain;
 
     Integer resultado = (Integer) testHelper(program).value;
-    System.out.println(resultado);
   }
 
   @Test void testArr() throws Exception {
@@ -132,7 +126,6 @@ public class ParserTest {
     program += funMain;
 
     Integer resultado = (Integer) testHelper(program).value;
-    System.out.println(resultado);
   }
 
   @Test void testStructures() throws Exception {
@@ -178,7 +171,6 @@ public class ParserTest {
     program += funMain;
 
     Integer resultado = (Integer) testHelper(program).value;
-    System.out.println(resultado);
   }
 
   @Test
@@ -206,7 +198,6 @@ public class ParserTest {
     program += funMain;
 
     Integer resultado = (Integer) testHelper(program).value;
-    System.out.println(resultado);
   }
 
   @Test
@@ -226,7 +217,6 @@ public class ParserTest {
     program += funMain;
 
     Integer resultado = (Integer) testHelper(program).value;
-    System.out.println(resultado);
   }
 
   @Test
@@ -250,6 +240,5 @@ public class ParserTest {
     program += funMain;
 
     Integer resultado = (Integer) testHelper(program).value;
-    System.out.println(resultado);
   }
 }

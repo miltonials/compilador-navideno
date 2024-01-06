@@ -25,6 +25,7 @@ import utilidades.Archivos;
         description = "Analizador léxico")
 public class App implements Callable<Integer> {
 
+
     @Option(names = {"-f", "--file"}, description = "File to read")
     File file;
 
@@ -77,7 +78,6 @@ public class App implements Callable<Integer> {
         IdLexer lexer = new IdLexer(new FileReader(filename));
         Parser p = new Parser(lexer);
         p.parse();
-        System.out.println("¡¡¡Se puede compilar!!! 😀");
     }
 
     /**
