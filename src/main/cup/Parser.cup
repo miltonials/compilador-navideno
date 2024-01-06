@@ -4,9 +4,12 @@ import java_cup.runtime.*;
 import java.io.*;
 import java.util.*;
 import java.lang.Math;
+
+//para errores
 import java_cup.runtime.Symbol;
 import java.util.Stack;
 
+//para tablas de simbolos
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
@@ -21,6 +24,8 @@ action code {:
         HashMap<String, ArrayList<String>> listaTablasSimbolos = new HashMap<String, ArrayList<String>>();
         String currentHash;
         boolean compila = true;
+        String vName;
+        String vValue;
 
         public void imprimirTablaSimbolos () {
             System.out.println("_________________________Tablas de símbolos_________________________");
@@ -117,27 +122,27 @@ scan with {: return miParser.next_token(); :};
 /* Terminales */
 
 // Operadores aritméticos binarios
-terminal RUDOLPH; // +
-terminal  DASHER; // -
-terminal  DANCER; // /
-terminal  PRANCER; // // (division entera)
-terminal  VIXEN; // *
-terminal  COMET; // ~
-terminal CUPID; // **
+terminal String RUDOLPH; // +
+terminal String DASHER; // -
+terminal String  DANCER; // /
+terminal String  PRANCER; // // (division entera)
+terminal String  VIXEN; // *
+terminal String  COMET; // ~
+terminal String CUPID; // **
 // Operadores aritméticos unarios
-terminal  GRINCH; // ++
-terminal  QUIEN; // --
+terminal String  GRINCH; // ++
+terminal String  QUIEN; // --
 // Operadores relacionales
-terminal  HERMEY; // <
-terminal  BUDDY; // =<
-terminal  JINGLE; // >
-terminal JANGLE; // >=
-terminal  PEPPERMINT; // ==
-terminal  WUNORSE; // !=
+terminal String  HERMEY; // <
+terminal String  BUDDY; // =<
+terminal String  JINGLE; // >
+terminal String JANGLE; // >=
+terminal String  PEPPERMINT; // ==
+terminal String  WUNORSE; // !=
 // Operadores lógicos
-terminal  MELCHOR; // ^
-terminal  GASPAR; // #
-terminal BALTASAR; // !
+terminal String  MELCHOR; // ^
+terminal String  GASPAR; // #
+terminal String BALTASAR; // !
 terminal  LOCAL; // variable
 
 // Tipos
@@ -156,22 +161,22 @@ terminal String L_DEDMOROZ; // literal string
 //terminal Integer[] L_PAPANOEL; // literal array
 
 // Parentesis
-terminal Integer ABRECUENTO; // (
-terminal Integer CIERRECUENTO; // )
-terminal Integer ABREEMPAQUE; // [
-terminal Integer CIERREEMPAQUE; // ]
-terminal Integer ABREREGALO; // {
-terminal Integer CIERRAREGALO; // }
+terminal String ABRECUENTO; // (
+terminal String CIERRECUENTO; // )
+terminal String ABREEMPAQUE; // [
+terminal String CIERREEMPAQUE; // ]
+terminal String ABREREGALO; // {
+terminal String CIERRAREGALO; // }
 
 // Estructuras de control
-terminal Integer ELFO;//if
-terminal Integer HADA;//else
-terminal Integer DUENDE;//else
-terminal Integer ENVUELVE;//for
-terminal Integer HACE;//do
-terminal Integer REVISA;//until
-terminal Integer ENVIA;//return
-terminal Integer CORTA;//break
+terminal String ELFO;//if
+terminal String HADA;//else
+terminal String DUENDE;//else
+terminal String ENVUELVE;//for
+terminal String HACE;//do
+terminal String REVISA;//until
+terminal String ENVIA;//return
+terminal String CORTA;//break
 
 // Entrada y salida
 terminal Integer NARRA;//print
@@ -274,12 +279,12 @@ bolsanavidena ::=  regaloprincipal
                 | regalofuncional regaloprincipal;
 
 regaloprincipal ::= REGALO SANTACLAUS MAIN ABRECUENTO  CIERRECUENTO ABREREGALO
-                        juguetes
-                        dedicatoriasenteras
                     {:
                         agregarTablaSimbolos("int", "main");
                     :}
-                        | error_production; //{: System.out.println("Error en la expresión de regaloprincipal"); :};
+                    juguetes
+                    dedicatoriasenteras
+                    | error_production; //{: System.out.println("Error en la expresión de regaloprincipal"); :};
 
 //Funciones
 regalofuncional ::= regalofuncionaltipado | regalofuncional regalofuncionaltipado;
@@ -383,11 +388,14 @@ tipojuguetes ::= juguetesaritmeticos FINREGALO // aritméticas (sumas, restas, e
          | juguetechismoso FINREGALO;
 
 jugueteparlanchin ::= NARRA ABRECUENTO PERSONA CIERRECUENTO | NARRA ABRECUENTO L_DEDMOROZ CIERRECUENTO;//TODO: concatenación de strings
-juguetechismoso ::= ESCUCHA ABRECUENTO L_DEDMOROZ CIERRECUENTO
-                | ESCUCHA ABRECUENTO CIERRECUENTO
-                | ESCUCHA ABRECUENTO PERSONA CIERRECUENTO
-                | LOCAL DEDMOROZ PERSONA ENTREGA ESCUCHA ABRECUENTO L_DEDMOROZ CIERRECUENTO
-                | LOCAL DEDMOROZ PERSONA ENTREGA ESCUCHA ABRECUENTO CIERRECUENTO
+
+
+
+
+juguetechismoso ::= ESCUCHA ABRECUENTO CIERRECUENTO //read ()
+                | ESCUCHA ABRECUENTO PERSONA CIERRECUENTO //read (str)
+                //| LOCAL DEDMOROZ PERSONA ENTREGA ESCUCHA ABRECUENTO L_DEDMOROZ CIERRECUENTO // LOCAL DEDMOROZ str ENTREGA ESCUCHA ("str")
+                //| LOCAL DEDMOROZ PERSONA ENTREGA ESCUCHA ABRECUENTO CIERRECUENTO  // LOCAL DEDMOROZ str ENTREGA ESCUCHA ()
                 | error_production; //{: System.out.println("Error en la expresión de juguetechismoso"); :};
 
 // aritméticas (sumas, restas, etc)
@@ -417,26 +425,82 @@ juguetesaritmeticos ::= juguetesaritmeticos:e1 RUDOLPH juguetesaritmeticos:e2
                         :}; // +;
 
 */
-juguetesaritmeticos_operadores ::= RUDOLPH // +
-                |  DASHER // -
-                |  DANCER // /
-                |  PRANCER // //
-                |  VIXEN // *
-                |  COMET // ~
-                |  CUPID; // **
+juguetesaritmeticos_operadores ::= RUDOLPH:opAritmetico // +
+                    {:
+                        RESULT = opAritmetico;
+                    :}
+                |  DASHER:opAritmetico // -
+                    {:
+                        RESULT = opAritmetico;
+                    :}
+                |  DANCER:opAritmetico // /
+                    {:
+                        RESULT = opAritmetico;
+                    :}
+                |  PRANCER:opAritmetico // //
+                    {:
+                        RESULT = opAritmetico;
+                    :}
+                |  VIXEN:opAritmetico // *
+                    {:
+                        RESULT = opAritmetico;
+                    :}
+                |  COMET:opAritmetico // ~
+                    {:
+                        RESULT = opAritmetico;
+                    :}
+                |  CUPID:opAritmetico // **
+                    {:
+                        RESULT = opAritmetico;
+                    :}
+                ;
 
-piezasenteras ::= piezasenteras juguetesaritmeticos_operadores piezasenteras
-                |  ABRECUENTO piezasenteras CIERRECUENTO // (expr)
-                |  ABRECUENTO piezasenteras CIERRECUENTO juguetesaritmeticos_operadores piezasenteras // (expr) + expr
-                |  PERSONA
-                |  L_SANTACLAUS;
+piezasenteras ::= piezasenteras:valueA juguetesaritmeticos_operadores:opAritmetico piezasenteras:valueB
+                    {:
+                        RESULT = valueA + " " + opAritmetico.toString() + " " + valueB;
+
+                    :}
+                |  ABRECUENTO:lParen piezasenteras:valueA CIERRECUENTO:rParen // (expr)
+                    {:
+                        RESULT = lParen + " " + valueA + " " + rParen;
+                    :}
+                |  ABRECUENTO:lParen piezasenteras:valueA CIERRECUENTO:rParen juguetesaritmeticos_operadores:opAritmetico piezasenteras:valueB // (expr) + expr
+                    {:
+                        RESULT = lParen + " " + valueA + " " + rParen + " " + opAritmetico.toString() + " " + valueB;
+                    :}
+                |  PERSONA:valueA
+                    {:
+                        RESULT = valueA;
+                    :}
+                |  L_SANTACLAUS:valueA
+                    {:
+                        RESULT = valueA;
+                    :}
+                ;
 
 
-piezasflotantes ::= piezasflotantes juguetesaritmeticos_operadores piezasflotantes
-                     |  ABRECUENTO piezasflotantes CIERRECUENTO // (expr)
-                     |  ABRECUENTO piezasflotantes CIERRECUENTO juguetesaritmeticos_operadores piezasflotantes // (expr) + expr
-                     | PERSONA VIXEN L_PERENOEL // produce conflicto con piezasenteras
-                     |  L_PERENOEL;
+piezasflotantes ::= piezasflotantes:valueA juguetesaritmeticos_operadores:opAritmetico piezasflotantes:valueB
+                    {:
+                        RESULT = valueA + " " + opAritmetico.toString() + " " + valueB;
+
+                    :}
+                |  ABRECUENTO:lParen piezasflotantes:valueA CIERRECUENTO:rParen // (expr)
+                    {:
+                        RESULT = lParen + " " + valueA + " " + rParen;
+                    :}
+                |  ABRECUENTO:lParen piezasflotantes:valueA CIERRECUENTO:rParen juguetesaritmeticos_operadores:opAritmetico piezasflotantes:valueB // (expr) + expr
+                    {:
+                        RESULT = lParen + " " + valueA + " " + rParen + " " + opAritmetico.toString() + " " + valueB;
+                    :}
+                |  PERSONA:valueA VIXEN:op L_PERENOEL:valueB
+                    {:
+                        RESULT = valueA + " " + op + " " + valueB;
+                    :}
+                |  L_PERENOEL:valueA
+                    {:
+                        RESULT = valueA;
+                    :}
+                ;
 
 // relacionales (menor, mayor, etc)
 juguetesrelacionales ::= piezasenteras piezasrelacionales piezasenteras // enteros
@@ -464,13 +528,55 @@ juguetesunarios ::= GRINCH juguetesaritmeticos // ++
                 | QUIEN juguetesaritmeticos; // --
 
 // asignacion <=
-jugueteasignacion_entera ::= PERSONA ENTREGA piezasenteras | PERSONA ENTREGA GRINCH piezasenteras | PERSONA ENTREGA QUIEN piezasenteras;
-jugueteasignacion_flotante ::= PERSONA ENTREGA piezasflotantes | PERSONA ENTREGA GRINCH piezasflotantes | PERSONA ENTREGA QUIEN piezasflotantes;
+jugueteasignacion_entera ::= PERSONA:name ENTREGA piezasenteras:value
+                                {:
+                                    vName = name;
+                                    vValue = value.toString();
+                                :}
+                            | PERSONA:name ENTREGA GRINCH piezasenteras:value
+                                {:
+                                    vName = name;
+                                    vValue = value.toString();
+                                :}
+                            | PERSONA:name ENTREGA QUIEN piezasenteras:value
+                                {:
+                                    vName = name;
+                                    vValue = value.toString();
+                                :};
+
+jugueteasignacion_flotante ::= PERSONA:name ENTREGA piezasflotantes:value
+                                {:
+                                    vName = name;
+                                    vValue = value.toString();
+                                :}
+                            | PERSONA:name ENTREGA GRINCH piezasflotantes:value
+                                {:
+                                    vName = name;
+                                    vValue = value.toString();
+                                :}
+                            | PERSONA:name ENTREGA QUIEN piezasflotantes:value
+                                {:
+                                    vName = name;
+                                    vValue = value.toString();
+                                :};
 
 jugueteasignacion ::= LOCAL SANTACLAUS jugueteasignacion_entera // enteros
+                        {:
+                            listaTablasSimbolos.get(currentHash).add("variable int (" + vName + ") : " + vValue);
+                        :}
         | LOCAL PERENOEL jugueteasignacion_flotante // flotantes
+            {:
+                listaTablasSimbolos.get(currentHash).add("variable float (" + vName + ") : " + vValue);
+            :}
         |jugueteasignacion_entera
+            {:
+                listaTablasSimbolos.get(currentHash).add("variable int (" + vName + ") : " + vValue);
+            :}
         |jugueteasignacion_flotante
+            {:
+                listaTablasSimbolos.get(currentHash).add("variable float (" + vName + ") : " + vValue);
+            :}
+        
 
         | LOCAL FATHERCHRISTMAS PERSONA ENTREGA jugueteslogicos // booleanos
         | LOCAL KRISKRINGLE PERSONA ENTREGA L_KRISKRINGLE // caracteres
