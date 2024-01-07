@@ -189,7 +189,7 @@ public class ParserTest {
     program += "local int m|";
     program += "break|";
     program += "m <= [123]|}";
-
+    program += "break|";
     program += "m <= [123]|}";
 
     // do while
@@ -215,7 +215,7 @@ public class ParserTest {
     //program += "local string identificador <= read()|";
     //program += "local string identificador <= read(\"ingrese algo:\")|";
 
-    program += "local int[1] x <= [1]|";
+    program+= "local int[1] x <= [1]|";
     program += "return 1|}";
     program += funMain;
 

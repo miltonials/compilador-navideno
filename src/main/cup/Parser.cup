@@ -647,7 +647,37 @@ jugueteasignacion ::= LOCAL SANTACLAUS jugueteasignacion_entera // enteros
             :}
         ;
 
-juguetesdefinidos ::= LOCAL tiposmonnos;
+juguetesdefinidos ::= LOCAL SANTACLAUS PERSONA:idParam // int identificador
+                {:
+                //int
+                    listaTablasSimbolos.get(currentHash).add("Variable int " + idParam + ": sin valor");
+                :}   
+            | LOCAL PERENOEL PERSONA:idParam // float identificador
+                {:
+                //float
+                    listaTablasSimbolos.get(currentHash).add("Variable float " + idParam + ": sin valor");
+                :}   
+            | LOCAL FATHERCHRISTMAS PERSONA:idParam // boolean identificador
+                {:
+                //boolean
+                    listaTablasSimbolos.get(currentHash).add("Variable boolean " + idParam + ": sin valor");
+                :}   
+            | LOCAL KRISKRINGLE PERSONA:idParam // char identificador
+                {:
+                //char
+                    listaTablasSimbolos.get(currentHash).add("Variable char " + idParam + ": sin valor");
+                :}   
+            | LOCAL DEDMOROZ PERSONA:idParam // string identificador
+                {:
+                //string
+                    listaTablasSimbolos.get(currentHash).add("Variable string " + idParam + ": sin valor");
+                :}   
+            | LOCAL PAPANOEL PERSONA:idParam // array identificador
+                {:
+                //array
+                    listaTablasSimbolos.get(currentHash).add("Variable array " + idParam + ": sin valor");
+                :};
+                
 arreglosarreglados ::= piezaarregloentero:value
                         {:
                             RESULT = value;
