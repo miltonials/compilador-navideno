@@ -27,6 +27,9 @@ action code {:
         String vValue;
         char vValueCharmander;
 
+        /**
+         * Imprime la tabla de símbolos
+        */
         public void imprimirTablaSimbolos () {
             System.out.println("_________________________Tablas de símbolos_________________________");
             for(String key: listaTablasSimbolos.keySet()) {
@@ -40,6 +43,11 @@ action code {:
             System.out.println("______________________________________________________________________");
         }
 
+        /**
+         * Agrega una tabla de símbolos a la lista de tablas de símbolos
+         * @param tipo tipo de la tabla de símbolos
+         * @param nombreFuncion nombre de la función a la que pertenece la tabla de símbolos
+         */
         public void agregarTablaSimbolos (String tipo, String nombreFuncion) {
             String tipoTabla = "Tipo: " + tipo;
             ArrayList<String> funcionMain = new ArrayList<String>();
@@ -48,6 +56,10 @@ action code {:
             listaTablasSimbolos.put(currentHash, funcionMain);
         }
 
+        /*
+         * muestra el error de sintaxis
+         * @param mensaje error
+         */
         public void error(String mensaje) {
             System.out.println(mensaje);
         }
@@ -61,10 +73,18 @@ parser code {:
 
         String tipoRetornoActual = null;
 
+        /**
+         * Establece el tipo de retorno actual
+         * @param tipo tipo de retorno actual
+         */
         public void setTipoRetorno(String tipo) {
                 tipoRetornoActual = tipo;
         }
 
+        /**
+         * Verifica que el tipo de retorno sea el correcto
+         * @param tipoReal tipo de retorno real
+         */
         public void checkTipoRetorno(String tipoReal) {
                 if (tipoRetornoActual != null && !tipoRetornoActual.equals(tipoReal)) {
                         System.err.println("Tipo de retorno incorrecto. Se esperaba: " + tipoRetornoActual + ", pero se encontró: " + tipoReal);
@@ -72,6 +92,10 @@ parser code {:
         }
 
         // Agregar un método para obtener la lista de errores después del análisis
+        /**
+         * Obtiene la lista de errores de sintaxis
+         * @return lista de errores de sintaxis
+         */
         public List<String> getSyntaxErrors() {
                 return syntaxErrors;
         }
@@ -81,18 +105,11 @@ parser code {:
                 this.miParser = miParser;
                 this.symbolFactory = new DefaultSymbolFactory();
         }
-        /*
-        public void syntax_error(Symbol s) {
-            compila = false;
-            System.err.println("Error R de sintaxis: "+ s.value +" Linea "+(s.left+1)+" columna "+(s.right+1) );
-        }
-        */
-        /*
-        public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
-                getSyntaxErrors();
-                System.err.println("Error NR de sintaxis: "+ s.value +" Linea "+(s.left+2)+" columna "+(s.right+1) );
-        }
-        */
+
+        /**
+         * captura los errores de sintaxis 
+         * @param s error
+         */
         public void syntax_error(Symbol s) {
                 try {
                         String errorMessage = "Error de sintaxis: " + s.value + " en la línea " + (s.left + 1) + " columna " + (s.right + 1);
@@ -105,6 +122,10 @@ parser code {:
                 }
         }
 
+        /**
+         * captura los errores de sintaxis no recuperables
+         * @param s error
+         */
         public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception {
                 String errorMessage = "Error de sintaxis no recuperable: " + s.value + " en la línea " + (s.left + 1) + " columna " + (s.right + 1);
                 System.err.println(errorMessage);
@@ -226,21 +247,21 @@ non terminal juguetesunarios; // produccion para expresiones unarias ✅
 non terminal jugueteasignacion; // produccion para expresiones de asignacion y ciclos✅
 non terminal arreglosarreglados; // produccion para arreglos ✅
 non terminal juguetesdecontrol; // produccion para if-elif-else ✅
-non terminal juguetesaritmeticos_operadores;
-non terminal juguetesdefinidos;
-non terminal controldejuguete;
-non terminal adicionalesdecontrol;
-non terminal iteradordejuguetes;
-non terminal parametrosdeenvoltura;
-non terminal jugueteparlanchin;
-non terminal juguetechismoso;
-non terminal etiquetanavidena;
-non terminal piezasenteras;
-non terminal piezasflotantes;
-non terminal jugueteasignacion_entera;
-non terminal jugueteasignacion_flotante;
-non terminal piezaarregloentero;
-non terminal piezaarreglochar;
+non terminal juguetesaritmeticos_operadores; // produccion para operadores aritméticos ✅
+non terminal juguetesdefinidos; // produccion para definicion de variables ✅
+non terminal controldejuguete; // produccion para condicionales de estructura ✅
+non terminal adicionalesdecontrol; // produccion para los if anidados y el else ✅
+non terminal iteradordejuguetes; // produccion para ciclos ✅      
+non terminal parametrosdeenvoltura; // produccion para del ciclo ✅
+non terminal jugueteparlanchin; // produccion para print ✅
+non terminal juguetechismoso; // produccion para read ✅
+non terminal etiquetanavidena; // produccion para sentencias ✅ 
+non terminal piezasenteras; // produccion para operaciones literales enteras ✅ 
+non terminal piezasflotantes; // produccion para operaciones literales flotantes ✅
+non terminal jugueteasignacion_entera; // produccion para asignacion de variables enteros ✅
+non terminal jugueteasignacion_flotante; // produccion para asignacion de variables flotantes ✅
+non terminal piezaarregloentero; // produccion para arreglos enteros ✅
+non terminal piezaarreglochar; // produccion para arreglos char ✅
 non terminal error_production; // produccion para errores ✅
 //-------------------------------------------------------------------------------------- PRECEDENCIA
 precedence left RUDOLPH, DASHER; // suma y resta
@@ -739,7 +760,6 @@ parametrosdeenvoltura ::= LOCAL SANTACLAUS jugueteasignacion_entera FINREGALO co
 controldejuguete ::= juguetesrelacionales | jugueteslogicos;
 
 // produccion de recuperacion de errores
-
 error_production ::= error //{ System.out.println("Error: " + this.preceding().left + " - " + this.current_left()); }
                 | error COMA error; //{ System.out.println("Error: cierre de llaves"); }
                 
