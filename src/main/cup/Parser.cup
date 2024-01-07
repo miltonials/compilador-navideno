@@ -7,7 +7,6 @@ import java.lang.Math;
 
 //para errores
 import java_cup.runtime.Symbol;
-import java.util.Stack;
 
 //para tablas de simbolos
 import java.util.HashMap;
