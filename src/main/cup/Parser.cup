@@ -225,53 +225,21 @@ non terminal navidad; // Símbolo inicial ✅
 non terminal bolsanavidena; // produccion para funciones ✅
 non terminal regaloprincipal; // produccion para main ✅
 non terminal regalofuncional; // produccion para funciones ✅
-non terminal regalofuncionaltipado; // produccion para funciones ✅
-non terminal juguetes; // produccion para expresiones ✅
-non terminal tipojuguetes; // produccion para expresiones ✅
-non terminal regalofuncionalentero; // produccion para funciones int
-//non terminal regalofuncionalflotante; // produccion para funciones float
-//non terminal regalofuncionaldelaverdad; // produccion para funciones boolean
-//non terminal regalofuncionalcharmander; // produccion para funciones char
-non terminal encabezadoregalofuncional; // produccion para "nombreFuncion params {"
-//non terminal dedicatoriasenteras; // produccion para " return int| } "
-non terminal monnos; // produccion para parametros de funcion ✅
-non terminal tiposmonnos; // produccion para parametros de funcion ✅
-non terminal juguetesaritmeticos; // produccion para expresiones aritméticas ✅
-non terminal juguetesrelacionales; // produccion para expresiones relacionales
-non terminal piezasrelacionales; // produccion para expresiones relacionales ✅
-non terminal jugueteslogicos; // produccion para expresiones lógicas ✅
-non terminal juguetesunarios; // produccion para expresiones unarias ✅
-non terminal jugueteasignacion; // produccion para expresiones de asignacion y ciclos✅
-non terminal arreglosarreglados; // produccion para arreglos ✅
-non terminal juguetesdecontrol; // produccion para if-elif-else ✅
-non terminal juguetesaritmeticos_operadores; // produccion para operadores aritméticos ✅
-//non terminal juguetesdefinidos; // produccion para definicion de variables ✅
-non terminal controldejuguete; // produccion para condicionales de estructura ✅
-non terminal adicionalesdecontrol; // produccion para los if anidados y el else ✅
-non terminal iteradordejuguetes; // produccion para ciclos ✅      
-non terminal parametrosdeenvoltura; // produccion para del ciclo ✅
-non terminal jugueteparlanchin; // produccion para print ✅
-non terminal juguetechismoso; // produccion para read ✅
-non terminal etiquetanavidena; // produccion para sentencias ✅ 
-//non terminal piezasenteras; // produccion para operaciones literales enteras ✅ 
-//non terminal piezasflotantes; // produccion para operaciones literales flotantes ✅
-//non terminal jugueteasignacion_entera; // produccion para asignacion de variables enteros ✅
-//non terminal jugueteasignacion_flotante; // produccion para asignacion de variables flotantes ✅
-non terminal piezaarreglonumerico; // produccion para arreglos enteros ✅
-non terminal piezaarreglochar; // produccion para arreglos char ✅
-non terminal error_production; // produccion para errores ✅
-non terminal dedicatorias;
-non terminal retornoderegalo;
+non terminal tipoRegalo; // produccion para tipo de funcion ✅
+non terminal monnos; // produccion para parametros ✅
+non terminal juguetes; // produccion para cuerpo de funcion ✅
+non terminal juguete; // produccion para cuerpo de funcion ✅
+non terminal tallerDeJuguetes; // produccion para cuerpo de funcion ✅
+non terminal piezaJuguete; // produccion para cuerpo de funcion ✅
+non terminal gomaLocaAritmetica; // produccion para cuerpo de funcion ✅
+non terminal gomaLocaRelacional; // produccion para cuerpo de funcion ✅
+non terminal gomaLocaLogica; // produccion para cuerpo de funcion ✅
+non terminal asignarJuguete;
+non terminal tipoJuguete;
+non terminal subtipoRegalo;
+non terminal gomasNavidenas;
 //-------------------------------------------------------------------------------------- PRECEDENCIA
-precedence left RUDOLPH, DASHER; // suma y resta
-precedence left DANCER, PRANCER; // division y division entera
-precedence left VIXEN, COMET; // multiplicacion y modulo
-precedence left CUPID; // potencia
-precedence left GRINCH, QUIEN; // incremento y decremento
-precedence left HERMEY, BUDDY, JINGLE, JANGLE, PEPPERMINT, WUNORSE; // operadores relacionales
-precedence left MELCHOR, GASPAR; // operadores lógicos
-precedence left BALTASAR; // operador lógico not
-precedence left COMA; // lexema separador
+
 
 
 
@@ -300,333 +268,121 @@ bolsanavidena ::=  regaloprincipal
                 | regalofuncional regaloprincipal;
 
 regaloprincipal ::= REGALO SANTACLAUS MAIN ABRECUENTO  CIERRECUENTO ABREREGALO
+                        {:
+                            agregarTablaSimbolos("int", "main");
+                        :}
+                        juguetes
+                    CIERRAREGALO;
+
+regalofuncional ::= REGALO tipoRegalo:tipo PERSONA:nombre ABRECUENTO monnos CIERRECUENTO ABREREGALO
                     {:
-                        agregarTablaSimbolos("int", "main");
+                        agregarTablaSimbolos(tipo.toString(), nombre.toString());
                     :}
                     juguetes
-                    dedicatorias
-                    | error_production; //{: System.out.println("Error en la expresión de regaloprincipal"); :};
-
-//Funciones
-regalofuncional ::= regalofuncionaltipado | regalofuncional regalofuncionaltipado;
-
-regalofuncionaltipado ::= regalofuncionalentero
-                | error_production; //{: System.out.println("Error en la expresión de regalofuncionaltipado"); :};
-
-
-regalofuncionalentero ::= REGALO tiposmonnos:tFunc PERSONA:funcName
-                        {:
-                            agregarTablaSimbolos(tFunc.toString(), funcName.toString());
-                            //setTipoRetorno(tipoFuncion.toString());
-                            //System.out.println("Función int");
-                        :}
-                            encabezadoregalofuncional juguetes dedicatorias;
-
-
-dedicatorias ::= ENVIA retornoderegalo FINREGALO CIERRAREGALO;
-
-retornoderegalo ::= juguetesaritmeticos | jugueteslogicos | L_KRISKRINGLE;
-
-//para parametros
-encabezadoregalofuncional ::= ABRECUENTO CIERRECUENTO ABREREGALO
-                            | ABRECUENTO monnos CIERRECUENTO ABREREGALO
-                ; //{: System.out.println("Error en la expresión de encabezadoregalofuncional"); :};
-
-// Parámetros de la función
-monnos ::= tiposmonnos:tParametro PERSONA:nombreParametro
-                {:
-                    RESULT = "Parametro: " + nombreParametro + " (" + tParametro + ")";
-                    listaTablasSimbolos.get(currentHash).add(RESULT.toString());
-                :}
-            | monnos COMA monnos;
-
-// tiposmonnos son los diferentes tipos de parámetros de la función
-tiposmonnos ::= SANTACLAUS:tipo {: RESULT = tipo; :}   
-            | PERENOEL:tipo {: RESULT = tipo; :}
-            | FATHERCHRISTMAS:tipo {: RESULT = tipo; :}
-            | KRISKRINGLE:tipo {: RESULT = tipo; :}
-            | DEDMOROZ:tipo {: RESULT = tipo; :}
-            | PAPANOEL:tipo {: RESULT = tipo; :}
-            | error_production; //{: System.out.println("Error en la expresión de tiposmonnos"); :};
-
-juguetes ::= etiquetanavidena
-        | etiquetanavidena CORTA FINREGALO
-        | etiquetanavidena CORTA FINREGALO etiquetanavidena
-        | error_production; //{: System.out.println("Error en la expresión de juguetes"); };
-
-
-etiquetanavidena ::= tipojuguetes | tipojuguetes etiquetanavidena;
-
-tipojuguetes ::= juguetesaritmeticos FINREGALO // aritméticas (sumas, restas, etc)✅
-         | juguetesrelacionales FINREGALO // expresiones relacionales (menor, mayor, etc) 
-         | jugueteslogicos FINREGALO// expresiones lógicas (and, or, etc)
-         //| juguetesdefinidos FINREGALO // expresiones de definicion de variables
-         | jugueteasignacion FINREGALO // expresiones de asignacion y ciclos
-         | juguetesdecontrol
-         | iteradordejuguetes
-         | jugueteparlanchin FINREGALO
-         | juguetechismoso FINREGALO;
-
-jugueteparlanchin ::= NARRA ABRECUENTO PERSONA CIERRECUENTO | NARRA ABRECUENTO L_DEDMOROZ CIERRECUENTO;//TODO: concatenación de strings
-
-
-
-
-juguetechismoso ::= ESCUCHA ABRECUENTO CIERRECUENTO //read ()
-                | ESCUCHA ABRECUENTO PERSONA CIERRECUENTO //read (str)
-                | error_production; //{: System.out.println("Error en la expresión de juguetechismoso"); :};
-
-// aritméticas (sumas, restas, etc)
-//juguetesaritmeticos ::= piezasenteras | piezasflotantes;
-
-juguetesaritmeticos ::= juguetesaritmeticos:valueA juguetesaritmeticos_operadores:opAritmetico juguetesaritmeticos:valueB
-                        {:
-                            RESULT = valueA + " " + opAritmetico.toString() + " " + valueB;
-                        :}
-                     |  ABRECUENTO:lParen juguetesaritmeticos:value CIERRECUENTO:rParen // (expr)
-                        {:
-                            RESULT = lParen + " " + value + " " + rParen;
-                        :}
-                     |  ABRECUENTO:lParen juguetesaritmeticos:value CIERRECUENTO:rParen juguetesaritmeticos_operadores:op juguetesaritmeticos:cont // (expr) + expr
-                        {:
-                            RESULT = lParen + " " + value + " " + rParen + " " + op.toString() + " " + cont;
-                        :}
-                     //|  juguetesaritmeticos juguetesaritmeticos_operadores ABRECUENTO juguetesaritmeticos CIERRECUENTO // (expr) + expr
-                     | juguetesunarios // ++ o --
-                     |  PERSONA:value
-                        {:
-                            RESULT = value;
-                        :}
-                     |  L_PERENOEL:value
-                        {:
-                            RESULT = value;
-                        :}
-                     |  L_SANTACLAUS:value
-                        {:
-                            RESULT=value;
-                        :}
-                    | PERSONA:vName ABREEMPAQUE juguetesaritmeticos:vValue CIERREEMPAQUE // array
-                        {:
-                            RESULT = vName.toString() + "[" + vValue.toString() + "]";
-                            //listaTablasSimbolos.get(currentHash).add(RESULT.toString());
-                        :}
-                    | PERSONA:vName ABREEMPAQUE juguetesaritmeticos:vValue CIERREEMPAQUE juguetesaritmeticos_operadores:op juguetesaritmeticos:cont // array + expr
-                        {:
-                            RESULT = vName.toString() + "[" + vValue.toString() + "]" + " " + op.toString() + " " + cont;
-                        :}
-                        ;
-
-juguetesaritmeticos_operadores ::= RUDOLPH:opAritmetico // +
+                    CIERRAREGALO
+                    |
+                    REGALO tipoRegalo:tipo PERSONA:nombre ABRECUENTO CIERRECUENTO ABREREGALO
                     {:
-                        RESULT = opAritmetico;
+                        agregarTablaSimbolos(tipo.toString(), nombre.toString());
                     :}
-                |  DASHER:opAritmetico // -
-                    {:
-                        RESULT = opAritmetico;
-                    :}
-                |  DANCER:opAritmetico // /
-                    {:
-                        RESULT = opAritmetico;
-                    :}
-                |  PRANCER:opAritmetico // //
-                    {:
-                        RESULT = opAritmetico;
-                    :}
-                |  VIXEN:opAritmetico // *
-                    {:
-                        RESULT = opAritmetico;
-                    :}
-                |  COMET:opAritmetico // ~
-                    {:
-                        RESULT = opAritmetico;
-                    :}
-                |  CUPID:opAritmetico // **
-                    {:
-                        RESULT = opAritmetico;
-                    :}
+                    juguetes
+                    CIERRAREGALO
+                    ;
+
+tipoRegalo ::=  PERENOEL:tipo {: RESULT =  tipo; :}
+            | FATHERCHRISTMAS:tipo {: RESULT =  tipo; :}
+            | subtipoRegalo:tipo {: RESULT =  tipo; :}
+            | DEDMOROZ:tipo {: RESULT =  tipo; :}
+            | PAPANOEL:tipo {: RESULT =  tipo; :}
+            ;
+
+subtipoRegalo ::= SANTACLAUS:tipo {: RESULT =  tipo; :}
+                | KRISKRINGLE:tipo {: RESULT =  tipo; :}
                 ;
 
-// relacionales (menor, mayor, etc)
-juguetesrelacionales ::= juguetesaritmeticos piezasrelacionales juguetesaritmeticos;// enteros;
+monnos ::= tipoRegalo:tipo PERSONA:nombre
+                {:
+                    agregarTablaSimbolos(tipo.toString(), nombre.toString());
+                :} 
+            | tipoRegalo:tipo PERSONA:nombre COMA monnos;
 
-piezasrelacionales ::= HERMEY // <
-        | BUDDY // =<
-        | JINGLE // >
-        | JANGLE // >=
-        | PEPPERMINT // ==
-        | WUNORSE; // !=
 
-// lógicos (and, or, negacion)
-jugueteslogicos ::= jugueteslogicos:valueA MELCHOR jugueteslogicos:valueB // AND
-                    {:
-                        RESULT = valueA + " ^ " + valueB;
-                        vValue = RESULT.toString();
-                    :}
-        | jugueteslogicos:valueA GASPAR jugueteslogicos:valueB // OR
-                    {:
-                        RESULT = valueA + " # " + valueB;
-                        vValue = RESULT.toString();
-                    :}
-        | BALTASAR jugueteslogicos:valueA // NOT
-                    {:
-                        RESULT = "! " + valueA;
-                        vValue = RESULT.toString();
-                    :}
-        | ABRECUENTO:lParen jugueteslogicos:valueA CIERRECUENTO:rParen // (expr)
-                    {:
-                        RESULT = lParen + " " + valueA + " " + rParen;
-                        vValue = RESULT.toString();
-                    :}
-        | ABRECUENTO:lParen jugueteslogicos:valueA CIERRECUENTO:rParen jugueteslogicos // (expr) op expr
-                    {:
-                        RESULT = lParen + " " + valueA + " " + rParen;
-                        vValue = RESULT.toString();
-                    :}
-        | PERSONA:valueA GASPAR L_FATHERCHRISTMAS:valueB // identificador
-                    {:
-                        RESULT = valueA + " # " + valueB;
-                        vValue = RESULT.toString();
-                    :}
-        | L_FATHERCHRISTMAS:valueA // literal boolean
-                    {:
-                        RESULT = valueA;
-                        vValue = RESULT.toString();
-                    :};
+juguetes ::= juguete FINREGALO
+            | juguete FINREGALO juguetes;
 
-// unarios (incremento, decremento, etc)
-juguetesunarios ::= GRINCH juguetesaritmeticos // ++
-                | QUIEN juguetesaritmeticos; // --
+juguete ::= asignarJuguete
+            | CORTA
+            | ENVIA tallerDeJuguetes
+            // | jugueteRelacional
+            // | jugueteLogico
+            // | jugueteEntradaSalida
+            // | jugueteEstructuraControl
+            // | jugueteFuncion
+            ;
 
-// asignacion <=
+asignarJuguete ::= LOCAL tipoJuguete PERSONA ENTREGA tallerDeJuguetes
+                      | LOCAL tipoJuguete PERSONA
+                      | PERSONA ENTREGA tallerDeJuguetes
+                      ;
 
-jugueteasignacion ::= LOCAL tiposmonnos:vTipo PERSONA:vNombre ENTREGA juguetesaritmeticos:vValue
-                        {:
-                            RESULT = "Variable: " + vNombre + " (" + vTipo + "): " + vValue;
-                            listaTablasSimbolos.get(currentHash).add(RESULT.toString());
-                        :}
-                    | LOCAL tiposmonnos:vTipo PERSONA:vNombre 
-                        {:
-                            RESULT = "Variable: " + vNombre + " (" + vTipo + ")";
-                            listaTablasSimbolos.get(currentHash).add(RESULT.toString());
-                        :}
-                    |PERSONA:vNombre ENTREGA juguetesaritmeticos:vValue
-                        {:
-                            RESULT = "Variable declarada anteriormente: " + vNombre + " (anterior): " + vValue;
-                            listaTablasSimbolos.get(currentHash).add(RESULT.toString());
-                        :}
-        
+tipoJuguete ::= tipoRegalo:tipo {: RESULT =  tipo; :}
+            |  tipoRegalo:tipo ABREEMPAQUE tallerDeJuguetes CIERREEMPAQUE
+            ;
 
-        | LOCAL tiposmonnos:vTipo PERSONA:vName ENTREGA jugueteslogicos:vValue // booleanos
-            {:
-                listaTablasSimbolos.get(currentHash).add("variable boolean (" + vName + ") : " + vValue);
-            :}
-        | LOCAL tiposmonnos:vTipo PERSONA:vName ENTREGA L_KRISKRINGLE:vValueCharmander // caracteres
-            {:
-                listaTablasSimbolos.get(currentHash).add("variable char (" + vName + ") : " + vValueCharmander.charAt(1));
-            :}
-        | LOCAL tiposmonnos:vTipo PERSONA:vName ENTREGA L_DEDMOROZ:vValue // strings ⚠️ valorar utilizar produccion de strings
-            {:
-                listaTablasSimbolos.get(currentHash).add("variable string (" + vName + ") : " + vValue);
-            :}
-        | LOCAL tiposmonnos:vTipo ABREEMPAQUE juguetesaritmeticos CIERREEMPAQUE PERSONA:vName ENTREGA ABREEMPAQUE piezaarreglonumerico:vValue CIERREEMPAQUE
-            {:
-                listaTablasSimbolos.get(currentHash).add("variable array int (" + vName + ") : [" + vValue + "]");
-            :}
-        | LOCAL tiposmonnos:vTipo ABREEMPAQUE juguetesaritmeticos CIERREEMPAQUE PERSONA:vName ENTREGA ABREEMPAQUE piezaarreglochar:vValue CIERREEMPAQUE
-            {:
-                listaTablasSimbolos.get(currentHash).add("variable array char (" + vName + ") : [" + vValue + "]");
-            :}
 
-        | PERSONA:vName ENTREGA jugueteslogicos:vValue // booleanos
-            {:
-                listaTablasSimbolos.get(currentHash).add("variable boolean (" + vName + ") : " + vValue);
-            :}
-        | PERSONA:vName ENTREGA L_KRISKRINGLE:vValueCharmander // caracteres
-            {:
-                listaTablasSimbolos.get(currentHash).add("variable char (" + vName + ") : " + vValueCharmander.charAt(1));
-            :}
-        | PERSONA:vName ENTREGA L_DEDMOROZ:vValue // strings ⚠️ valorar utilizar produccion de strings
-            {:
-                listaTablasSimbolos.get(currentHash).add("variable string (" + vName + ") : " + vValue);
-            :}
-        | PERSONA:vName ENTREGA ABREEMPAQUE arreglosarreglados:vValue CIERREEMPAQUE
-            {:
-                listaTablasSimbolos.get(currentHash).add("variable array (" + vName + ") : [" + vValue + "]");
-            :}
-        | PERSONA:vName ABREEMPAQUE juguetesaritmeticos CIERREEMPAQUE ENTREGA juguetesaritmeticos:vValue
-            {:
-                listaTablasSimbolos.get(currentHash).add("variable array (" + vName + ") : [" + vValue + "]");
-            :}
-
-        | PERSONA:vName ABREEMPAQUE juguetesaritmeticos CIERREEMPAQUE ENTREGA L_KRISKRINGLE:vValueCharmander // caracteres
-            {:
-                listaTablasSimbolos.get(currentHash).add("variable char (" + vName + ") : " + vValueCharmander.charAt(1));
-            :}
-        ;
-
-arreglosarreglados ::= piezaarreglonumerico:value
-                        {:
-                            RESULT = value;
-                            vValue = RESULT.toString();
-                        :}
-                    | piezaarreglochar:value
-                    {:
-                        RESULT = value;
-                        vValue = RESULT.toString();
-                    :}
+//para crear los literales
+tallerDeJuguetes ::= piezaJuguete
+                    | piezaJuguete gomasNavidenas tallerDeJuguetes
+                    | GRINCH:operador tallerDeJuguetes
+                    | QUIEN:operador tallerDeJuguetes
+                    | BALTASAR:operador tallerDeJuguetes
+                    | ABRECUENTO tallerDeJuguetes CIERRECUENTO // ( expr )
+                    | ABRECUENTO tallerDeJuguetes CIERRECUENTO gomasNavidenas tallerDeJuguetes // ( expr ) gomasNavidenas tallerDeJuguetes
                     ;
 
-piezaarreglonumerico ::= juguetesaritmeticos:value
-                        {:
-                            RESULT = value;
-                            vValue = RESULT.toString();
-                        :}
-                    | juguetesaritmeticos:valueA COMA:coma piezaarreglonumerico:valueB
-                        {:
-                            RESULT = valueA + " " + coma + " " + valueB;
-                            vValue = RESULT.toString();
-                        :}
+gomasNavidenas ::= gomaLocaAritmetica
+                | gomaLocaRelacional
+                | gomaLocaLogica
+                ;
+
+piezaJuguete ::= L_SANTACLAUS:val {: RESULT =  val; :}
+            | L_PERENOEL:val {: RESULT =  val; :}
+            | L_FATHERCHRISTMAS:val {: RESULT =  val; :}
+            | L_KRISKRINGLE:val {: RESULT =  val; :}
+            | L_DEDMOROZ:val {: RESULT =  val; :}
+            | PERSONA:nombre ABREEMPAQUE tallerDeJuguetes:val CIERREEMPAQUE //indice de array
+                {:
+                    RESULT = nombre + "[" + val.toString() + "]";
+                :}
+            | PERSONA:nombre {: RESULT =  nombre; :}
+            ;
+
+gomaLocaAritmetica ::= RUDOLPH:operador {: RESULT = operador; :}
+                    | DASHER:operador {: RESULT = operador; :}
+                    | DANCER:operador {: RESULT = operador; :}
+                    | PRANCER:operador {: RESULT = operador; :}
+                    | VIXEN:operador {: RESULT = operador; :}
+                    | COMET:operador {: RESULT = operador; :}
+                    | CUPID:operador {: RESULT = operador; :}
                     ;
 
-piezaarreglochar ::= L_KRISKRINGLE:value
-                        {:
-                            RESULT = value;
-                            //vValueCharmander = RESULT.toString().charAt(0);
-                            vValue = RESULT.toString();
-                        :}
-                    | L_KRISKRINGLE:valueA COMA:coma piezaarreglochar:valueB
-                        {:
-                            RESULT = valueA + " " + coma + " " + valueB;
-                            //vValueCharmander = RESULT.toString().charAt(0);
-                            vValue = RESULT.toString();
-                        :}
-                    | PERSONA:valueA COMA:coma piezaarreglochar:valueB
-                        {:
-                            RESULT = valueA + " " + coma + " " + valueB;
-                            //vValueCharmander = RESULT.toString().charAt(0);
-                            vValue = RESULT.toString();
-                        :}
-                        ;
+gomaLocaRelacional ::= HERMEY:operador {: RESULT = operador; :}
+                    | BUDDY:operador {: RESULT = operador; :}
+                    | JINGLE:operador {: RESULT = operador; :}
+                    | JANGLE:operador {: RESULT = operador; :}
+                    | PEPPERMINT:operador {: RESULT = operador; :}
+                    | WUNORSE:operador {: RESULT = operador; :}
+                    ;
 
-// estructuras de control
-juguetesdecontrol ::= ELFO ABRECUENTO controldejuguete CIERRECUENTO ABREREGALO juguetes CIERRAREGALO
-                | ELFO ABRECUENTO controldejuguete CIERRECUENTO ABREREGALO juguetes CIERRAREGALO adicionalesdecontrol;
+gomaLocaLogica ::= MELCHOR:operador {: RESULT = operador; :}
+                | GASPAR:operador {: RESULT = operador; :}
+                ;
 
-adicionalesdecontrol ::= HADA ABRECUENTO controldejuguete CIERRECUENTO ABREREGALO juguetes CIERRAREGALO 
-                | HADA ABRECUENTO controldejuguete CIERRECUENTO ABREREGALO juguetes CIERRAREGALO adicionalesdecontrol
-                | DUENDE ABREREGALO juguetes CIERRAREGALO;
-
-
-
-
-iteradordejuguetes ::= ENVUELVE ABRECUENTO parametrosdeenvoltura CIERRECUENTO ABREREGALO juguetes CIERRAREGALO
-                | HACE ABREREGALO juguetes CIERRAREGALO REVISA ABRECUENTO controldejuguete CIERRECUENTO FINREGALO;
-
-parametrosdeenvoltura ::= jugueteasignacion FINREGALO controldejuguete FINREGALO juguetesunarios;
-
-controldejuguete ::= juguetesrelacionales | jugueteslogicos;
-
-// produccion de recuperacion de errores
-error_production ::= error //{ System.out.println("Error: " + this.preceding().left + " - " + this.current_left()); }
-                | error COMA error; //{ System.out.println("Error: cierre de llaves"); }
-                
+/*
+TODO: permitir que se pueda llamar funciones con parametros y sin parametros (un parametro puede ser una funcion)
+TODO: permitir que se pueda llamar una funcion como operando
+TODO: permitir creación de arreglos
+TODO: permitir Entrada y salida
+TODO: permitir Estructuras de control
+TODO: permitir ciclos
+*/

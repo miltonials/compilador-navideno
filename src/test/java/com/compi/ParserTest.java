@@ -37,7 +37,9 @@ public class ParserTest {
     String program = funInt;
     program += "local int res <= 1|";
     program += "local int res1 <= ++(1)|";
+
     program += "local int res2 <= ++(((1)*(2)))|";
+
     program += "local int res3 <= ++((1))|";
     program += "local int res4 <= ++((1)- 23+1**2*5)|";
     program += "local int res5 <= (1+3)|";
@@ -50,6 +52,7 @@ public class ParserTest {
     program += "local int res11 <= ++((res1)+ (-23)+res3**res6*5) + 4|";
     program += "local int res11 <= 3 - ((res1)+ 23+res3**res6*5)*-1 + 4|";
     program += "return ((res1)- 23+res3**res6*5)|}";//res1+res2+res3
+
     //program += "return 3|}";
     program += funMain;
     
