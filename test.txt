@@ -1,111 +1,83 @@
-function int hola () {
-    local string res <= 3|
-    local float preres <= ++++1.1|
-    local char prueba <= 3 |
-    local int res2 <= 1.2+3|
-    return 3.3|@esto no se debe permitir porque es una funcion string
+ /_ esto es un comentario inicial _/
+
+function float func1(char x22,char x22){@semantico borrar parametro
+	local char x22 <= '!'| /_semantico x22_/
+	local char miChar<='!'|
+	@local char miChar2<='!!'| @sintactico
+    local char miChar2<='!'| @sintactico
+	local string str1<="Hola $%&/#$&) mundo"|
+	local float fl1|
+	local float fl1<=56.6| @semantico fl1
+	local int in1<= false|
+	@local char arr[lit] <= {'c','d'}| @sintatico lit
+    local char[lit] arr <= ['c','d']| @sintatico lit
+	arr[lit] <= 'c'|
+    arr[3] <= 'c'|
+	local bool mibool <= true|
+
+	local int in1<= --fl1 ~ -14/++in1+7- 15 **  arr[67]|@ * func1 (hola, true, "hola mundo", 4.5, 'a') | @semantico fl1, in1 TODO: permitir llamada a funcion
+	@mibool <= (3.7 * fl1 + (-45.6~76)) < 56 ^ true # mibool # !mibool  | @semantico literal 76
+
+	return -5.6|@cambio en retorno genera semantico
+
+} 
+
+function float miFunc(int dif,char otra,char otra2){	
+	for(i <= 10|i<30*2|++i)
+	{
+		do{
+			var <= var - 1| @semantico
+			@return|@sintactico
+		@}until(var2>12.2 # (34+33)>12)| @semantico
+        }until(true)| @semantico
+
+		if (var==0)
+		{
+			print("entra al if")|
+			break|
+		}
+		elif(true)
+		{
+			print(var)|
+		}
+		else
+		{
+			for(j <= 10|j<30*2|++j){
+				for(k <= 10|k<30*2|++k){
+					@return 1+3|
+                    print(x)|
+				}
+			}
+		}
+		if (var==0){
+            print("entra al if")|@TODO: permitir solo break
+			break|
+		} elif(true) {
+			print(var)|
+		}
+	}
+	return 1| @semantico
 }
 
-function int ejemplo1() {
-    local float variable1 <= -2.5|
-    local int variable2 <= ++5|
-    return 1|
+function string func3(string b1){ @semantico string
+    print(x)|@TODO: QUITAR
+	return b1| 
 }
 
-function int ejemplo2() {
-    local int resultado <= 2 + 3 * 4|
-    return resultado|
-}
-
-function int ejemplo3() {
-    local boolean condicion <= (4 > 2)|
-    return 0|
-}
-
-function int ejemplo4() {
-    local boolean condicion1 <= true|
-    local boolean condicion2 <= false|
-    local boolean resultado <= condicion1 ^ condicion2|
-    return 1|
-}
-
-function int ejemplo5() {
-    local string mensaje <= "Hola, mundo!"|
-    return 2|
-}
-
-function char ejemplo6() {
-    for (local int i <= 0; i < 10; i++) {
-        local int j <= 0|
-    }
-    return 'a'|
-}
-
-function boolean ejemplo7() {
-    local int i <= 0|
-    if (i < 10) {
-        local int j <= 0|
-    }
-    return true|
-}
-
-function int ejemplo8() {
-    local int i <= 0|
-    if (i < 10) {
-        local int j <= 0|
-    } else {
-        local int k <= 0|
-    }
-    return 3|
-}
-
-function int ejemplo9() {
-    local int i <= 0|
-    if (i < 10) {
-        local int j <= 0|
-    } else if (i < 20) {
-        local int k <= 0|
-    } else {
-        local int l <= 0|
-    }
-    return 4|
-}
-
-function int ejemplo10() {
-    local int i <= 0|
-    do {
-        local int j <= 0|
-    } until (i < 10)|
-    return 5|
-}
-
-@ funciones con errores 
-
-function int ejemplo11() {
-    local int i <= 0|
-    do {
-        local int j <= 0|
-    } until (i < 10)|
-    return "dd"|
-}
-
-function int ejemplo12() {
-    local int i <= 0|
-    do {
-        local int j <= 0|
-    } until (i < 10)|
-    return 5.5|
-}
-
-function int ejemplo13() {
-    local int i <= 0|
-    do {
-        local int j <= 0|
-    } until (i < 10)|
-    return 'a'|
-}
-
-function int main () {
-    local int res <= 1+3|
-    return 3|
+function int main(){ @function
+/_
+Comentario 1
+_/
+	
+@comentario 2
+	local bool b1|
+	local string s1|
+	read(s1)| @semantico
+	print(b1)| @semantico
+	@print(true)| @semantico
+	@print(-6.7)|
+	@miFunc(miFunc(),'a')| @semantico miFunc, hola
+	@local bool bl0 <= 6.7 != 8.9| @ok TODO: permitir
+	@local bool bl1 <= in1 => fl1 ^ false # !(func2(3,in1) > 56)| @semantico in1 >= fl1, func2
+	return bl1| @semantico
 }

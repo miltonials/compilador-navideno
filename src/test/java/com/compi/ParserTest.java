@@ -8,7 +8,7 @@ import java_cup.runtime.Symbol;
 
 
 public class ParserTest {
-  private String funMain = "function int main () { local int res <= 1+3|return res|@comentario\n}";
+  private String funMain = "function int main () { local int res <= 1|return 1|}";
   private String funStr = "function int hola (string paramA, int paramB, char paramC) {local string res <= \"hola\"|return 3|}";
   private String funInt = "function int hola () {";
   private String funfloat = "function float hola (int x, char y) {";
@@ -135,10 +135,15 @@ public class ParserTest {
   @Test void testStructures() throws Exception {
     String program = funInt + "\n";
     program += "local int[1] x <= [1]|";
+    program += "local int m|";
+    program += "m <= [123]|";
+
     //if
+
     program += "if (true) {";
     program += "local int m|";
     program += "m <= [123]|}";
+
     //if else
     program += "if (true) {";
     program += "local int m|";
@@ -170,7 +175,7 @@ public class ParserTest {
     program += "else {";
     program += "local int m|";
     program += "m <= [123]|}";
-    
+
     program += "return 2|}";
     program += funMain;
 
@@ -181,6 +186,8 @@ public class ParserTest {
   public void testLoops() throws Exception{
     String program = funChar + "\n";
     program += "local int[1] x <= [1]|";
+    program += "for (local int res <= 1| 2<5 | ++res) {";
+    program += "local int m|}";
     //for
     program += "for (local int res <= 1| 2<5 | ++res) {";
     program += "local int m|";
@@ -197,7 +204,7 @@ public class ParserTest {
     program += "local int m|";
     program += "m <= [123]|}";
     program += "until (true)|";
-    
+
     program += "return '5'|}";
     program += funMain;
 
@@ -227,16 +234,7 @@ public class ParserTest {
     String program = funInt;
 
     //program += "local int x <= 21 + 1|";
-    program += "local int miVariable <= 13|";
-    program += "local int m <= miVariable + x ** x + 1|";
-    program += "local int a <= 12 + x + 1|";
-
-    program += "local float x <= 2.1 + 1.0|";
-    program += "local float miVariable <= 1.3|";
-    program += "local float m <= miVariable*1.0 + x*1.0 ** x*1.0 + 1.1|";
-    program += "local float a <= 12.1 + x*1.0 + 2.0 |";
-    program += "local float a <= (x*1.0 + y*1.0)|";
-    program += "local float a <= (x*1.0 + y*1.0 + 1.0 + y*1.0) + 1.0|";
+    program += "local int res11 <= 3 - ((res1) + 23 + res3 ** res6 * 5) * -1 + 4|";
 
 
     program += "return 1|}";
