@@ -332,13 +332,31 @@ juguete ::= asignarJuguete FINREGALO
             | ESCUCHA tallerDeJuguetes FINREGALO
             ;
 
-asignarJuguete ::= LOCAL tipoJuguete PERSONA ENTREGA tallerDeJuguetes
-                    | LOCAL tipoJuguete PERSONA
-                    | PERSONA ENTREGA tallerDeJuguetes
+asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguetes
+                    {:
+                        listaTablasSimbolos.get(currentHash).add( "Variable (" + tipo.toString() + ") : " + nombre + " = " + vValue);
+                    :}
+                    | LOCAL tipoJuguete:tipo PERSONA:nombre
+                    {:
+                        listaTablasSimbolos.get(currentHash).add( "Variable (" + tipo.toString() + ") : " + nombre);
+                    :}
+                    | PERSONA:nombre ENTREGA tallerDeJuguetes
+                    {:
+                        listaTablasSimbolos.get(currentHash).add( "Variable anterior ( no identificado ) : " + nombre + " = " + vValue);
+                    :}
 
-                    | LOCAL tipoJuguete PERSONA ENTREGA ABREEMPAQUE estampillasNavidena CIERREEMPAQUE
-                    | PERSONA ABREEMPAQUE tallerDeJuguetes CIERREEMPAQUE ENTREGA tallerDeJuguetes
-                    | PERSONA ENTREGA ABREEMPAQUE estampillasNavidena CIERREEMPAQUE
+                    | LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA ABREEMPAQUE estampillasNavidena CIERREEMPAQUE
+                    {:
+                        listaTablasSimbolos.get(currentHash).add( "Variable (" + tipo.toString() + ") : " + nombre + " = [" + vValue + "]");
+                    :}
+                    | PERSONA:nombre ABREEMPAQUE tallerDeJuguetes CIERREEMPAQUE ENTREGA tallerDeJuguetes
+                    {:
+                        listaTablasSimbolos.get(currentHash).add( "Variable anterior (array) : " + nombre + " = [" + vValue + "]");
+                    :}
+                    | PERSONA:nombre ENTREGA ABREEMPAQUE estampillasNavidena CIERREEMPAQUE
+                    {:
+                        listaTablasSimbolos.get(currentHash).add( "Variable (array) : " + nombre + " = [" + vValue + "]");
+                    :}
                     ;
 
 tipoJuguete ::= tipoRegalo:tipo {: RESULT =  tipo; :}
@@ -347,39 +365,107 @@ tipoJuguete ::= tipoRegalo:tipo {: RESULT =  tipo; :}
 
 
 //para crear los literales
-tallerDeJuguetes ::= piezaJuguete
-                    | piezaJuguete gomasNavidenas tallerDeJuguetes
-                    | GRINCH:operador tallerDeJuguetes
-                    | QUIEN:operador tallerDeJuguetes
-                    | BALTASAR:operador tallerDeJuguetes
-                    | ABRECUENTO tallerDeJuguetes CIERRECUENTO // ( expr )
-                    | ABRECUENTO tallerDeJuguetes CIERRECUENTO gomasNavidenas tallerDeJuguetes // ( expr ) gomasNavidenas tallerDeJuguetes
+tallerDeJuguetes ::= piezaJuguete: val
+                    {:
+                        RESULT =  val;
+                        vValue = RESULT.toString();
+                    :}
+                    | piezaJuguete:valA gomasNavidenas:operador tallerDeJuguetes:valB
+                    {:
+                        RESULT =  valA.toString() + " " + operador.toString() + " " + valB.toString();
+                        vValue = RESULT.toString();
+                    :}
+                    | GRINCH:operador tallerDeJuguetes:val
+                    {:
+                        RESULT = operador.toString() + " " + val.toString();
+                        vValue = RESULT.toString();
+                    :}
+                    | QUIEN:operador tallerDeJuguetes:val
+                    {:
+                        RESULT = operador.toString() + " " + val.toString();
+                        vValue = RESULT.toString();
+                    :}
+                    | BALTASAR:operador tallerDeJuguetes:val
+                    {:
+                        RESULT = operador.toString() + " " + val.toString();
+                        vValue = RESULT.toString();
+                    :}
+                    | ABRECUENTO tallerDeJuguetes:val CIERRECUENTO // ( expr )
+                    {:
+                        RESULT =  "( " + val.toString() + " ) ";
+                        vValue = RESULT.toString();
+                    :}
+                    | ABRECUENTO tallerDeJuguetes:valA CIERRECUENTO gomasNavidenas:operador tallerDeJuguetes:valB // ( expr ) gomasNavidenas tallerDeJuguetes
+                    {:
+                        RESULT =  "( " + valA.toString() + " ) " + operador.toString() + " " + valB.toString();
+                        vValue = RESULT.toString();
+                    :}
                     ;
 
-gomasNavidenas ::= gomaLocaAritmetica
-                | gomaLocaRelacional
-                | gomaLocaLogica
+gomasNavidenas ::= gomaLocaAritmetica:operador {: RESULT = operador; :}
+                | gomaLocaRelacional:operador {: RESULT = operador; :}
+                | gomaLocaLogica:operador {: RESULT = operador; :}
                 ;
 
-piezaJuguete ::= L_SANTACLAUS:val {: RESULT =  val; :}
-            | L_PERENOEL:val {: RESULT =  val; :}
-            | L_FATHERCHRISTMAS:val {: RESULT =  val; :}
-            | L_KRISKRINGLE:val {: RESULT =  val; :}
-            | L_DEDMOROZ:val {: RESULT =  val; :}
+piezaJuguete ::= L_SANTACLAUS:val
+                {:
+                    RESULT =  val;
+                    vValue = RESULT.toString();
+                :}
+            | L_PERENOEL:val
+                {:
+                    RESULT =  val;
+                    vValue = RESULT.toString();
+                :}
+            | L_FATHERCHRISTMAS:val
+                {:
+                    RESULT =  val;
+                    vValue = RESULT.toString();
+                :}
+            | L_KRISKRINGLE:val
+                {:
+                    RESULT =  val;
+                    vValue = RESULT.toString();
+                :}
+            | L_DEDMOROZ:val
+                {:
+                    RESULT =  val;
+                    vValue = RESULT.toString();
+                :}
             | PERSONA:nombre ABREEMPAQUE tallerDeJuguetes:val CIERREEMPAQUE //indice de array
                 {:
-                    RESULT = nombre + "[" + "val.toString()" + "]";//TODO: agregar a la tabla de simbolos
+                    RESULT = nombre + "[" + val.toString() + "]";//TODO: agregar a la tabla de simbolos
                 :}
-            | PERSONA:nombre {: RESULT =  nombre; :}
-            | piezaImportada
+            | PERSONA:nombre {: RESULT =  nombre; vValue = RESULT.toString(); :}
+            | piezaImportada:val
+                {:
+                    RESULT =  val;
+                    vValue = RESULT.toString();
+                :}
             ;
 
-piezaImportada ::= PERSONA ABRECUENTO CIERRECUENTO
-                | PERSONA ABRECUENTO estampillasNavidena CIERRECUENTO
+piezaImportada ::= PERSONA:nombre ABRECUENTO CIERRECUENTO
+                    {:
+                        RESULT =  nombre + "()";
+                        vValue = RESULT.toString();
+                    :}
+                | PERSONA:nombre ABRECUENTO estampillasNavidena:val CIERRECUENTO
+                    {:
+                        RESULT =  nombre + "( " + val.toString() + " )";
+                        vValue = RESULT.toString();
+                    :}
                 ;
 
-estampillasNavidena ::= tallerDeJuguetes
-                    | tallerDeJuguetes COMA estampillasNavidena
+estampillasNavidena ::= tallerDeJuguetes:val
+                        {:
+                            RESULT =  val;
+                            vValue = RESULT.toString();
+                        :}
+                    | tallerDeJuguetes:valA COMA estampillasNavidena:valB
+                        {:
+                            RESULT =  valA.toString() + ", " + valB.toString();
+                            vValue = RESULT.toString();
+                        :}
                     ;
 
 gomaLocaAritmetica ::= RUDOLPH:operador {: RESULT = operador; :}
