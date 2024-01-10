@@ -195,9 +195,10 @@ public class ParserTest {
   public void testLoops() throws Exception{
     String program = funChar + "\n";
     program += "local int[1] x <= [1]|";
-    program += "for (local int res <= 1| 2<5 | ++res) {";
-    program += "local int m|}";
+    program += "for (local int res <= 1| 2 < 5 | ++res) {";
+    program += "local int m|break|}";
     //for
+
     program += "for (local int res <= 1| 2<5 | ++res) {";
     program += "local int m|";
 

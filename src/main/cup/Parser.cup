@@ -247,6 +247,10 @@ non terminal estructurarJuguete_else;
 non terminal condiciones;
 non terminal bloque;
 
+non terminal estructurarJuguete_for;
+non terminal encabezado_for;
+non terminal estructurarJuguete_doUntil;
+
 //-------------------------------------------------------------------------------------- PRECEDENCIA
 
 
@@ -321,16 +325,11 @@ juguetes ::= juguete
 
 juguete ::= asignarJuguete FINREGALO
             | piezaImportada FINREGALO
-            //| CORTA
             | estructurarJuguete
+            | CORTA FINREGALO
             | ENVIA tallerDeJuguetes FINREGALO
             | NARRA tallerDeJuguetes FINREGALO
             | ESCUCHA tallerDeJuguetes FINREGALO
-            // | jugueteRelacional
-            // | jugueteLogico
-            // | jugueteEntradaSalida
-            // | jugueteEstructuraControl
-            // | jugueteFuncion
             ;
 
 asignarJuguete ::= LOCAL tipoJuguete PERSONA ENTREGA tallerDeJuguetes
@@ -404,26 +403,33 @@ gomaLocaLogica ::= MELCHOR:operador {: RESULT = operador; :}
                 | GASPAR:operador {: RESULT = operador; :}
                 ;
 
-
-//⚠️
 estructurarJuguete ::= estructurarJuguete_if
                     | estructurarJuguete_if estructurarJuguete_else
                     | estructurarJuguete_if estructurarJuguete_elif
                     | estructurarJuguete_if estructurarJuguete_elif estructurarJuguete_else
+                    | estructurarJuguete_for
+                    | estructurarJuguete_doUntil
                     ;
 
 estructurarJuguete_if ::= ELFO condiciones bloque;
 estructurarJuguete_elif ::= HADA condiciones bloque | HADA condiciones bloque estructurarJuguete_elif;
 estructurarJuguete_else ::= DUENDE bloque;
+estructurarJuguete_for ::= ENVUELVE encabezado_for bloque;
+estructurarJuguete_doUntil ::= HACE bloque REVISA condiciones FINREGALO;
 
 condiciones ::= ABRECUENTO tallerDeJuguetes CIERRECUENTO;
 bloque ::= ABREREGALO juguetes CIERRAREGALO;
+
+
+encabezado_for ::= ABRECUENTO asignarJuguete FINREGALO tallerDeJuguetes FINREGALO tallerDeJuguetes CIERRECUENTO;
+
+
 
 /*
 TODO: permitir que se pueda llamar funciones con parametros y sin parametros (un parametro puede ser una funcion)✅
 TODO: permitir que se pueda llamar una funcion como operando✅
 TODO: permitir creación de arreglos✅
 TODO: permitir Entrada y salida✅
-TODO: permitir Estructuras de control❌
-TODO: permitir ciclos❌
+TODO: permitir Estructuras de control✅
+TODO: permitir ciclos✅
 */
