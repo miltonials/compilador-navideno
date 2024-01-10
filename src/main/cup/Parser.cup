@@ -238,6 +238,8 @@ non terminal asignarJuguete;
 non terminal tipoJuguete;
 non terminal subtipoRegalo;
 non terminal gomasNavidenas;
+non terminal piezaImportada;
+non terminal estampillaNavidena;
 //-------------------------------------------------------------------------------------- PRECEDENCIA
 
 
@@ -311,6 +313,7 @@ juguetes ::= juguete FINREGALO
             | juguete FINREGALO juguetes;
 
 juguete ::= asignarJuguete
+            | piezaImportada
             | CORTA
             | ENVIA tallerDeJuguetes
             // | jugueteRelacional
@@ -352,10 +355,19 @@ piezaJuguete ::= L_SANTACLAUS:val {: RESULT =  val; :}
             | L_DEDMOROZ:val {: RESULT =  val; :}
             | PERSONA:nombre ABREEMPAQUE tallerDeJuguetes:val CIERREEMPAQUE //indice de array
                 {:
-                    RESULT = nombre + "[" + val.toString() + "]";
+                    RESULT = nombre + "[" + "val.toString()" + "]";//TODO: agregar a la tabla de simbolos
                 :}
             | PERSONA:nombre {: RESULT =  nombre; :}
+            | piezaImportada
             ;
+
+piezaImportada ::= PERSONA ABRECUENTO CIERRECUENTO
+                | PERSONA ABRECUENTO estampillaNavidena CIERRECUENTO
+                ;
+
+estampillaNavidena ::= tallerDeJuguetes
+                    | tallerDeJuguetes COMA estampillaNavidena
+                    ;
 
 gomaLocaAritmetica ::= RUDOLPH:operador {: RESULT = operador; :}
                     | DASHER:operador {: RESULT = operador; :}
@@ -379,10 +391,10 @@ gomaLocaLogica ::= MELCHOR:operador {: RESULT = operador; :}
                 ;
 
 /*
-TODO: permitir que se pueda llamar funciones con parametros y sin parametros (un parametro puede ser una funcion)
-TODO: permitir que se pueda llamar una funcion como operando
-TODO: permitir creación de arreglos
-TODO: permitir Entrada y salida
-TODO: permitir Estructuras de control
-TODO: permitir ciclos
+TODO: permitir que se pueda llamar funciones con parametros y sin parametros (un parametro puede ser una funcion)✅
+TODO: permitir que se pueda llamar una funcion como operando✅
+TODO: permitir creación de arreglos❌
+TODO: permitir Entrada y salida❌
+TODO: permitir Estructuras de control❌
+TODO: permitir ciclos❌
 */

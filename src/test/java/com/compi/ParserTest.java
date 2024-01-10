@@ -65,6 +65,13 @@ public class ParserTest {
     program += "local float multiUnario <= 5.1 + 1.1|";
     program += "local float res <= 1.3|";
     program += "res <= 2.2|";
+    program += "local int in1<= --fl1 ~ -14/++in1+7- 15 **  arr[67] * func1 (hola, true, \"hola mundo\", 4.5, 'a') |";
+    program += "mibool <= (3.7 * fl1 + (-45.6~76)) < 56 ^ true # mibool # !mibool  | @semantico literal 76\n";
+
+    program += "miFunc(miFunc(a),'a')|";
+    program += "local bool bl0 <= 6.7 != 8.9|";
+    program += "local bool bl1 <= in1 => fl1 ^ false # !(func2(3,in1) > 56)|";
+
     program += "local float res1 <= ++(1.34)|";
     program += "local float res2 <= ++(((1.3)*(0.3)))|";
     program += "local float res3 <= ++((1.1))|";

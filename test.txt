@@ -77,7 +77,7 @@ _/
 	@print(true)| @semantico
 	@print(-6.7)|
 	@miFunc(miFunc(),'a')| @semantico miFunc, hola
-	@local bool bl0 <= 6.7 != 8.9| @ok TODO: permitir
-	@local bool bl1 <= in1 => fl1 ^ false # !(func2(3,in1) > 56)| @semantico in1 >= fl1, func2
-	return bl1| @semantico
+	local bool bl0 <= 6.7 != 8.9| @ok
+	local bool bl1 <= in1 => fl1 ^ false # !(func2(3,in1) > 56)|
+	return bl1|
 }
