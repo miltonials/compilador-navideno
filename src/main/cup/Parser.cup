@@ -316,6 +316,8 @@ juguete ::= asignarJuguete
             | piezaImportada
             | CORTA
             | ENVIA tallerDeJuguetes
+            | NARRA tallerDeJuguetes
+            | ESCUCHA tallerDeJuguetes
             // | jugueteRelacional
             // | jugueteLogico
             // | jugueteEntradaSalida
@@ -398,7 +400,7 @@ gomaLocaLogica ::= MELCHOR:operador {: RESULT = operador; :}
 TODO: permitir que se pueda llamar funciones con parametros y sin parametros (un parametro puede ser una funcion)✅
 TODO: permitir que se pueda llamar una funcion como operando✅
 TODO: permitir creación de arreglos✅
-TODO: permitir Entrada y salida❌
+TODO: permitir Entrada y salida✅
 TODO: permitir Estructuras de control❌
 TODO: permitir ciclos❌
 */
