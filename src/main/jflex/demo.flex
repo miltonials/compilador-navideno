@@ -17,7 +17,9 @@ import java_cup.runtime.Symbol;
 // Expresiones regulares para tokens
 digit = [0-9] // dígito
 digitnonzero = [1-9] // dígito no cero
-entero = -?{digitnonzero}{digit}* // entero
+// digito positivo o negativo, con cero o más dígitos
+entero = 0|-?{digitnonzero}{digit}*
+// entero = -?{digitnonzero}{digit}* // entero (positivo o negativo)
 decimales = 0|{digitnonzero}{digit}* // decimales
 decimal = -?{decimales}("."{decimales})? // decimal
 letter = [a-zA-Z]
