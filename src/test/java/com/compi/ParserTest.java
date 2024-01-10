@@ -150,10 +150,9 @@ public class ParserTest {
 
     //if
 
-    program += "if (true) {";
+    program += "if (true^false) {";
     program += "local int m|";
     program += "m <= [123]|}";
-
     //if else
     program += "if (true) {";
     program += "local int m|";
