@@ -239,7 +239,7 @@ non terminal tipoJuguete;
 non terminal subtipoRegalo;
 non terminal gomasNavidenas;
 non terminal piezaImportada;
-non terminal estampillaNavidena;
+non terminal estampillasNavidena;
 //-------------------------------------------------------------------------------------- PRECEDENCIA
 
 
@@ -324,9 +324,13 @@ juguete ::= asignarJuguete
             ;
 
 asignarJuguete ::= LOCAL tipoJuguete PERSONA ENTREGA tallerDeJuguetes
-                      | LOCAL tipoJuguete PERSONA
-                      | PERSONA ENTREGA tallerDeJuguetes
-                      ;
+                    | LOCAL tipoJuguete PERSONA
+                    | PERSONA ENTREGA tallerDeJuguetes
+
+                    | LOCAL tipoJuguete PERSONA ENTREGA ABREEMPAQUE estampillasNavidena CIERREEMPAQUE
+                    | PERSONA ABREEMPAQUE tallerDeJuguetes CIERREEMPAQUE ENTREGA tallerDeJuguetes
+                    | PERSONA ENTREGA ABREEMPAQUE estampillasNavidena CIERREEMPAQUE
+                    ;
 
 tipoJuguete ::= tipoRegalo:tipo {: RESULT =  tipo; :}
             |  tipoRegalo:tipo ABREEMPAQUE tallerDeJuguetes CIERREEMPAQUE
@@ -362,11 +366,11 @@ piezaJuguete ::= L_SANTACLAUS:val {: RESULT =  val; :}
             ;
 
 piezaImportada ::= PERSONA ABRECUENTO CIERRECUENTO
-                | PERSONA ABRECUENTO estampillaNavidena CIERRECUENTO
+                | PERSONA ABRECUENTO estampillasNavidena CIERRECUENTO
                 ;
 
-estampillaNavidena ::= tallerDeJuguetes
-                    | tallerDeJuguetes COMA estampillaNavidena
+estampillasNavidena ::= tallerDeJuguetes
+                    | tallerDeJuguetes COMA estampillasNavidena
                     ;
 
 gomaLocaAritmetica ::= RUDOLPH:operador {: RESULT = operador; :}
@@ -393,7 +397,7 @@ gomaLocaLogica ::= MELCHOR:operador {: RESULT = operador; :}
 /*
 TODO: permitir que se pueda llamar funciones con parametros y sin parametros (un parametro puede ser una funcion)✅
 TODO: permitir que se pueda llamar una funcion como operando✅
-TODO: permitir creación de arreglos❌
+TODO: permitir creación de arreglos✅
 TODO: permitir Entrada y salida❌
 TODO: permitir Estructuras de control❌
 TODO: permitir ciclos❌

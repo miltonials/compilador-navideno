@@ -130,12 +130,12 @@ public class ParserTest {
     //program += "local int[2] x|";
     program += "local int[3] x <= [1, variable, 2,3, variable2 ,5, xyz]|";
     program += "local char[3] x <= ['1',variable, '2','3','4']|";
-    //program += "local char[3] x <= [1, 's']|";
+    program += "local char[3] x <= [1, 's']|";
     program += "local int m|";
-    //program += "m <= [123]|";
-    //program += "local array y <= [2, tres, cuatro]|";
-    //program += "local array w <= [variable, 3]|";
-    //program += "local array w <= [mil, variable]|";
+    program += "m <= [123]|";
+    program += "local int[x] y <= [2, tres, cuatro]|";
+    program += "local int[x+2 - 2] w <= [variable, 3]|";
+    program += "local int[x+2 + -2] w <= [mil, variable, (func2(3,in1) > 56)]|";
     program += "return 1|}";
     program += funMain;
 
