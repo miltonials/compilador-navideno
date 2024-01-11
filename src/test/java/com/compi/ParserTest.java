@@ -62,10 +62,11 @@ public class ParserTest {
   @Test
   public void testFloat() throws Exception {
     String program = funfloat;
-    program += "local float multiUnario <= 5.1 + 1.1|";
-    program += "local float res <= 1.3|";
-    program += "res <= 2.2|";
-    program += "local int in1<= --fl1 ~ -14/++in1+7- 15 **  arr[67i] * func1 (hola, true, \"hola mundo\", 4.5, 'a') |";
+    program += "local float multiUnario <= 5.1 + 1.1|local float fl1|\n" +
+            "\tlocal float fl1<=56.6|";
+    program += "local float res <= 1.3|local bool mibool <= true|";
+    program += "res <= 2.2|arr[lit] <= 'c'|";
+    program += "local int in1<= --fl1 ~ -14/++in1+7- 15 **  arr[67] * func1 (hola, true, \"hola mundo\", 4.5, 'a') |";
     program += "mibool <= (3.7 * fl1 + (-45.6~76)) < 56 ^ true # mibool # !mibool  | @semantico literal 76\n";
 
     program += "miFunc(miFunc(a),'a')|";
@@ -82,6 +83,9 @@ public class ParserTest {
     program += "local float res8 <= res1*1.0 + res2*1.0 + res3*1.0|";
     program += "return (res*1.1 - ((23.1)) + ((res3 *1.2) ** res6 *1.3) * -5.4)|}";//res1+res2+res3
     //program += "return 3.4|}";
+    program += "function float hola (int x, char y){" +
+            "\treturn b1|\n" +
+            "}";
     program += funMain;
     
     Integer resultado = (Integer) testHelper(program).value;

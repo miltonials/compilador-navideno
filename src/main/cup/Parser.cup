@@ -250,7 +250,8 @@ non terminal bloque;
 non terminal estructurarJuguete_for;
 non terminal encabezado_for;
 non terminal estructurarJuguete_doUntil;
-
+non terminal bolsaFuncional;
+non terminal monnosAux;
 //-------------------------------------------------------------------------------------- PRECEDENCIA
 
 
@@ -278,7 +279,9 @@ navidad ::=
         ;
 
 bolsanavidena ::=  regaloprincipal
-                | regalofuncional regaloprincipal;
+                | bolsaFuncional regaloprincipal;
+
+bolsaFuncional ::= regalofuncional | bolsaFuncional regalofuncional;
 
 regaloprincipal ::= REGALO SANTACLAUS MAIN ABRECUENTO  CIERRECUENTO ABREREGALO
                         {:
@@ -287,20 +290,15 @@ regaloprincipal ::= REGALO SANTACLAUS MAIN ABRECUENTO  CIERRECUENTO ABREREGALO
                         juguetes
                     CIERRAREGALO;
 
-regalofuncional ::= REGALO tipoRegalo:tipo PERSONA:nombre ABRECUENTO monnos CIERRECUENTO ABREREGALO
-                    {:
-                        agregarTablaSimbolos(tipo.toString(), nombre.toString());
-                    :}
-                    juguetes
-                    CIERRAREGALO
-                    |
-                    REGALO tipoRegalo:tipo PERSONA:nombre ABRECUENTO CIERRECUENTO ABREREGALO
+regalofuncional ::= REGALO tipoRegalo:tipo PERSONA:nombre monnosAux ABREREGALO
                     {:
                         agregarTablaSimbolos(tipo.toString(), nombre.toString());
                     :}
                     juguetes
                     CIERRAREGALO
                     ;
+                    
+monnosAux ::= ABRECUENTO monnos CIERRECUENTO | ABRECUENTO CIERRECUENTO;
 
 tipoRegalo ::=  PERENOEL:tipo {: RESULT =  tipo; :}
             | FATHERCHRISTMAS:tipo {: RESULT =  tipo; :}
@@ -360,7 +358,8 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                     ;
 
 tipoJuguete ::= tipoRegalo:tipo {: RESULT =  tipo; :}
-            |  tipoRegalo:tipo ABREEMPAQUE tallerDeJuguetes CIERREEMPAQUE
+            |  tipoRegalo:tipo ABREEMPAQUE tallerDeJuguetes:val CIERREEMPAQUE
+            {: RESULT =  tipo.toString() + "[" + val.toString() + "]"; :}
             ;
 
 
