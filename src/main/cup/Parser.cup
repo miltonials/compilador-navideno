@@ -26,6 +26,71 @@ action code {:
         String vName;
         String vValue;
         char vValueCharmander;
+        /**
+         * Verifica si la variable ya fue declarada
+         * @param nombreVariable nombre de la variable
+         */
+        public void verificarDeclaracionVariable(String nombreVariable) {
+            if (!variableDeclarada(nombreVariable)) {
+                // Capturar y registrar el error semántico
+                System.err.println("Error semántico: Variable '" + nombreVariable + "' no declarada.");
+                compila = false;
+            }
+        }
+
+        public boolean variableDeclarada(String nombreVariable) {
+            // Lógica para verificar si la variable está declarada en la tabla de símbolos
+            boolean declarada = false;
+            for (String item : listaTablasSimbolos.get(currentHash)) {
+                if (item.contains(nombreVariable)) {
+                    declarada = true;
+                }
+            }
+            return declarada;    
+        }
+        public void verificarDeclaracionFuncion(String nombreFuncion) {
+            if (funcionDeclarada(nombreFuncion)) {
+                // Capturar y registrar el error semántico
+                System.err.println("Error semántico: Función '" + nombreFuncion + "' ya declarada.");
+                compila = false;
+            }
+        }
+
+        public boolean funcionDeclarada(String nombreFuncion) {
+            // Lógica para verificar si la variable está declarada en la tabla de símbolos
+            boolean declarada = false;
+            for (String item : listaTablasSimbolos.keySet()) {
+                if (item.contains(nombreFuncion)) {
+                    declarada = true;
+                }
+            }
+            return declarada;    
+        }
+
+        /**
+         * Verifica que el tipo de retorno sea el correcto
+         * @param tipoReal tipo de retorno real
+         * @param tipoEsperado tipo de retorno esperado
+        */
+        public void verificarTipoRetorno(String actual) {
+            if (tipodeRetorno(actual)) {
+                // Capturar y registrar el error semántico
+                System.err.println("Error semántico: Tipo de retorno incorrecto.");
+                compila = false;
+            }
+        }
+
+        public boolean tipodeRetorno(String actual) {
+            // Lógica para verificar si lo que se retorna es del tipo correcto
+            boolean isTrue = false;
+            for (String item : listaTablasSimbolos.get(currentHash)) {
+                if (item.contains(actual)) {
+                    isTrue = true;
+                }
+            }
+            return isTrue;   
+        }
+
 
         StringBuffer cod3D = new StringBuffer();
         int currentTemp = 1;
@@ -121,73 +186,76 @@ action code {:
 :}
 
 parser code {:
-        IdLexer miParser;
-        // Habilitar la depuración
-        boolean _cup_debug = true;
-        List<String> syntaxErrors = new ArrayList<>();
+    IdLexer miParser;
+    // Habilitar la depuración
+    boolean _cup_debug = true;
+    List<String> syntaxErrors = new ArrayList<>();
 
-        String tipoRetornoActual = null;
+    String tipoRetornoActual = null;
 
-        /**
-         * Establece el tipo de retorno actual
-         * @param tipo tipo de retorno actual
-         */
-        public void setTipoRetorno(String tipo) {
-                tipoRetornoActual = tipo;
+    /**
+        * Establece el tipo de retorno actual
+        * @param tipo tipo de retorno actual
+        */
+    public void setTipoRetorno(String tipo) {
+            tipoRetornoActual = tipo;
+    }
+
+    /**
+        * Verifica que el tipo de retorno sea el correcto
+        * @param tipoReal tipo de retorno real
+        */
+    public void checkTipoRetorno(String tipoReal) {
+            if (tipoRetornoActual != null && !tipoRetornoActual.equals(tipoReal)) {
+                    System.err.println("Tipo de retorno incorrecto. Se esperaba: " + tipoRetornoActual + ", pero se encontró: " + tipoReal);
+            }
+    }
+
+    // Agregar un método para obtener la lista de errores después del análisis
+    /**
+        * Obtiene la lista de errores de sintaxis
+        * @return lista de errores de sintaxis
+        */
+    public List<String> getSyntaxErrors() {
+            return syntaxErrors;
+    }
+
+    @SuppressWarnings("deprecation")
+    public Parser(IdLexer miParser) {
+            this.miParser = miParser;
+            this.symbolFactory = new DefaultSymbolFactory();
+    }
+
+    /**
+        * captura los errores de sintaxis 
+        * @param s error
+        */
+    public void syntax_error(Symbol s) {
+        try {
+            String errorMessage = "Error de sintaxis: " + s.sym + " (" + s.value + ") en la línea " + (s.left+1) + " columna " + (s.right+1);
+            System.err.println(errorMessage);
+            // Agregar lógica adicional si es necesario para errores recuperables
+            // throw new Exception("Error recuperable");
+        } catch (Exception e) {
+            System.err.println("Hola");
+            System.err.println("Error de sintaxis: " + e.getMessage());
         }
+    }
 
-        /**
-         * Verifica que el tipo de retorno sea el correcto
-         * @param tipoReal tipo de retorno real
-         */
-        public void checkTipoRetorno(String tipoReal) {
-                if (tipoRetornoActual != null && !tipoRetornoActual.equals(tipoReal)) {
-                        System.err.println("Tipo de retorno incorrecto. Se esperaba: " + tipoRetornoActual + ", pero se encontró: " + tipoReal);
-                }
-        }
 
-        // Agregar un método para obtener la lista de errores después del análisis
-        /**
-         * Obtiene la lista de errores de sintaxis
-         * @return lista de errores de sintaxis
-         */
-        public List<String> getSyntaxErrors() {
-                return syntaxErrors;
-        }
+    /**
+        * captura los errores de sintaxis no recuperables
+        * @param s error
+        */
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception {
+            String errorMessage = "Error de sintaxis no recuperable: " + s.value + " en la línea " + (s.left + 1) + " columna " + (s.right + 1);
+            System.err.println(errorMessage);
 
-        @SuppressWarnings("deprecation")
-        public Parser(IdLexer miParser) {
-                this.miParser = miParser;
-                this.symbolFactory = new DefaultSymbolFactory();
-        }
+            // Agregar lógica adicional si es necesario para errores no recuperables
+            // throw new Exception("Error no recuperable");
+    }
 
-        /**
-         * captura los errores de sintaxis 
-         * @param s error
-         */
-        public void syntax_error(Symbol s) {
-                try {
-                        String errorMessage = "Error de sintaxis: " + s.value + " en la línea " + (s.left + 1) + " columna " + (s.right + 1);
-                        System.err.println(errorMessage);
-                        // Agregar lógica adicional si es necesario para errores recuperables
-                        //throw new Exception("Error recuperable");
-                } catch (Exception e) {
-                        System.err.println("Hola");
-                        System.err.println("Error de sintaxis: " + e.getMessage());
-                }
-        }
-
-        /**
-         * captura los errores de sintaxis no recuperables
-         * @param s error
-         */
-        public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception {
-                String errorMessage = "Error de sintaxis no recuperable: " + s.value + " en la línea " + (s.left + 1) + " columna " + (s.right + 1);
-                System.err.println(errorMessage);
-
-                // Agregar lógica adicional si es necesario para errores no recuperables
-                // throw new Exception("Error no recuperable");
-        }
+        
 :}
 
 
@@ -347,6 +415,9 @@ regaloprincipal ::= REGALO SANTACLAUS MAIN ABRECUENTO  CIERRECUENTO ABREREGALO
 
 regalofuncional ::= REGALO tipoRegalo:tipo PERSONA:nombre monnosAux ABREREGALO
                     {:
+                        //validar que no exista una funcion con el mismo nombre
+                        //verificarDeclaracionFuncion(nombre.toString());
+                        verificarDeclaracionFuncion(nombre);
                         agregarTablaSimbolos(tipo.toString(), nombre.toString());
                     :}
                     juguetes
@@ -386,28 +457,40 @@ juguete ::= asignarJuguete FINREGALO
             ;
 
 asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguetes
-                    {:
+                    {:  
+                        if(variableDeclarada(nombre)){
+                            System.out.println("Error semántico: Variable '" + nombre + "' ya declarada.");
+                        }
                         listaTablasSimbolos.get(currentHash).add( "Variable (" + tipo.toString() + ") : " + nombre + " = " + vValue);
                     :}
                     | LOCAL tipoJuguete:tipo PERSONA:nombre
                     {:
+                        if(variableDeclarada(nombre)){
+                            System.out.println("Error semántico: Variable '" + nombre + "' ya declarada.");
+                        }
                         listaTablasSimbolos.get(currentHash).add( "Variable (" + tipo.toString() + ") : " + nombre);
                     :}
                     | PERSONA:nombre ENTREGA tallerDeJuguetes
                     {:
+                        verificarDeclaracionVariable(nombre);
                         listaTablasSimbolos.get(currentHash).add( "Variable anterior ( no identificado ) : " + nombre + " = " + vValue);
                     :}
 
                     | LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA ABREEMPAQUE estampillasNavidena CIERREEMPAQUE
                     {:
+                        if(variableDeclarada(nombre)){
+                            System.out.println("Error semántico: Variable '" + nombre + "' ya declarada.");
+                        }
                         listaTablasSimbolos.get(currentHash).add( "Variable (" + tipo.toString() + ") : " + nombre + " = [" + vValue + "]");
                     :}
                     | PERSONA:nombre ABREEMPAQUE tallerDeJuguetes CIERREEMPAQUE ENTREGA tallerDeJuguetes
                     {:
+                        verificarDeclaracionVariable(nombre);
                         listaTablasSimbolos.get(currentHash).add( "Variable anterior (array) : " + nombre + " = [" + vValue + "]");
                     :}
                     | PERSONA:nombre ENTREGA ABREEMPAQUE estampillasNavidena CIERREEMPAQUE
                     {:
+                        verificarDeclaracionVariable(nombre);
                         listaTablasSimbolos.get(currentHash).add( "Variable (array) : " + nombre + " = [" + vValue + "]");
                     :}
                     ;
