@@ -247,8 +247,11 @@ public class ParserTest {
   public void miTest() throws Exception {
     String program = funInt;
 
-    //program += "local int x <= 21 + 1|";
-    program += "local int res11 <= 3 - ((res1) + 23 + res3 ** res6 * 5) * -1 + 4|";
+    program += "local int res1 <= 1 + ((5 + 1) + 2) - 1|";
+    //program += "local int res <= ((1)+(2))|";
+    //program += "local int res11 <= 3 - ((res - 1) + 23 + res1 ** res * 5) * -1 + 4|";
+    ///program += "local int res11 <= 3 - (res1+2 + 23 + res1 ** res1 * 5) + 1 + 4|";
+    //program += "local int res11 <= 3+2+11+1+res|";
 
 
     program += "return 1|}";

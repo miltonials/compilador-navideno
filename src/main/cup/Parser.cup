@@ -27,6 +27,9 @@ action code {:
         String vValue;
         char vValueCharmander;
 
+        StringBuffer cod3D = new StringBuffer();
+        int currentTemp = 1;
+
         /**
          * Imprime la tabla de símbolos
         */
@@ -63,6 +66,58 @@ action code {:
         public void error(String mensaje) {
             System.out.println(mensaje);
         }
+        
+        public String getTipo(String id) {
+            //buscar en la tabla de simbolos actual
+            for (String item : listaTablasSimbolos.get(currentHash)) {
+                boolean x = item.contains(id);
+                if (item.contains(id)) {
+                    String title = item.split(":")[0];
+                    return title.substring(title.indexOf("(") + 1, title.indexOf(")"));
+                }
+            }
+            return "null";
+        }
+        
+        /**
+        * Checks if the arithmetic operation between two operands is type-compatible.
+        * Assumes that the types are either "int" or "float".
+        * 
+        * @param type1 Type of the first operand
+        * @param operator Arithmetic operator
+        * @param type2 Type of the second operand
+        * @return true if the types are compatible, false otherwise
+        */
+        public boolean checkAritmeticTypeCompatibility(String type1, String operator, String type2) {
+            // Ensure both operands are only "int" or "float"
+            boolean isInt1 = type1.equals("int") && (type2.equals("int") || type2.equals(""));
+            boolean isInt2 = (type1.equals("int") || type1.equals("")) && type2.equals("int");
+            boolean isFloat1 = type1.equals("float") && (type2.equals("float") || type2.equals(""));
+            boolean isFloat2 = (type1.equals("float") || type1.equals("")) && type2.equals("float");
+
+            boolean isInt = isInt1 || isInt2;
+            boolean isFloat = isFloat1 || isFloat2;
+            if (!isInt && !isFloat) {
+                return false;
+            }
+
+            // Check for specific operator rules
+            if (operator.equals("+")
+                || operator.equals("-")
+                || operator.equals("*")
+                || operator.equals("/")
+                || operator.equals("//")
+                || operator.equals("~")
+                || operator.equals("**")
+                ) {
+                // Allow addition, subtraction, multiplication, and division for both "int" and "float"
+                return true;
+            }
+
+            // Default case
+            return false;
+        }
+
 :}
 
 parser code {:
@@ -371,8 +426,29 @@ tallerDeJuguetes ::= piezaJuguete: val
                     :}
                     | piezaJuguete:valA gomasNavidenas:operador tallerDeJuguetes:valB
                     {:
-                        RESULT =  valA.toString() + " " + operador.toString() + " " + valB.toString();
+                        String valALit = "";
+                        String valBLit = "";
+                        String valATipo = "";
+                        String valBTipo = "";
+
+                        System.out.println(valA.toString() + " " + operador.toString() + " " + valB.toString());
+                        valALit = valA.toString().split(":")[0];
+                        valATipo = valA.toString().split(":")[1];
+                        try {
+                            valBLit = valB.toString().split(":")[0];
+                            valBTipo = valB.toString().split(":")[1];
+                        }
+                        catch (Exception e){
+                        //nothing
+                        }
+
+                        RESULT =  valALit + " " + operador.toString() + " " + valBLit;
                         vValue = RESULT.toString();
+                        
+                        //validarTipos
+                        if (!checkAritmeticTypeCompatibility(valATipo, operador.toString(), valBTipo)) {
+                            System.err.println("Error de tipos en la expresión: " + valA.toString() + " " + operador.toString() + " " + valB.toString());
+                        }
                     :}
                     | GRINCH:operador tallerDeJuguetes:val
                     {:
@@ -391,13 +467,39 @@ tallerDeJuguetes ::= piezaJuguete: val
                     :}
                     | ABRECUENTO tallerDeJuguetes:val CIERRECUENTO // ( expr )
                     {:
-                        RESULT =  "( " + val.toString() + " ) ";
+                        RESULT =  "( " + val.toString() + " )";
                         vValue = RESULT.toString();
+                        RESULT =  val.toString();
+                        System.out.println("jdslfjk: " + RESULT.toString());
                     :}
                     | ABRECUENTO tallerDeJuguetes:valA CIERRECUENTO gomasNavidenas:operador tallerDeJuguetes:valB // ( expr ) gomasNavidenas tallerDeJuguetes
                     {:
                         RESULT =  "( " + valA.toString() + " ) " + operador.toString() + " " + valB.toString();
                         vValue = RESULT.toString();
+                        RESULT =  valA.toString() + operador.toString() + " " + valB.toString();
+
+                        //System.out.println("popopo: " + RESULT.toString());
+                        //validarTipos
+                        System.out.println(valA.toString() + " " + operador.toString() + " " + valB.toString());                        
+                        String valATipo = "";
+                        String valBTipo = "";
+
+                        try {
+                            valATipo = valA.toString().split(":")[1];
+                        }
+                        catch (Exception e){
+                        //nothing
+                        }
+                        try {
+                            valBTipo = valB.toString().split(":")[1];
+                        }
+                        catch (Exception e){
+                        //nothing
+                        }
+
+                        if (!checkAritmeticTypeCompatibility(valATipo, operador.toString(), valBTipo)) {
+                            System.err.println("Error de tipos en la expresión: " + valA.toString() + " " + operador.toString() + " " + valB.toString());
+                        }
                     :}
                     ;
 
@@ -408,34 +510,38 @@ gomasNavidenas ::= gomaLocaAritmetica:operador {: RESULT = operador; :}
 
 piezaJuguete ::= L_SANTACLAUS:val
                 {:
-                    RESULT =  val;
-                    vValue = RESULT.toString();
+                    vValue = val.toString();
+                    RESULT =  val.toString() + ":int";
                 :}
             | L_PERENOEL:val
                 {:
-                    RESULT =  val;
-                    vValue = RESULT.toString();
+                    vValue = val.toString();
+                    RESULT =  val + ":float";
                 :}
             | L_FATHERCHRISTMAS:val
                 {:
-                    RESULT =  val;
-                    vValue = RESULT.toString();
+                    vValue = val.toString();
+                    RESULT =  val + ":bool";
                 :}
             | L_KRISKRINGLE:val
                 {:
-                    RESULT =  val;
-                    vValue = RESULT.toString();
+                    vValue = val.toString();
+                    RESULT =  val + ":char";
                 :}
             | L_DEDMOROZ:val
                 {:
-                    RESULT =  val;
-                    vValue = RESULT.toString();
+                    vValue = val.toString();
+                    RESULT =  val + ":string";
                 :}
             | PERSONA:nombre ABREEMPAQUE tallerDeJuguetes:val CIERREEMPAQUE //indice de array
                 {:
                     RESULT = nombre + "[" + val.toString() + "]";//TODO: agregar a la tabla de simbolos
                 :}
-            | PERSONA:nombre {: RESULT =  nombre; vValue = RESULT.toString(); :}
+            | PERSONA:nombre
+                {:
+                    vValue = nombre.toString();
+                    RESULT =  nombre + ":" + getTipo(nombre.toString());
+                :}
             | piezaImportada:val
                 {:
                     RESULT =  val;
