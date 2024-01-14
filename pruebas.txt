@@ -1,0 +1,31 @@
+
+function int ejemplo2() {
+    local int resultado <= 2 + 3 * 4.2|
+    local int resultado2 <= 0|
+    resultado3 <= resultado + resultado2|
+    return resultado|
+}
+
+function char ejemplo3() {
+    local int resultado <= 2 + 3 * 4|
+    local int resultado2 <= 0|
+    local int resultado|
+    return resultado|
+}
+
+function float ejemplo3() {
+    local int resultado <= 2 + 3 * 4|
+    local int resultado2 <= 0|
+    return resultado|
+}
+
+function int ejemplo4() {
+    local int resultado <= 2 + 3 * 4|
+    local int resultado2 <= 0|
+    return resultado|
+}
+
+function int main () {
+    local int res <= 1+3|
+    return 3|
+}
