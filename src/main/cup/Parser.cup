@@ -476,8 +476,7 @@ monnos ::= tipoRegalo:tipo PERSONA:nombre
                 {:
                     verificarDeclaracionParametro(nombre);
                     listaTablasSimbolos.get(currentHash).add( "Parametro (" + tipo.toString() + ") : " + nombre);
-                :}
-            ;
+                :};
 
 juguetes ::= juguete
             | juguete juguetes;
@@ -690,13 +689,26 @@ piezaJuguete ::= L_SANTACLAUS:val
                 {:
                     RESULT =  val;
                     vValue = RESULT.toString();
+                    String nombreFuncion = val.toString().split(":")[0];
+                    System.out.println(nombreFuncion);
+                    System.out.println("hola");
+                    if (!funcionDeclarada(nombreFuncion)) {
+                        System.err.println("Error semántico: Función '" + nombreFuncion + "' no declarada.");
+                        compila = false;
+                    }
                 :}
             ;
 
 piezaImportada ::= PERSONA:nombre ABRECUENTO CIERRECUENTO
                     {:
+                        System.out.println(nombre);
+                        if (!funcionDeclarada(nombre)) {
+                            System.err.println("Error semántico: Función '" + nombre + "' no declarada.");
+                            compila = false;
+                        }
                         RESULT =  nombre + "()";
                         vValue = RESULT.toString();
+
                     :}
                 | PERSONA:nombre ABRECUENTO estampillasNavidena:val CIERRECUENTO
                     {:

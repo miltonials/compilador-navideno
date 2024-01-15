@@ -8,8 +8,10 @@ function int ejemplo2(char s, int a) {
 function int ejemplo3( int b) {
     local int ejemplo2 <= 2 + 3 * 4|
     local int resultado2 <= 0|
+    ejemplo2()|
     return resultado|
 }
+
 
 function int main () {
     local int res <= 1+3|
