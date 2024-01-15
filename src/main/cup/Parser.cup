@@ -470,6 +470,7 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                     {:  
                         if(variableDeclarada(nombre)){
                             System.out.println("Error semántico: Variable '" + nombre + "' ya declarada.");
+                            copila = false;
                         }
                         listaTablasSimbolos.get(currentHash).add( "Variable (" + tipo.toString() + ") : " + nombre + " = " + vValue);
                     :}
@@ -477,6 +478,7 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                     {:
                         if(variableDeclarada(nombre)){
                             System.out.println("Error semántico: Variable '" + nombre + "' ya declarada.");
+                            copila = false;
                         }
                         listaTablasSimbolos.get(currentHash).add( "Variable (" + tipo.toString() + ") : " + nombre);
                     :}
@@ -490,6 +492,7 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                     {:
                         if(variableDeclarada(nombre)){
                             System.out.println("Error semántico: Variable '" + nombre + "' ya declarada.");
+                            copila = false;
                         }
                         listaTablasSimbolos.get(currentHash).add( "Variable (" + tipo.toString() + ") : " + nombre + " = [" + vValue + "]");
                     :}
