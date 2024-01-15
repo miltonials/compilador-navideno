@@ -1,12 +1,12 @@
 
-function int ejemplo2(int resultado, int a) {
+function int ejemplo2(char s, int a) {
     local int resultado <= 2 + 3 * 4|
     local int resultado2 <= 0|
-    local int resultado <= 2.2|
     return resultado|
 }
-function int ejemplo3(int a, int b) {
-    local int resultado <= 2 + 3 * 4|
+
+function int ejemplo3( int b) {
+    local int ejemplo2 <= 2 + 3 * 4|
     local int resultado2 <= 0|
     return resultado|
 }

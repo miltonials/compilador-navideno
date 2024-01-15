@@ -27,6 +27,27 @@ action code {:
         String vValue;
         char vValueCharmander;
         /**
+         * Verificar que el parametro no este declarado
+         * @param nombreParametro nombre del parametro
+        */
+        public void verificarDeclaracionParametro(String nombreParametro) {
+            if (parametroDeclarado(nombreParametro)) {
+                // Capturar y registrar el error semántico
+                System.err.println("Error semántico: Parámetro '" + nombreParametro + "' ya declarado.");
+                compila = false;
+            }
+        }
+        public boolean parametroDeclarado(String nombreParametro) {
+            // Lógica para verificar si la variable está declarada en la tabla de símbolos
+            boolean declarada = false;
+            for (String item : listaTablasSimbolos.get(currentHash)) {
+                if (item.contains(nombreParametro) && item.contains("Parametro")) {
+                    declarada = true;
+                }
+            }
+            return declarada;    
+        }
+        /**
          * Verifica si la variable ya fue declarada
          * @param nombreVariable nombre de la variable
          */
@@ -43,6 +64,10 @@ action code {:
             boolean declarada = false;
             for (String item : listaTablasSimbolos.get(currentHash)) {
                 if (item.contains(nombreVariable) && !item.contains("Parametro")) {
+                    declarada = true;
+                }
+                else if (item.contains(nombreVariable) && item.contains("Parametro")) {
+                    System.err.println("Error semántico: Variable no puede llamarse igual que un parámetro.");
                     declarada = true;
                 }
             }
@@ -444,10 +469,12 @@ subtipoRegalo ::= SANTACLAUS:tipo {: RESULT =  tipo; :}
 
 monnos ::= tipoRegalo:tipo PERSONA:nombre
                 {:
+                    verificarDeclaracionParametro(nombre);
                     listaTablasSimbolos.get(currentHash).add( "Parametro (" + tipo.toString() + ") : " + nombre);
                 :} 
             | tipoRegalo:tipo PERSONA:nombre COMA monnos
                 {:
+                    verificarDeclaracionParametro(nombre);
                     listaTablasSimbolos.get(currentHash).add( "Parametro (" + tipo.toString() + ") : " + nombre);
                 :}
             ;
