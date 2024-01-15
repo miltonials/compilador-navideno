@@ -504,34 +504,34 @@ tipoJuguete ::= tipoRegalo:tipo {: RESULT =  tipo; :}
 //para crear los literales
 tallerDeJuguetes ::= piezaJuguete: val
                     {:
-                        RESULT =  val;
-                        vValue = RESULT.toString();
+                        RESULT =  val.toString();
+                        vValue = RESULT.toString().split(":")[0];
                     :}
                     | piezaJuguete:valA gomasNavidenas:operador tallerDeJuguetes:valB
                     {:
-                        String valALit = "";
-                        String valBLit = "";
-                        String valATipo = "";
-                        String valBTipo = "";
-
-                        System.out.println(valA.toString() + " " + operador.toString() + " " + valB.toString());
-                        valALit = valA.toString().split(":")[0];
-                        valATipo = valA.toString().split(":")[1];
-                        try {
-                            valBLit = valB.toString().split(":")[0];
-                            valBTipo = valB.toString().split(":")[1];
-                        }
-                        catch (Exception e){
-                        //nothing
-                        }
-
-                        RESULT =  valALit + " " + operador.toString() + " " + valBLit;
+                        RESULT =  valA.toString() + " " + operador.toString() + " " + valB.toString();
                         vValue = RESULT.toString();
-                        
-                        //validarTipos
-                        if (!checkAritmeticTypeCompatibility(valATipo, operador.toString(), valBTipo)) {
+
+                        String tpValA = "";
+                        String tpValB = "";
+
+                        try {
+                            tpValA = valA.toString().split(":")[1].split(" ")[0];
+                        } catch (Exception e) {}
+
+                        try {
+                            tpValB = valB.toString().split(":")[1].split(" ")[0];
+                        } catch (Exception e) {}
+
+                        if (!checkAritmeticTypeCompatibility(tpValA, operador.toString(), tpValB)) {
                             System.err.println("Error de tipos en la expresión: " + valA.toString() + " " + operador.toString() + " " + valB.toString());
                         }
+
+                        valA = valA.toString().replace(":int", "").replace(":float", "").replace(":bool", "").replace(":char", "").replace(":string", "");
+
+
+                        RESULT =  valA.toString() + " " + operador.toString() + " " + valB.toString();
+                        vValue = RESULT.toString().replace(":int", "").replace(":float", "").replace(":bool", "").replace(":char", "").replace(":string", "");
                     :}
                     | GRINCH:operador tallerDeJuguetes:val
                     {:
@@ -550,41 +550,44 @@ tallerDeJuguetes ::= piezaJuguete: val
                     :}
                     | ABRECUENTO tallerDeJuguetes:val CIERRECUENTO // ( expr )
                     {:
-                        RESULT =  "( " + val.toString() + " )";
-                        vValue = RESULT.toString();
-                        RESULT =  val.toString();
-                        System.out.println("jdslfjk: " + RESULT.toString());
+                        String tipo = val.toString().split(":")[1];
+                        String valLit = val.toString().replace(":int", "").replace(":float", "").replace(":bool", "").replace(":char", "").replace(":string", "");
+                        try {
+                            RESULT =  "( " + val.toString() + " ):" + tipo;
+                        }
+                        catch (Exception e) {
+                            RESULT =  "( " + val.toString() + " )";
+                        }
+                        vValue = "( " + valLit + " )";;
                     :}
                     | ABRECUENTO tallerDeJuguetes:valA CIERRECUENTO gomasNavidenas:operador tallerDeJuguetes:valB // ( expr ) gomasNavidenas tallerDeJuguetes
                     {:
-                        RESULT =  "( " + valA.toString() + " ) " + operador.toString() + " " + valB.toString();
-                        vValue = RESULT.toString();
-                        RESULT =  valA.toString() + operador.toString() + " " + valB.toString();
-
-                        //System.out.println("popopo: " + RESULT.toString());
-                        //validarTipos
-                        System.out.println(valA.toString() + " " + operador.toString() + " " + valB.toString());                        
-                        String valATipo = "";
-                        String valBTipo = "";
+                        String tpValA = "";
+                        String tpValB = "";
+                        String tipo = "";
 
                         try {
-                            valATipo = valA.toString().split(":")[1];
-                        }
-                        catch (Exception e){
-                        //nothing
-                        }
+                            tpValA = valA.toString().split(":")[1].split(" ")[0];
+                        } catch (Exception e) {}
                         try {
-                            valBTipo = valB.toString().split(":")[1];
-                        }
-                        catch (Exception e){
-                        //nothing
-                        }
+                            tpValB = valB.toString().split(":")[1].split(" ")[0];
+                        } catch (Exception e) {}
+                        
+                        tipo = tpValA.equals("") ? tpValB : tpValA;
 
-                        if (!checkAritmeticTypeCompatibility(valATipo, operador.toString(), valBTipo)) {
-                            System.err.println("Error de tipos en la expresión: " + valA.toString() + " " + operador.toString() + " " + valB.toString());
+                        if (!checkAritmeticTypeCompatibility(tpValA, operador.toString(), tpValB)) {
+                            System.out.println("tipoA: " + tpValA + "|  tipoB: " + tpValB);
+                            System.err.println("Error de tipos en la expresión: (" + valA.toString() + "):" + tipo + operador.toString() + " " + valB.toString());
                         }
+                        
+                        valA = valA.toString().replace(":int", "");
+                        valA = valA.toString().replace(":float", "");
+
+                        RESULT =  "( " + valA.toString() + " ):" + tipo  + " " + operador.toString() + " " + valB.toString();
+                        vValue = "( " + valA.toString() + " ) " + operador.toString() + " " + valB.toString();
                     :}
                     ;
+
 
 gomasNavidenas ::= gomaLocaAritmetica:operador {: RESULT = operador; :}
                 | gomaLocaRelacional:operador {: RESULT = operador; :}

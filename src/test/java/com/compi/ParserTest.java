@@ -9,7 +9,7 @@ import java_cup.runtime.Symbol;
 
 public class ParserTest {
   private String funMain = "function int main () { local int res <= 1|return 1|}";
-  private String funStr = "function int hola (string paramA, int paramB, char paramC) {local string res <= \"hola\"|return 3|}";
+  private String funStr = "function int hola (string paramA, int paramB, char paramC) {";
   private String funInt = "function int hola () {";
   private String funfloat = "function float hola (int x, char y) {";
   private String funBool = "function bool hola () {";
@@ -28,8 +28,12 @@ public class ParserTest {
 
   @Test
   public void testStr() throws Exception {
-    funStr += funMain;
-    Integer resultado = (Integer) testHelper(funStr).value;
+    String program = funStr;
+    program += "local string res <= \"hola\"|";
+    program += "local string res2 <= \"hola\"|";
+    program += "return 3|}";
+    program += funMain;
+    Integer resultado = (Integer) testHelper(program).value;
   }
 
   @Test
@@ -246,12 +250,12 @@ public class ParserTest {
   @Test
   public void miTest() throws Exception {
     String program = funInt;
-
-    program += "local int res1 <= 1 + ((5 + 1) + 2) - 1|";
-    //program += "local int res <= ((1)+(2))|";
-    //program += "local int res11 <= 3 - ((res - 1) + 23 + res1 ** res * 5) * -1 + 4|";
-    ///program += "local int res11 <= 3 - (res1+2 + 23 + res1 ** res1 * 5) + 1 + 4|";
-    //program += "local int res11 <= 3+2+11+1+res|";
+    program += "local int res <= ((1 - 1)+(2+1))|";
+    program += "local int res1 <= 1 + ((5 + (1 - 3)) + 2) - 1|";
+    program += "local int res2 <= 5 + (1 - 3) + 2|";
+    program += "local int res3 <= 3 - ((res - 1) + 23 + res1 ** res * 5) * -1 + 4|";
+    program += "local int res4 <= 3 - (res1+2 + 23 + res1 ** res1 * 5) + 1 + 4|";
+    program += "local int res11 <= 3+2+11+1+res|";
 
 
     program += "return 1|}";
