@@ -42,7 +42,7 @@ action code {:
             // Lógica para verificar si la variable está declarada en la tabla de símbolos
             boolean declarada = false;
             for (String item : listaTablasSimbolos.get(currentHash)) {
-                if (item.contains(nombreVariable)) {
+                if (item.contains(nombreVariable) && !item.contains("Parametro")) {
                     declarada = true;
                 }
             }
@@ -419,16 +419,15 @@ regaloprincipal ::= REGALO SANTACLAUS MAIN ABRECUENTO  CIERRECUENTO ABREREGALO
                         juguetes
                     CIERRAREGALO;
 
-regalofuncional ::= REGALO tipoRegalo:tipo PERSONA:nombre monnosAux ABREREGALO
-                    {:
-                        //validar que no exista una funcion con el mismo nombre
-                        //verificarDeclaracionFuncion(nombre.toString());
-                        verificarDeclaracionFuncion(nombre);
-                        agregarTablaSimbolos(tipo.toString(), nombre.toString());
-                    :}
-                    juguetes
+regalofuncional ::= REGALO tipoRegalo:tipo PERSONA:nombre
+                        {:
+                            verificarDeclaracionFuncion(nombre);
+                            agregarTablaSimbolos(tipo.toString(), nombre.toString());
+                        :} 
+                    monnosAux ABREREGALO
+                        juguetes
                     CIERRAREGALO
-                    ;
+                    ;
                     
 monnosAux ::= ABRECUENTO monnos CIERRECUENTO | ABRECUENTO CIERRECUENTO;
 
@@ -445,10 +444,13 @@ subtipoRegalo ::= SANTACLAUS:tipo {: RESULT =  tipo; :}
 
 monnos ::= tipoRegalo:tipo PERSONA:nombre
                 {:
-                    agregarTablaSimbolos(tipo.toString(), nombre.toString());
+                    listaTablasSimbolos.get(currentHash).add( "Parametro (" + tipo.toString() + ") : " + nombre);
                 :} 
-            | tipoRegalo:tipo PERSONA:nombre COMA monnos;
-
+            | tipoRegalo:tipo PERSONA:nombre COMA monnos
+                {:
+                    listaTablasSimbolos.get(currentHash).add( "Parametro (" + tipo.toString() + ") : " + nombre);
+                :}
+            ;
 
 juguetes ::= juguete
             | juguete juguetes;
@@ -466,11 +468,16 @@ juguete ::= asignarJuguete FINREGALO
             | ESCUCHA tallerDeJuguetes FINREGALO
             ;
 
-asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguetes
+asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguetes:tp
                     {:  
                         if(variableDeclarada(nombre)){
                             System.out.println("Error semántico: Variable '" + nombre + "' ya declarada.");
-                            copila = false;
+                            compila = false;
+                        }
+                        String tipoAux = tp.toString().split(":")[tp.toString().split(":").length - 1];
+                        if (!tipoAux.equals(tipo.toString())) {
+                            System.out.println("Error semántico: Tipo de dato incorrecto en la asignación de la variable '" + nombre + "'.");
+                            compila = false;
                         }
                         listaTablasSimbolos.get(currentHash).add( "Variable (" + tipo.toString() + ") : " + nombre + " = " + vValue);
                     :}
@@ -478,13 +485,19 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                     {:
                         if(variableDeclarada(nombre)){
                             System.out.println("Error semántico: Variable '" + nombre + "' ya declarada.");
-                            copila = false;
+                            compila = false;
                         }
+
                         listaTablasSimbolos.get(currentHash).add( "Variable (" + tipo.toString() + ") : " + nombre);
                     :}
-                    | PERSONA:nombre ENTREGA tallerDeJuguetes
+                    | PERSONA:nombre ENTREGA tallerDeJuguetes:tp
                     {:
                         verificarDeclaracionVariable(nombre);
+                        String tipoAux = tp.toString().split(":")[tp.toString().split(":").length - 1];  
+                        if (!tipoAux.equals(getTipo(nombre))) {
+                            System.out.println("Error semántico: Tipo de dato incorrecto en la asignación de la variable '" + nombre + "'.");
+                            compila = false;
+                        }
                         listaTablasSimbolos.get(currentHash).add( "Variable anterior ( no identificado ) : " + nombre + " = " + vValue);
                     :}
 
@@ -492,13 +505,18 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                     {:
                         if(variableDeclarada(nombre)){
                             System.out.println("Error semántico: Variable '" + nombre + "' ya declarada.");
-                            copila = false;
+                            compila = false;
                         }
                         listaTablasSimbolos.get(currentHash).add( "Variable (" + tipo.toString() + ") : " + nombre + " = [" + vValue + "]");
                     :}
-                    | PERSONA:nombre ABREEMPAQUE tallerDeJuguetes CIERREEMPAQUE ENTREGA tallerDeJuguetes
+                    | PERSONA:nombre ABREEMPAQUE tallerDeJuguetes:tp CIERREEMPAQUE ENTREGA tallerDeJuguetes
                     {:
                         verificarDeclaracionVariable(nombre);
+                        String tipoAux = tp.toString().split(":")[tp.toString().split(":").length - 1];
+                        if (!tipoAux.equals(getTipo(nombre))) {
+                            System.out.println("Error semántico: Tipo de dato incorrecto en la asignación de la variable '" + nombre + "'.");
+                            compila = false;
+                        }
                         listaTablasSimbolos.get(currentHash).add( "Variable anterior (array) : " + nombre + " = [" + vValue + "]");
                     :}
                     | PERSONA:nombre ENTREGA ABREEMPAQUE estampillasNavidena CIERREEMPAQUE
