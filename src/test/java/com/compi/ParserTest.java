@@ -31,7 +31,8 @@ public class ParserTest {
     String program = funStr;
     program += "local string res <= \"hola\"|";
     program += "local string res2 <= \"hola\"|";
-    program += "return 3|}";
+    program += "local int resInt <= 3|";
+    program += "return resInt|}";
     program += funMain;
     Integer resultado = (Integer) testHelper(program).value;
   }

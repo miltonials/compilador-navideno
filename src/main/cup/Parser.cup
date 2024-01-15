@@ -72,20 +72,26 @@ action code {:
          * @param tipoReal tipo de retorno real
          * @param tipoEsperado tipo de retorno esperado
         */
-        public void verificarTipoRetorno(String actual) {
+        public boolean verificarTipoRetorno(String actual) {
             if (tipodeRetorno(actual)) {
-                // Capturar y registrar el error semántico
-                System.err.println("Error semántico: Tipo de retorno incorrecto.");
-                compila = false;
+                return true;
             }
+            // Capturar y registrar el error semántico
+            System.err.println("Error semántico: Tipo de retorno incorrecto en la función " + currentHash + ".");
+            compila = false;
+            return false;
         }
 
         public boolean tipodeRetorno(String actual) {
             // Lógica para verificar si lo que se retorna es del tipo correcto
             boolean isTrue = false;
             for (String item : listaTablasSimbolos.get(currentHash)) {
-                if (item.contains(actual)) {
-                    isTrue = true;
+                if (item.contains("Tipo: ")) {
+                    String tipoFunc = item.split(":")[1].replace(" ", "");
+                    if(tipoFunc.equals(actual)){
+                        isTrue = true;
+                    }
+                    break;
                 }
             }
             return isTrue;   
@@ -451,7 +457,11 @@ juguete ::= asignarJuguete FINREGALO
             | piezaImportada FINREGALO
             | estructurarJuguete
             | CORTA FINREGALO
-            | ENVIA tallerDeJuguetes FINREGALO
+            | ENVIA tallerDeJuguetes:tp FINREGALO
+                {:
+                    String tipo = tp.toString().split(":")[tp.toString().split(":").length - 1];
+                    verificarTipoRetorno(tipo);
+                :}
             | NARRA tallerDeJuguetes FINREGALO
             | ESCUCHA tallerDeJuguetes FINREGALO
             ;
