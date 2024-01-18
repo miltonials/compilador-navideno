@@ -452,7 +452,7 @@ regalofuncional ::= REGALO tipoRegalo:tipo PERSONA:nombre
                     monnosAux ABREREGALO
                         juguetes
                     CIERRAREGALO
-                    ;
+                    ;
                     
 monnosAux ::= ABRECUENTO monnos CIERRECUENTO | ABRECUENTO CIERRECUENTO;
 
@@ -501,6 +501,7 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                             compila = false;
                         }
                         String tipoAux = tp.toString().split(":")[tp.toString().split(":").length - 1];
+                        
                         if (!tipoAux.equals(tipo.toString())) {
                             System.out.println("Error semántico: Tipo de dato incorrecto en la asignación de la variable '" + nombre + "'.");
                             compila = false;
@@ -607,7 +608,8 @@ tallerDeJuguetes ::= piezaJuguete: val
                     :}
                     | ABRECUENTO tallerDeJuguetes:val CIERRECUENTO // ( expr )
                     {:
-                        String tipo = val.toString().split(":")[1];
+                        //String tipo = val.toString().split(":")[1];
+                        String tipo = val.toString().split(":")[val.toString().split(":").length - 1];
                         String valLit = val.toString().replace(":int", "").replace(":float", "").replace(":bool", "").replace(":char", "").replace(":string", "");
                         try {
                             RESULT =  "( " + val.toString() + " ):" + tipo;
@@ -615,7 +617,7 @@ tallerDeJuguetes ::= piezaJuguete: val
                         catch (Exception e) {
                             RESULT =  "( " + val.toString() + " )";
                         }
-                        vValue = "( " + valLit + " )";;
+                        vValue = "( " + valLit + " )";
                     :}
                     | ABRECUENTO tallerDeJuguetes:valA CIERRECUENTO gomasNavidenas:operador tallerDeJuguetes:valB // ( expr ) gomasNavidenas tallerDeJuguetes
                     {:
