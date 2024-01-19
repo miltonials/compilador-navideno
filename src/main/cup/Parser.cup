@@ -31,6 +31,36 @@ action code {:
         StringBuffer cod3D = new StringBuffer();
         StringBuffer data = new StringBuffer();
         int currentTemp = 0;
+        int cantidadNumeros = 0;
+
+        /**
+         * contiene operadores aritmeticos
+         * @param variable
+        */
+        public boolean contieneOperadorAritmetico(String variable) {
+            if (variable.contains("+") ){
+                return true;
+            }
+            else if (variable.contains("-") ){
+                return true;
+            }
+            else if (variable.contains("*") ){
+                return true;
+            }
+            else if (variable.contains("/") ){
+                return true;
+            }
+            else if (variable.contains("//") ){
+                return true;
+            }
+            else if (variable.contains("~") ){
+                return true;
+            }
+            else if (variable.contains("**") ){
+                return true;
+            }
+            return false;
+        }
 
         /**
          * Verificar que el parametro no este declarado
@@ -527,22 +557,40 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                             System.out.println("Error semántico: Tipo de dato incorrecto en la asignación de la variable '" + nombre + "'.");
                             compila = false;
                         }
-
+                        System.out.println(tp.toString());
                         //crear una funcion que realice lo de abajo
-                        //if (tp.toString().contains("-")) {
-                        if (true) {
-                            if (tipoAux.equals("int")) {
+                        // if (!contieneOperadorAritmetico(tp.toString())) { // si es una operacion aritmetica
+                        if(compila){
+                            if (tipo.toString().equals("int")) {
                                 data.append(nombre + currentHash + ": .word 0\n");
-
+                                
                                 for (int i = 1; currentTemp >= i; i++) {
                                     cod3D.append("add $t0, $t0, $t" + i + "\n");
                                 }
-                                
+
                                 cod3D.append("sw $t0, " + nombre + currentHash + "\n");
                                 cod3D.append("lw $a0, "+nombre+currentHash+"\nli $v0, 1\nsyscall\n");
 
-                            } else if (tipoAux.equals("float")) {
+                            } else if (tipo.toString().equals("float")) {
                                 data.append(nombre + currentHash + ": .float 0.0\n");
+                                //guardo el valor en la variable creada
+                                cod3D.append("s.s $f0, " + nombre + currentHash + "\n");
+                                //imprimo el valor de la variable
+                                cod3D.append("l.s $f12, " + nombre + currentHash + "\nli $v0, 2\nsyscall\n");
+                                cantidadNumeros=0;
+                            } else if (tipo.toString().equals("bool")) {
+                                data.append(nombre + currentHash + ": .word true\n");
+                                cod3D.append("sw $t0, " + nombre + currentHash + "\n");
+                                cod3D.append("lw $a0, "+nombre+currentHash+"\nli $v0, 1\nsyscall\n");
+                            } else if (tipo.toString().equals("char")) {
+                                data.append(nombre + currentHash + ": .byte 0\n");
+                                cod3D.append("sb $t0, " + nombre + currentHash + "\n");
+                                cod3D.append("li $v0, 11\nli $a0, 0\nsyscall\n");
+
+                            } else if (tipo.toString().equals("string")) {
+                                data.append(nombre + currentHash + ": .word 0\n");
+                                cod3D.append("sw $t0, " + nombre + currentHash + "\n");
+                                cod3D.append("lw $a0, "+nombre+currentHash+"\nli $v0, 1\nsyscall\n");
                             }
                         }
                         else {
@@ -560,8 +608,18 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                             System.out.println("Error semántico: Variable '" + nombre + "' ya declarada.");
                             compila = false;
                         }
-
-                        data.append(nombre + currentHash + ": .word 0\n");
+                        if (tipo.equals("int")){
+                            data.append(nombre + currentHash + ": .word 0\n");  
+                        } else if (tipo.equals("float")) {
+                            data.append(nombre + currentHash + ": .float 0.0\n");
+                        } else if (tipo.equals("bool")) {
+                            data.append(nombre + currentHash + ": .word 0\n");
+                        } else if (tipo.equals("char")) {
+                            data.append(nombre + currentHash + ": .byte 0\n");
+                        } else if (tipo.equals("string")) {
+                            data.append(nombre + currentHash + ": .word 0\n");
+                        }
+                        // data.append(nombre + currentHash + ": .word 0\n");
                         listaTablasSimbolos.get(currentHash).add( "Variable (" + tipo.toString() + ") : " + nombre);
                     :}
                     | PERSONA:nombre ENTREGA tallerDeJuguetes:tp
@@ -689,7 +747,16 @@ tallerDeJuguetes ::= piezaJuguete: val
                         }
                         else if (tpValA.equals("float") || tpValB.equals("float")) {
                             if (operador.equals("+")) {
-                                cod3D.append("add.s $f" + currentTemp + ", " + valALiteral + ", " + valBLiteral + "\n");
+                                if (!valB.toString().contains("+")) {
+                                    cantidadNumeros++;
+                                    cod3D.append("li.s $f"+cantidadNumeros+", " + valA.toString()+"\n");
+                                    cantidadNumeros++;
+                                    cod3D.append("li.s $f"+cantidadNumeros+", " + valB.toString() +"\n");
+                                    cod3D.append("add.s $f0, $f"+(cantidadNumeros-1)+", $f"+cantidadNumeros+"\n");
+                                }
+                                else {
+                                    cod3D.append("add.s $f0, $f0, "+ valA.toString() +"\n");
+                                }
                             } else if (operador.equals("-")) {
                                 cod3D.append("sub.s $f" + currentTemp + ", " + valALiteral + ", " + valBLiteral + "\n");
                             } else if (operador.equals("*")) {
