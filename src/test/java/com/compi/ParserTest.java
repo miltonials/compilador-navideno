@@ -252,7 +252,8 @@ public class ParserTest {
   @Test
   public void miTest() throws Exception {
     String program = funMainAlt;
-    program += "local int temp <= 1+(2+1)+5+7+8|";
+    program += "local int temp <= 5|";
+    //program += "local int temp <= (1+(2+1)+5+7+8)|";
     //program += "local int tuki <= 10+2|";
     //program += "print(\"hola\")|";
     /*

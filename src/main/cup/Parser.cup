@@ -529,13 +529,20 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                         }
 
                         //crear una funcion que realice lo de abajo
-                        if (tipoAux.equals("int")) {
-                            data.append(nombre + currentHash + ": .word 0\n");
+                        data.append(nombre + currentHash + ": .word 0\n");
+                        if (tp.toString().contains("+")) {
+                            if (tipoAux.equals("int")) {
+                                cod3D.append("sw $t0, " + nombre + currentHash + "\n");
+                                cod3D.append("lw $a0, "+nombre+currentHash+"\nli $v0, 1\nsyscall\n");
+
+                            } else if (tipoAux.equals("float")) {
+                                data.append(nombre + currentHash + ": .float 0.0\n");
+                            }
+                        }
+                        else {
+                            cod3D.append("add $t0, " + tp.toString().split(":")[0] + "\n");
                             cod3D.append("sw $t0, " + nombre + currentHash + "\n");
                             cod3D.append("lw $a0, "+nombre+currentHash+"\nli $v0, 1\nsyscall\n");
-
-                        } else if (tipoAux.equals("float")) {
-                            data.append(nombre + currentHash + ": .float 0.0\n");
                         }
 
                         primeraOp = true;
