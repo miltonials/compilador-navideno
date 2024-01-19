@@ -9,6 +9,7 @@ import java_cup.runtime.Symbol;
 
 public class ParserTest {
   private String funMain = "function int main () { local int res <= 1|return 1|}";
+  private String funMainAlt = "function int main () { ";
   private String funStr = "function int hola (string paramA, int paramB, char paramC) {";
   private String funInt = "function int hola () {";
   private String funfloat = "function float hola (int x, char y) {";
@@ -250,17 +251,20 @@ public class ParserTest {
 
   @Test
   public void miTest() throws Exception {
-    String program = funInt;
+    String program = funMainAlt;
+    program += "local int temp <= 1+(2+1)+5+7+8|";
+    //program += "local int tuki <= 10+2|";
+    //program += "print(\"hola\")|";
+    /*
     program += "local int res <= ((1 - 1)+(2+1))|";
     program += "local int res1 <= 1 + ((5 + (1 - 3)) + 2) - 1|";
     program += "local int res2 <= 5 + (1 - 3) + 2|";
     program += "local int res3 <= 3 - ((res - 1) + 23 + res1 ** res * 5) * -1 + 4|";
     program += "local int res4 <= 3 - (res1+2 + 23 + res1 ** res1 * 5) + 1 + 4|";
     program += "local int res11 <= 3+2+11+1+res|";
-
+     */
 
     program += "return 1|}";
-    program += funMain;
 
     Integer resultado = (Integer) testHelper(program).value;
   }

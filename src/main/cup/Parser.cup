@@ -26,6 +26,12 @@ action code {:
         String vName;
         String vValue;
         char vValueCharmander;
+        boolean primeraOp = true;
+
+        StringBuffer cod3D = new StringBuffer();
+        StringBuffer data = new StringBuffer();
+        int currentTemp = 1;
+
         /**
          * Verificar que el parametro no este declarado
          * @param nombreParametro nombre del parametro
@@ -122,10 +128,6 @@ action code {:
             return isTrue;   
         }
 
-
-        StringBuffer cod3D = new StringBuffer();
-        int currentTemp = 1;
-
         /**
          * Imprime la tabla de símbolos
         */
@@ -214,6 +216,20 @@ action code {:
             return false;
         }
 
+        public void generarArchivo() {
+            // Solicitar nombre del generarArchivo
+            String filename = "compilado.asm";
+            Archivos.crearArchivo(filename);
+            Archivos.escribirArchivo(filename, "");
+            Archivos.agregarArchivo(filename, ".data\n");
+            Archivos.agregarArchivo(filename, data.toString());
+            Archivos.agregarArchivo(filename, ".text\n");
+            // utilizar StringBuffer cod3D
+            Archivos.agregarArchivo(filename, cod3D.toString());
+            Archivos.agregarArchivo(filename, "j end_program");
+            Archivos.agregarArchivo(filename, Archivos.getContenido("macrosMips.asm"));
+        }
+
 :}
 
 parser code {:
@@ -285,8 +301,6 @@ parser code {:
             // Agregar lógica adicional si es necesario para errores no recuperables
             // throw new Exception("Error no recuperable");
     }
-
-        
 :}
 
 
@@ -425,6 +439,7 @@ navidad ::=
             System.out.println("Fin de ejecución");
             
             if (compila) {
+                generarArchivo();
                 System.out.println("Compilación exitosa");
             } else {
                 System.out.println("Compilación fallida");
@@ -440,6 +455,7 @@ bolsaFuncional ::= regalofuncional | bolsaFuncional regalofuncional;
 regaloprincipal ::= REGALO SANTACLAUS MAIN ABRECUENTO  CIERRECUENTO ABREREGALO
                         {:
                             agregarTablaSimbolos("int", "main");
+                            cod3D.append("main:\n");
                         :}
                         juguetes
                     CIERRAREGALO;
@@ -448,6 +464,7 @@ regalofuncional ::= REGALO tipoRegalo:tipo PERSONA:nombre
                         {:
                             verificarDeclaracionFuncion(nombre);
                             agregarTablaSimbolos(tipo.toString(), nombre.toString());
+                            cod3D.append(nombre + ":\n");
                         :} 
                     monnosAux ABREREGALO
                         juguetes
@@ -490,7 +507,11 @@ juguete ::= asignarJuguete FINREGALO
                     String tipo = tp.toString().split(":")[tp.toString().split(":").length - 1];
                     verificarTipoRetorno(tipo);
                 :}
-            | NARRA tallerDeJuguetes FINREGALO
+            | NARRA tallerDeJuguetes:tp FINREGALO
+            {:
+                String tipo = tp.toString().split(":")[tp.toString().split(":").length - 1];
+                boolean isVar = variableDeclarada(vValue);
+            :}
             | ESCUCHA tallerDeJuguetes FINREGALO
             ;
 
@@ -506,6 +527,18 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                             System.out.println("Error semántico: Tipo de dato incorrecto en la asignación de la variable '" + nombre + "'.");
                             compila = false;
                         }
+
+                        //crear una funcion que realice lo de abajo
+                        if (tipoAux.equals("int")) {
+                            data.append(nombre + currentHash + ": .word 0\n");
+                            cod3D.append("sw $t0, " + nombre + currentHash + "\n");
+                            cod3D.append("lw $a0, "+nombre+currentHash+"\nli $v0, 1\nsyscall\n");
+
+                        } else if (tipoAux.equals("float")) {
+                            data.append(nombre + currentHash + ": .float 0.0\n");
+                        }
+
+                        primeraOp = true;
                         listaTablasSimbolos.get(currentHash).add( "Variable (" + tipo.toString() + ") : " + nombre + " = " + vValue);
                     :}
                     | LOCAL tipoJuguete:tipo PERSONA:nombre
@@ -515,6 +548,7 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                             compila = false;
                         }
 
+                        data.append(nombre + currentHash + ": .word 0\n");
                         listaTablasSimbolos.get(currentHash).add( "Variable (" + tipo.toString() + ") : " + nombre);
                     :}
                     | PERSONA:nombre ENTREGA tallerDeJuguetes:tp
@@ -525,6 +559,8 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                             System.out.println("Error semántico: Tipo de dato incorrecto en la asignación de la variable '" + nombre + "'.");
                             compila = false;
                         }
+
+                        data.append(nombre + currentHash + ": .word 0\n");
                         listaTablasSimbolos.get(currentHash).add( "Variable anterior ( no identificado ) : " + nombre + " = " + vValue);
                     :}
 
@@ -564,14 +600,20 @@ tallerDeJuguetes ::= piezaJuguete: val
                     {:
                         RESULT =  val.toString();
                         vValue = RESULT.toString().split(":")[0];
+                        String tipo = val.toString().split(":")[1].split(" ")[0];
                     :}
-                    | piezaJuguete:valA gomasNavidenas:operador tallerDeJuguetes:valB
+                    | piezaJuguete:valA gomasNavidenas:operador tallerDeJuguetes:valB //operando operador operando
                     {:
-                        RESULT =  valA.toString() + " " + operador.toString() + " " + valB.toString();
-                        vValue = RESULT.toString();
-
                         String tpValA = "";
                         String tpValB = "";
+                        
+                        String valALiteral = valA.toString().replace(":int", "")
+                                                    .replace(":float", "").replace(":bool", "").replace(":char", "")
+                                                    .replace(":string", "").replace(vValue, "");
+                        
+                        String valBLiteral = valB.toString().replace(":int", "")
+                                                    .replace(":float", "").replace(":bool", "").replace(":char", "")
+                                                    .replace(":string", "").replace(vValue, "");
 
                         try {
                             tpValA = valA.toString().split(":")[1].split(" ")[0];
@@ -590,6 +632,62 @@ tallerDeJuguetes ::= piezaJuguete: val
 
                         RESULT =  valA.toString() + " " + operador.toString() + " " + valB.toString();
                         vValue = RESULT.toString().replace(":int", "").replace(":float", "").replace(":bool", "").replace(":char", "").replace(":string", "");
+
+                        //cod3d mips
+                        operador = operador.toString().replace(" ", "");
+                        
+                        valB = valB.toString().replace(":int", "").replace(":float", "")
+                        .replace(":bool", "").replace(":char", "").replace(":string", "");
+                        if(tpValA.equals("int") || tpValB.equals("int")) {
+                            //System.out.println(valALiteral + " :::: " + operador + " :::: " + valBLiteral);
+                            System.out.println(valA.toString() + " ==== " + operador + " ==== " + valB.toString());
+                            if (operador.equals("+")) {
+                                if (!valB.toString().contains("+")) {
+                                    //cod3D.append("li $t1, " + valA.toString()+"\n");
+                                    //cod3D.append("li $t2, " + valB.toString() +"\n");
+                                    //cod3D.append("add $t0, $t1, $t2\n");
+                                    cod3D.append("add $t0, $t0, " + valA.toString() + "\n");
+                                    cod3D.append("add $t0, $t0, " + valB.toString() + "\n");
+                                }
+                                else {
+                                    cod3D.append("add $t0, $t0, "+ valA.toString() +"\n");
+                                }
+                            } else if (operador.equals("-")) {
+                                cod3D.append("sub $t2, $t0, $t1\n");
+                            } else if (operador.equals("*")) {
+                                cod3D.append("mul $t2, $t0, $t1\n");
+                            } else if (operador.equals("/")) {
+                                cod3D.append("div $t2, $t0, $t1\n");
+                            } else if (operador.equals("//")) {
+                                cod3D.append("div $t2, $t0, $t1\n");
+                                cod3D.append("mflo $t2\n");
+                            } else if (operador.equals("~")) {
+                                cod3D.append("div $t2, $t0, $t1\n");
+                                cod3D.append("mfhi $t2\n");
+                            } else if (operador.equals("**")) {
+                                cod3D.append("mul $t2, $t0, $t1\n");
+                            }
+                        }
+                        else if (tpValA.equals("float") || tpValB.equals("float")) {
+                            if (operador.equals("+")) {
+                                cod3D.append("add.s $f" + currentTemp + ", " + valALiteral + ", " + valBLiteral + "\n");
+                            } else if (operador.equals("-")) {
+                                cod3D.append("sub.s $f" + currentTemp + ", " + valALiteral + ", " + valBLiteral + "\n");
+                            } else if (operador.equals("*")) {
+                                cod3D.append("mul.s $f" + currentTemp + ", " + valALiteral + ", " + valBLiteral + "\n");
+                            } else if (operador.equals("/")) {
+                                cod3D.append("div.s $f" + currentTemp + ", " + valALiteral + ", " + valBLiteral + "\n");
+                            } else if (operador.equals("//")) {
+                                cod3D.append("div.s $f" + currentTemp + ", " + valALiteral + ", " + valBLiteral + "\n");
+                                cod3D.append("mflo $f" + currentTemp + "\n");
+                            } else if (operador.equals("~")) {
+                                cod3D.append("div.s $f" + currentTemp + ", " + valALiteral + ", " + valBLiteral + "\n");
+                                cod3D.append("mfhi $f" + currentTemp + "\n");
+                            } else if (operador.equals("**")) {
+                                cod3D.append("mul.s $f" + currentTemp + ", " + valALiteral + ", " + valBLiteral + "\n");
+                            }
+                        }
+                        primeraOp = false;
                     :}
                     | GRINCH:operador tallerDeJuguetes:val
                     {:
@@ -618,6 +716,7 @@ tallerDeJuguetes ::= piezaJuguete: val
                             RESULT =  "( " + val.toString() + " )";
                         }
                         vValue = "( " + valLit + " )";
+                        primeraOp = true;
                     :}
                     | ABRECUENTO tallerDeJuguetes:valA CIERRECUENTO gomasNavidenas:operador tallerDeJuguetes:valB // ( expr ) gomasNavidenas tallerDeJuguetes
                     {:
@@ -644,6 +743,7 @@ tallerDeJuguetes ::= piezaJuguete: val
 
                         RESULT =  "( " + valA.toString() + " ):" + tipo  + " " + operador.toString() + " " + valB.toString();
                         vValue = "( " + valA.toString() + " ) " + operador.toString() + " " + valB.toString();
+                        primeraOp = true;
                     :}
                     ;
 
