@@ -30,7 +30,7 @@ action code {:
 
         StringBuffer cod3D = new StringBuffer();
         StringBuffer data = new StringBuffer();
-        int currentTemp = 1;
+        int currentTemp = 0;
 
         /**
          * Verificar que el parametro no este declarado
@@ -529,9 +529,15 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                         }
 
                         //crear una funcion que realice lo de abajo
-                        data.append(nombre + currentHash + ": .word 0\n");
-                        if (tp.toString().contains("+")) {
+                        //if (tp.toString().contains("-")) {
+                        if (true) {
                             if (tipoAux.equals("int")) {
+                                data.append(nombre + currentHash + ": .word 0\n");
+
+                                for (int i = 1; currentTemp >= i; i++) {
+                                    cod3D.append("add $t0, $t0, $t" + i + "\n");
+                                }
+                                
                                 cod3D.append("sw $t0, " + nombre + currentHash + "\n");
                                 cod3D.append("lw $a0, "+nombre+currentHash+"\nli $v0, 1\nsyscall\n");
 
@@ -646,21 +652,27 @@ tallerDeJuguetes ::= piezaJuguete: val
                         valB = valB.toString().replace(":int", "").replace(":float", "")
                         .replace(":bool", "").replace(":char", "").replace(":string", "");
                         if(tpValA.equals("int") || tpValB.equals("int")) {
-                            //System.out.println(valALiteral + " :::: " + operador + " :::: " + valBLiteral);
                             System.out.println(valA.toString() + " ==== " + operador + " ==== " + valB.toString());
                             if (operador.equals("+")) {
                                 if (!valB.toString().contains("+")) {
-                                    //cod3D.append("li $t1, " + valA.toString()+"\n");
-                                    //cod3D.append("li $t2, " + valB.toString() +"\n");
-                                    //cod3D.append("add $t0, $t1, $t2\n");
-                                    cod3D.append("add $t0, $t0, " + valA.toString() + "\n");
-                                    cod3D.append("add $t0, $t0, " + valB.toString() + "\n");
+                                    cod3D.append("add $t" + currentTemp + ", $t" + currentTemp + ", " + valB.toString() + "\n");
                                 }
-                                else {
-                                    cod3D.append("add $t0, $t0, "+ valA.toString() +"\n");
-                                }
+                                cod3D.append("add $t" + currentTemp + ", $t" + currentTemp + ", " + valA.toString() + "\n");
                             } else if (operador.equals("-")) {
-                                cod3D.append("sub $t2, $t0, $t1\n");
+                                if (!valB.toString().contains("-") && !valB.toString().contains("(")) {
+                                    cod3D.append("sub $t" + currentTemp + ", $t" + currentTemp + ", " + valB.toString() + "\n");
+                                }
+                                else {//si hay -(expr), entonces, expr (que es lo que se ha operado) cambia su símbolo
+                                    if (currentTemp == 0) {
+                                        cod3D.append("add $t"+currentTemp+", $t"+currentTemp+", $t" + (currentTemp-1) + "\n");
+                                        cod3D.append("mul $t" + currentTemp + ", $t" + currentTemp + ", -1\n");
+                                    }
+                                    else {
+                                        cod3D.append("add $t"+currentTemp+", $t"+currentTemp+", $t" + (currentTemp-1) + "\n");
+                                        cod3D.append("mul $t" + (currentTemp - 1) + ", $t" + (currentTemp - 1) + ", -1\n");
+                                    }
+                                }
+                                cod3D.append("add $t" + currentTemp + ", $t" + currentTemp + ", " + valA.toString() + "\n");
                             } else if (operador.equals("*")) {
                                 cod3D.append("mul $t2, $t0, $t1\n");
                             } else if (operador.equals("/")) {
@@ -723,7 +735,7 @@ tallerDeJuguetes ::= piezaJuguete: val
                             RESULT =  "( " + val.toString() + " )";
                         }
                         vValue = "( " + valLit + " )";
-                        primeraOp = true;
+                        currentTemp += 1;
                     :}
                     | ABRECUENTO tallerDeJuguetes:valA CIERRECUENTO gomasNavidenas:operador tallerDeJuguetes:valB // ( expr ) gomasNavidenas tallerDeJuguetes
                     {:
@@ -750,7 +762,44 @@ tallerDeJuguetes ::= piezaJuguete: val
 
                         RESULT =  "( " + valA.toString() + " ):" + tipo  + " " + operador.toString() + " " + valB.toString();
                         vValue = "( " + valA.toString() + " ) " + operador.toString() + " " + valB.toString();
-                        primeraOp = true;
+
+                        currentTemp += 1;
+                        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>> " + valA.toString());
+                        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>> " + valB.toString());
+
+                        valB = valB.toString().replace(":int", "").replace(":float", "").replace(":bool", "").replace(":char", "").replace(":string", "");
+                        if(tpValA.equals("int") || tpValB.equals("int")) {
+                            System.out.println(valA.toString() + " ==== " + operador + " ==== " + valB.toString());
+                            if (operador.equals("+")) {
+                                if (!valB.toString().contains("+")) {
+                                    cod3D.append("add $t" + currentTemp + ", $t" + currentTemp + ", " + valB.toString() + "\n");
+                                }
+                                if (!valA.toString().contains("+")){
+                                    cod3D.append("add $t" + currentTemp + ", $t" + currentTemp + ", " + valA.toString() + "\n");
+                                }
+
+                            } else if (operador.equals("-")) {
+                                if (!valB.toString().contains("-") && !valB.toString().contains("(")) {
+                                    cod3D.append("sub $t" + currentTemp + ", $t" + currentTemp + ", " + valB.toString() + "\n");
+                                }
+                                else {//si hay -(expr), entonces, expr (que es lo que se ha operado) cambia su símbolo
+                                    if (currentTemp == 0) {
+                                        cod3D.append("add $t"+currentTemp+", $t"+currentTemp+", $t" + (currentTemp-1) + "\n");
+                                        cod3D.append("mul $t" + currentTemp + ", $t" + currentTemp + ", -1\n");
+                                        
+                                    }
+                                    else {
+                                        cod3D.append("add $t"+currentTemp+", $t"+currentTemp+", $t" + (currentTemp-1) + "\n");
+                                        cod3D.append("mul $t" + (currentTemp - 1) + ", $t" + (currentTemp - 1) + ", -1\n");
+                                    }
+                                    
+                                }
+
+                                if (!valA.toString().contains("+")) {
+                                    cod3D.append("add $t" + currentTemp + ", $t" + currentTemp + ", " + valA.toString() + "\n");
+                                }
+                            }
+                        }
                     :}
                     ;
 
