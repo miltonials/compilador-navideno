@@ -1,59 +1,19 @@
 
 .data
 
-saltoLinea: .asciiz "\n"
-temp1main: .word 0
-print0: .asciiz "hola"
-print3: .word 1 - ( 2 - ( 10 + ( 5 + 5 + 5 ) ) ) + 5 + 5
-print4: .word 5 / 5
-print5: .asciiz "Soy un string"
+holamain: .word 0
+hola2main: .float 0.0
 
 .text
 
 main:
-add $t0, $t0, 6
-add $t0, $t0, 5
-add $t0, $t0, -4
-add $t0, $t0, 3
-add $t0, $t0, 2
-add $t0, $t0, 1
-#1 + 2 + 3 + -4 + 5 + 6
-sw $t0, temp1main
-li $t0, 0
-la $a0, print0
-jal printStr
-la $a0, saltoLinea
-jal printStr
-lw $a0, temp1main
-jal printInt
-la $a0, saltoLinea
-jal printStr
 #finParentesis
+jal readFloat
+s.s $f0, hola2main
+# Imprimir el valor de hola2main
+l.s $f12, hola2main
+jal printFloat
 #finParentesis
-add $t4, $t4, 5
-add $t4, $t4, 5
-add $t4, $t4, 5
-#finParentesis
-add $t3, $t3, 10
-#finParentesis
-mul $t3, $t3, -1
-add $t2, $t2, 2
-add $t1, $t1, 5
-add $t1, $t1, 5
-mul $t2, $t2, -1
-add $t1, $t1, 1
-lw $a0, print3
-jal printInt
-la $a0, saltoLinea
-jal printStr
-lw $a0, print4
-jal printInt
-la $a0, saltoLinea
-jal printStr
-la $a0, print5
-jal printStr
-la $a0, saltoLinea
-jal printStr
 
 j end_program
 

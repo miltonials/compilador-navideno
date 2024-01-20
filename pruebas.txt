@@ -1,6 +1,7 @@
 function int main () {
     @local bool res <= true|
-    local int hola <= 1+2|
-    local float hola2 <= 1.0+1.1|
+    local int hola|
+    local float hola2|
+    read(hola2)|
     return 3|
 }
