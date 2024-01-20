@@ -759,8 +759,21 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                                 data.append(nombre + currentHash + ": .word 0\n");
                                 cod3D.append("sw $t0, " + nombre + currentHash + "\n");
                                 cod3D.append("lw $a0, "+nombre+currentHash+"\nli $v0, 1\nsyscall\n");
-                            }
-                            
+                            } else if (tipo.toString().contains("[") && tipo.toString().contains("]")) {
+                                System.out.println("paso por el array 1");
+                                System.out.println("tipo: "+tipo);
+                                String tamano = tipo.toString().replace("[", "").replace("]", "");
+                                String tamanoAux = tamano.toString().replace(":int", "").replace(":float", "").replace(":bool", "").replace(":char", "").replace(":string", "");
+                                String tipoAux2 = tipo.toString().replace("int", "").replace("float", "").replace("bool", "").replace("char", "").replace("string", "").replace("[", "").replace("]", "").replace(":", "");
+                                System.out.println("tamano: "+tipoAux2);
+                                int tamanoInt = Integer.parseInt(tipoAux2);
+                                System.out.println("largo: "+tamanoInt);
+                                // apartar espacio en memoria para el array segun el tipo de dato
+                                data.append(nombre + currentHash + ": .space "+(tamanoInt*4)+"\n");
+                                //guardo el valor en la variable creada
+                                
+
+                            }                            
                         }
                         else {
                             cod3D.append("add $t0, " + tp.toString().split(":")[0] + "\n");
@@ -789,6 +802,15 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                             data.append(nombre + currentHash + ": .byte 0\n");
                         } else if (tipo.equals("string")) {
                             data.append(nombre + currentHash + ": .word 0\n");
+                        } else if (tipo.toString().contains("[") && tipo.toString().contains("]")) {
+                            String tamano = tipo.toString().replace("[", "").replace("]", "");
+                            String tamanoAux = tamano.toString().replace(":int", "").replace(":float", "").replace(":bool", "").replace(":char", "").replace(":string", "");
+                            String tipoAux2 = tipo.toString().replace("int", "").replace("float", "").replace("bool", "").replace("char", "").replace("string", "").replace("[", "").replace("]", "").replace(":", "");
+                            System.out.println("tamano: "+tipoAux2);
+                            int tamanoInt = Integer.parseInt(tipoAux2);
+                            // apartar espacio en memoria para el array segun el tipo de dato
+                            data.append(nombre + currentHash + ": .space "+(tamanoInt*4)+"\n");
+
                         }
                         // data.append(nombre + currentHash + ": .word 0\n");
                         listaTablasSimbolos.get(currentHash).add( "Variable (" + tipo.toString() + ") : " + nombre);
@@ -808,11 +830,24 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
 
                     | LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA ABREEMPAQUE estampillasNavidena CIERREEMPAQUE
                     {:
+                        System.out.println("paso por el array");
                         if(variableDeclarada(nombre)){
                             System.err.println("Error semántico: Variable '" + nombre + "' ya declarada.");
                             compila = false;
                         }
-                        listaTablasSimbolos.get(currentHash).add( "Variable (" + tipo.toString() + ") : " + nombre + " = [" + vValue + "]");
+                        //se saca el tamaño del array de la variable a crear, se multiplica por 4 para saber cuantos bytes se necesitan
+                        
+                        // int tamanoInt = Integer.parseInt(tamano);
+                        // System.out.println("tamano: "+tamano);
+                        listaTablasSimbolos.get(currentHash).add( "Variable ("+tipo.toString()+ ") : " + nombre + " = [" + vValue + "]");
+                        String tamano = tipo.toString().replace("[", "").replace("]", "");
+                        System.out.println("tamano: "+tamano);
+                        String tamanoAux = tamano.toString().replace(":int", "").replace(":float", "").replace(":bool", "").replace(":char", "").replace(":string", "");
+                        String tipoAux2 = tipo.toString().replace("int", "").replace("float", "").replace("bool", "").replace("char", "").replace("string", "").replace("[", "").replace("]", "").replace(":", "");
+                        System.out.println("tamano: "+tipoAux2);
+                        int tamanoInt = Integer.parseInt(tipoAux2);
+                        // apartar espacio en memoria para el array segun el tipo de dato
+                        data.append(nombre + currentHash + ": .space "+(tamanoInt*4)+"\n");
                     :}
                     | PERSONA:nombre ABREEMPAQUE tallerDeJuguetes:tp CIERREEMPAQUE ENTREGA tallerDeJuguetes
                     {:
@@ -822,12 +857,15 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                             System.err.println("Error semántico: Tipo de dato incorrecto en la asignación de la variable '" + nombre + "'.");
                             compila = false;
                         }
-                        listaTablasSimbolos.get(currentHash).add( "Variable anterior (array) : " + nombre + " = [" + vValue + "]");
+                        String tipo = getTipo(nombre);
+                        listaTablasSimbolos.get(currentHash).add( "Variable ("+tipo+") : " + nombre + " = [" + vValue + "]");
                     :}
                     | PERSONA:nombre ENTREGA ABREEMPAQUE estampillasNavidena CIERREEMPAQUE
                     {:
                         verificarDeclaracionVariable(nombre);
-                        listaTablasSimbolos.get(currentHash).add( "Variable (array) : " + nombre + " = [" + vValue + "]");
+                        String tipo = getTipo(nombre);
+                        listaTablasSimbolos.get(currentHash).add( "Variable ("+tipo+") : " + nombre + " = [" + vValue + "]");
+
                     :}
                     ;
 
