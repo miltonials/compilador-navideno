@@ -32,6 +32,20 @@ action code {:
         StringBuffer data = new StringBuffer();
         int currentTemp = 0;
         int cantidadNumeros = 0;
+        boolean isParentesis = false;
+        boolean sumaDespuesParentesis = false;
+
+        /**
+         * Verifica si el temporal ya se sumo al temporal 0
+         * @param temporal temporal a verificar
+         */
+        public void temporalFueOperado() {
+            System.out.println("paso por el temporalFueOperado: "+"add $t0, $t0, $t"+(currentTemp-1));
+            System.out.println(cod3D.toString().contains("add $t0, $t0, $t"+(currentTemp-1)));
+            if(!cod3D.toString().contains("add $t0, $t0, $t"+(currentTemp-1))) {
+                cod3D.append("add $t0, $t0, $t" + (currentTemp-1) + "\n");
+            }
+        }
 
         /**
          * contiene operadores aritmeticos
@@ -563,10 +577,10 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                         if(compila){
                             if (tipo.toString().equals("int")) {
                                 data.append(nombre + currentHash + ": .word 0\n");
-                                
+                                /*
                                 for (int i = 1; currentTemp >= i; i++) {
                                     cod3D.append("add $t0, $t0, $t" + i + "\n");
-                                }
+                                }*/
 
                                 cod3D.append("sw $t0, " + nombre + currentHash + "\n");
                                 cod3D.append("lw $a0, "+nombre+currentHash+"\nli $v0, 1\nsyscall\n");
@@ -675,6 +689,7 @@ tallerDeJuguetes ::= piezaJuguete: val
                     :}
                     | piezaJuguete:valA gomasNavidenas:operador tallerDeJuguetes:valB //operando operador operando
                     {:
+                        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>> paso por aqui: operando operador operando");
                         String tpValA = "";
                         String tpValB = "";
                         
@@ -713,12 +728,17 @@ tallerDeJuguetes ::= piezaJuguete: val
                             System.out.println(valA.toString() + " ==== " + operador + " ==== " + valB.toString());
                             if (operador.equals("+")) {
                                 if (!valB.toString().contains("+")) {
-                                    cod3D.append("add $t" + currentTemp + ", $t" + currentTemp + ", " + valB.toString() + "\n");
+                                    cod3D.append("add $t0, $t0, " + valB.toString() + "\n");
                                 }
                                 cod3D.append("add $t" + currentTemp + ", $t" + currentTemp + ", " + valA.toString() + "\n");
+                                if(isParentesis){
+                                    //sumar el temporal anterior con el temporal 0
+                                    cod3D.append("add $t0, $t0, $t" + (currentTemp) + "\n");
+                                    isParentesis = false;
+                                }
                             } else if (operador.equals("-")) {
                                 if (!valB.toString().contains("-") && !valB.toString().contains("(")) {
-                                    cod3D.append("sub $t" + currentTemp + ", $t" + currentTemp + ", " + valB.toString() + "\n");
+                                    cod3D.append("sub $t0, $t0, " + valB.toString() + "\n");
                                 }
                                 else {//si hay -(expr), entonces, expr (que es lo que se ha operado) cambia su símbolo
                                     if (currentTemp == 0) {
@@ -726,11 +746,23 @@ tallerDeJuguetes ::= piezaJuguete: val
                                         cod3D.append("mul $t" + currentTemp + ", $t" + currentTemp + ", -1\n");
                                     }
                                     else {
-                                        cod3D.append("add $t"+currentTemp+", $t"+currentTemp+", $t" + (currentTemp-1) + "\n");
-                                        cod3D.append("mul $t" + (currentTemp - 1) + ", $t" + (currentTemp - 1) + ", -1\n");
+                                        // cod3D.append("add $t"+currentTemp+", $t"+currentTemp+", $t" + (currentTemp-1) + "\n");
+                                        // cod3D.append("mul $t" + (currentTemp - 1) + ", $t" + (currentTemp - 1) + ", -1\n");
+                                        //multiplica el temporal 0 por -1
+                                        cod3D.append("mul $t0, $t0, -1\n");
+                                        //funcion que comprueba si el currentTemp-1 ya se sumo al temporal 0
+                                        System.out.println("currentTemp: " + currentTemp);
+                                        temporalFueOperado();
+                                        // isParentesis = false;
                                     }
                                 }
                                 cod3D.append("add $t" + currentTemp + ", $t" + currentTemp + ", " + valA.toString() + "\n");
+                                if (isParentesis) {
+                                    //sumar el temporal anterior con el temporal 0
+                                    cod3D.append("add $t0, $t0, $t" + (currentTemp) + "\n");
+                                    isParentesis = false;
+                                    System.out.println("paso por el isParentesis");
+                                }
                             } else if (operador.equals("*")) {
                                 cod3D.append("mul $t2, $t0, $t1\n");
                             } else if (operador.equals("/")) {
@@ -792,6 +824,8 @@ tallerDeJuguetes ::= piezaJuguete: val
                     :}
                     | ABRECUENTO tallerDeJuguetes:val CIERRECUENTO // ( expr )
                     {:
+                        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>> paso por aqui: ( expr ) "+val.toString());
+                        System.out.println(cod3D.toString());
                         //String tipo = val.toString().split(":")[1];
                         String tipo = val.toString().split(":")[val.toString().split(":").length - 1];
                         String valLit = val.toString().replace(":int", "").replace(":float", "").replace(":bool", "").replace(":char", "").replace(":string", "");
@@ -803,9 +837,19 @@ tallerDeJuguetes ::= piezaJuguete: val
                         }
                         vValue = "( " + valLit + " )";
                         currentTemp += 1;
+                        isParentesis = true;
+                        //aplicar operacion en parentesis
+                        if (tipo.equals("int")) {
+                            
+                        } else if (tipo.equals("float")) {
+                            cod3D.append("add.s $f" + currentTemp + ", $f" + currentTemp + ", " + valLit + "\n");
+                        }
                     :}
                     | ABRECUENTO tallerDeJuguetes:valA CIERRECUENTO gomasNavidenas:operador tallerDeJuguetes:valB // ( expr ) gomasNavidenas tallerDeJuguetes
                     {:
+                        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>> paso por aqui: ( expr ) gomasNavidenas tallerDeJuguetes:" + valA.toString() + " " + operador.toString() + " " + valB.toString());
+                        System.out.println(cod3D.toString());
+                        isParentesis = true;
                         String tpValA = "";
                         String tpValB = "";
                         String tipo = "";
@@ -824,6 +868,7 @@ tallerDeJuguetes ::= piezaJuguete: val
                             System.err.println("Error de tipos en la expresión: (" + valA.toString() + "):" + tipo + operador.toString() + " " + valB.toString());
                         }
                         
+                        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>> " + valA.toString());
                         valA = valA.toString().replace(":int", "");
                         valA = valA.toString().replace(":float", "");
 
@@ -833,6 +878,7 @@ tallerDeJuguetes ::= piezaJuguete: val
                         currentTemp += 1;
                         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>> " + valA.toString());
                         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>> " + valB.toString());
+                        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>> " + operador.toString());
 
                         valB = valB.toString().replace(":int", "").replace(":float", "").replace(":bool", "").replace(":char", "").replace(":string", "");
                         if(tpValA.equals("int") || tpValB.equals("int")) {
@@ -844,13 +890,25 @@ tallerDeJuguetes ::= piezaJuguete: val
                                 if (!valA.toString().contains("+")){
                                     cod3D.append("add $t" + currentTemp + ", $t" + currentTemp + ", " + valA.toString() + "\n");
                                 }
+                                System.out.println("paso por aqui: + ###### "+cod3D.toString()+"LINEA QUE SEGUIA:"+valA.toString() + " ==== " + operador + " ==== " + valB.toString());
+                                // cod3D.append("add $t0, $t0, $t" + (currentTemp) + "\n");
+                                if(isParentesis){
+                                    //suma los 2 temporales anteriores con el temporal 0
+                                    // cod3D.append("add $t0, $t0, $t" + (currentTemp) + "\n");
+                                    // cod3D.append("add $t0, $t" + (currentTemp-1) + ", $t0\n");
+                                    // isParentesis = false;
+                                }
+                                sumaDespuesParentesis = true;
 
                             } else if (operador.equals("-")) {
                                 if (!valB.toString().contains("-") && !valB.toString().contains("(")) {
                                     cod3D.append("sub $t" + currentTemp + ", $t" + currentTemp + ", " + valB.toString() + "\n");
                                 }
                                 else {//si hay -(expr), entonces, expr (que es lo que se ha operado) cambia su símbolo
+                                    System.out.println("paso por aqui: else de -");
+                                    System.out.println(cod3D.toString());
                                     if (currentTemp == 0) {
+                                        //resto
                                         cod3D.append("add $t"+currentTemp+", $t"+currentTemp+", $t" + (currentTemp-1) + "\n");
                                         cod3D.append("mul $t" + currentTemp + ", $t" + currentTemp + ", -1\n");
                                         
@@ -865,8 +923,18 @@ tallerDeJuguetes ::= piezaJuguete: val
                                 if (!valA.toString().contains("+")) {
                                     cod3D.append("add $t" + currentTemp + ", $t" + currentTemp + ", " + valA.toString() + "\n");
                                 }
+                                
+                                if(isParentesis){
+                                    //suma los 2 temporales anteriores con el temporal 0
+                                    // cod3D.append("add $t0, $t0, $t" + (currentTemp) + "\n");
+                                    // cod3D.append("add $t0, $t" + (currentTemp-1) + ", $t0\n");
+                                    // isParentesis = false;
+                                }
+                                System.out.println("paso por aqui: - ###### ");
+                            
                             }
                         }
+                        currentTemp += 1;
                     :}
                     ;
 
