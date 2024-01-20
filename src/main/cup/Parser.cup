@@ -37,6 +37,23 @@ action code {:
         boolean sumaDespuesParentesis = false;
 
         int contadorPrints = 0;
+
+        /**
+          * Tipo de retorno de la funcion
+          * @param nombreFuncion nombre de la funcion
+          * @return tipo de retorno
+          */
+        public String tipoRetornoFuncion(String nombreFuncion) {
+            String tipo = "";
+            for (String item : listaTablasSimbolos.get(nombreFuncion)) {
+                if (item.contains("Tipo: ")) {
+                    tipo = item.split(":")[1].replace(" ", "");
+                    break;
+                }
+            }
+            return tipo;
+        }
+
         /**
          * Verifica si el temporal ya se sumo al temporal 0
          * @param temporal temporal a verificar
@@ -986,11 +1003,28 @@ piezaImportada ::= PERSONA:nombre parens parens
                         RESULT =  nombre + "()";
                         vValue = RESULT.toString();
 
+                         // generacion de codigo 3d para llamada a funcion
+                        //se llama a la funcion
+                        cod3D.append("jal " + nombre + "\n");
+                        //se guarda el valor de retorno en la variable        
+
                     :}
                 | PERSONA:nombre parens estampillasNavidena:val parens
                     {:
+                    
+                        if (!funcionDeclarada(nombre)) {
+                            System.err.println("Error semántico: Función '" + nombre + "' no declarada.");
+                            compila = false;
+                        }
+                        // String tipo = tipoRetornoFuncion(nombre);
                         RESULT =  nombre + "( " + val.toString() + " )";
                         vValue = RESULT.toString();
+
+                        // generacion de codigo 3d para llamada a funcion
+                        //se llama a la funcion
+                        cod3D.append("jal " + nombre + "\n");
+                        //se guarda el valor de retorno en la variable
+
                     :}
                 ;
 

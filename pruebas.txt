@@ -1,7 +1,15 @@
+function int prueba(){
+    local int a|
+    local int d|
+    local int c|
+    return 3|
+}
+
 function int main () {
     @local bool res <= true|
     local int hola|
     local float hola2|
     read(hola2)|
+    prueba2()|
     return 3|
 }

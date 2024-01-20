@@ -1,19 +1,21 @@
 
 .data
 
+saltoLinea: .asciiz "\n"
+aprueba: .word 0
+dprueba: .word 0
+cprueba: .word 0
 holamain: .word 0
 hola2main: .float 0.0
 
 .text
 
+prueba:
 main:
 #finParentesis
 jal readFloat
 s.s $f0, hola2main
-# Imprimir el valor de hola2main
-l.s $f12, hola2main
-jal printFloat
-#finParentesis
+jal prueba
 
 j end_program
 
