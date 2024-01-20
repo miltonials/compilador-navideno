@@ -1,25 +1,191 @@
 
 .data
 
-holamain: .word 0
-hola2main: .float 0.0
+
+temp1main: .word 0
+temp2main: .word 0
+temp3main: .word 0
+temp4main: .word 0
+temp5main: .word 0
+temp6main: .word 0
+temp7main: .word 0
+temp8main: .word 0
+
+salto: .asciiz "\n"
 
 .text
 
 main:
-add $t0, $t0, 1
+add $t0, $t0, 6
+add $t0, $t0, 5
+add $t0, $t0, -4
+add $t0, $t0, 3
 add $t0, $t0, 2
-sw $t0, holamain
-lw $a0, holamain
+add $t0, $t0, 1
+#1 + 2 + 3 + -4 + 5 + 6
+sw $t0, temp1main
+lw $a0, temp1main
 li $v0, 1
 syscall
-li.s $f1, 1.0
-li.s $f2, 1.1
-add.s $f0, $f1, $f2
-s.s $f0, hola2main
-l.s $f12, hola2main
-li $v0, 2
+li $t0, 0
+add $t0, $t0, 5
+add $t0, $t0, 5
+mul $t0, $t0, -1
+add $t0, $t0, 5
+add $t0, $t0, 5
+mul $t0, $t0, -1
+add $t0, $t0, 5
+add $t0, $t0, 5
+
+
+addi		$v0, $0, 4		# system call #4 - print string
+la		$a0, salto
+syscall						# execute
+
+
+sw $t0, temp2main
+lw $a0, temp2main
+li $v0, 1
 syscall
+li $t0, 0
+add $t1, $t1, 5
+add $t1, $t1, 5
+add $t1, $t1, 5
+add $t1, $t1, 5
+add $t1, $t1, 5
+add $t1, $t1, 5
+#finParentesis
+add $t0, $t0, $t1
+li $t1, 0
+
+
+addi		$v0, $0, 4		# system call #4 - print string
+la		$a0, salto
+syscall						# execute
+
+
+sw $t0, temp3main
+lw $a0, temp3main
+li $v0, 1
+syscall
+li $t0, 0
+add $t1, $t1, 5
+add $t1, $t1, 5
+add $t0, $t0, 5
+add $t0, $t0, 5
+add $t0, $t0, 5
+add $t0, $t0, $t1
+li $t1, 0
+
+
+addi		$v0, $0, 4		# system call #4 - print string
+la		$a0, salto
+syscall						# execute
+
+
+sw $t0, temp4main
+lw $a0, temp4main
+li $v0, 1
+syscall
+li $t0, 0
+add $t1, $t1, 5
+add $t1, $t1, 10
+add $t0, $t0, 3
+add $t0, $t0, 2
+add $t0, $t0, 1
+add $t0, $t0, 4
+mul $t1, $t1, -1
+add $t0, $t0, 0
+add $t0, $t0, $t1
+li $t1, 0
+
+
+addi		$v0, $0, 4		# system call #4 - print string
+la		$a0, salto
+syscall						# execute
+
+
+sw $t0, temp5main
+lw $a0, temp5main
+li $v0, 1
+syscall
+li $t0, 0
+add $t1, $t1, 3
+add $t1, $t1, 2
+add $t1, $t1, 1
+add $t1, $t1, 4
+add $t1, $t1, 5
+add $t1, $t1, 10
+mul $t1, $t1, -1
+add $t1, $t1, 0
+#finParentesis
+add $t0, $t0, $t1
+li $t1, 0
+
+
+addi		$v0, $0, 4		# system call #4 - print string
+la		$a0, salto
+syscall						# execute
+
+
+sw $t0, temp6main
+lw $a0, temp6main
+li $v0, 1
+syscall
+li $t0, 0
+add $t1, $t1, 1
+add $t1, $t1, 2
+add $t0, $t0, 8
+add $t0, $t0, 7
+add $t0, $t0, 5
+add $t0, $t0, 1
+add $t0, $t0, $t1
+li $t1, 0
+
+
+addi		$v0, $0, 4		# system call #4 - print string
+la		$a0, salto
+syscall						# execute
+
+
+sw $t0, temp7main
+lw $a0, temp7main
+li $v0, 1
+syscall
+li $t0, 0
+add $t4, $t4, 5
+add $t4, $t4, 5
+add $t4, $t4, 5
+#finParentesis
+add $t3, $t3, 10
+#finParentesis
+mul $t3, $t3, -1
+add $t2, $t2, 2
+add $t1, $t1, 5
+add $t1, $t1, 5
+mul $t2, $t2, -1
+add $t1, $t1, 1
+#finParentesis
+add $t3, $t3, $t4
+li $t4, 0
+add $t2, $t2, $t3
+li $t3, 0
+add $t1, $t1, $t2
+li $t2, 0
+add $t0, $t0, $t1
+li $t1, 0
+
+
+addi		$v0, $0, 4		# system call #4 - print string
+la		$a0, salto
+syscall						# execute
+
+
+sw $t0, temp8main
+lw $a0, temp8main
+li $v0, 1
+syscall
+li $t0, 0
 
 j end_program
 
