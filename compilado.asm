@@ -1,17 +1,12 @@
 
 .data
 
-
+saltoLinea: .asciiz "\n"
 temp1main: .word 0
-temp2main: .word 0
-temp3main: .word 0
-temp4main: .word 0
-temp5main: .word 0
-temp6main: .word 0
-temp7main: .word 0
-temp8main: .word 0
-
-salto: .asciiz "\n"
+print0: .asciiz "hola"
+print3: .word 1 - ( 2 - ( 10 + ( 5 + 5 + 5 ) ) ) + 5 + 5
+print4: .word 5 / 5
+print5: .asciiz "Soy un string"
 
 .text
 
@@ -24,135 +19,17 @@ add $t0, $t0, 2
 add $t0, $t0, 1
 #1 + 2 + 3 + -4 + 5 + 6
 sw $t0, temp1main
+li $t0, 0
+la $a0, print0
+jal printStr
+la $a0, saltoLinea
+jal printStr
 lw $a0, temp1main
-li $v0, 1
-syscall
-li $t0, 0
-add $t0, $t0, 5
-add $t0, $t0, 5
-mul $t0, $t0, -1
-add $t0, $t0, 5
-add $t0, $t0, 5
-mul $t0, $t0, -1
-add $t0, $t0, 5
-add $t0, $t0, 5
-
-
-addi		$v0, $0, 4		# system call #4 - print string
-la		$a0, salto
-syscall						# execute
-
-
-sw $t0, temp2main
-lw $a0, temp2main
-li $v0, 1
-syscall
-li $t0, 0
-add $t1, $t1, 5
-add $t1, $t1, 5
-add $t1, $t1, 5
-add $t1, $t1, 5
-add $t1, $t1, 5
-add $t1, $t1, 5
+jal printInt
+la $a0, saltoLinea
+jal printStr
 #finParentesis
-add $t0, $t0, $t1
-li $t1, 0
-
-
-addi		$v0, $0, 4		# system call #4 - print string
-la		$a0, salto
-syscall						# execute
-
-
-sw $t0, temp3main
-lw $a0, temp3main
-li $v0, 1
-syscall
-li $t0, 0
-add $t1, $t1, 5
-add $t1, $t1, 5
-add $t0, $t0, 5
-add $t0, $t0, 5
-add $t0, $t0, 5
-add $t0, $t0, $t1
-li $t1, 0
-
-
-addi		$v0, $0, 4		# system call #4 - print string
-la		$a0, salto
-syscall						# execute
-
-
-sw $t0, temp4main
-lw $a0, temp4main
-li $v0, 1
-syscall
-li $t0, 0
-add $t1, $t1, 5
-add $t1, $t1, 10
-add $t0, $t0, 3
-add $t0, $t0, 2
-add $t0, $t0, 1
-add $t0, $t0, 4
-mul $t1, $t1, -1
-add $t0, $t0, 0
-add $t0, $t0, $t1
-li $t1, 0
-
-
-addi		$v0, $0, 4		# system call #4 - print string
-la		$a0, salto
-syscall						# execute
-
-
-sw $t0, temp5main
-lw $a0, temp5main
-li $v0, 1
-syscall
-li $t0, 0
-add $t1, $t1, 3
-add $t1, $t1, 2
-add $t1, $t1, 1
-add $t1, $t1, 4
-add $t1, $t1, 5
-add $t1, $t1, 10
-mul $t1, $t1, -1
-add $t1, $t1, 0
 #finParentesis
-add $t0, $t0, $t1
-li $t1, 0
-
-
-addi		$v0, $0, 4		# system call #4 - print string
-la		$a0, salto
-syscall						# execute
-
-
-sw $t0, temp6main
-lw $a0, temp6main
-li $v0, 1
-syscall
-li $t0, 0
-add $t1, $t1, 1
-add $t1, $t1, 2
-add $t0, $t0, 8
-add $t0, $t0, 7
-add $t0, $t0, 5
-add $t0, $t0, 1
-add $t0, $t0, $t1
-li $t1, 0
-
-
-addi		$v0, $0, 4		# system call #4 - print string
-la		$a0, salto
-syscall						# execute
-
-
-sw $t0, temp7main
-lw $a0, temp7main
-li $v0, 1
-syscall
-li $t0, 0
 add $t4, $t4, 5
 add $t4, $t4, 5
 add $t4, $t4, 5
@@ -165,27 +42,18 @@ add $t1, $t1, 5
 add $t1, $t1, 5
 mul $t2, $t2, -1
 add $t1, $t1, 1
-#finParentesis
-add $t3, $t3, $t4
-li $t4, 0
-add $t2, $t2, $t3
-li $t3, 0
-add $t1, $t1, $t2
-li $t2, 0
-add $t0, $t0, $t1
-li $t1, 0
-
-
-addi		$v0, $0, 4		# system call #4 - print string
-la		$a0, salto
-syscall						# execute
-
-
-sw $t0, temp8main
-lw $a0, temp8main
-li $v0, 1
-syscall
-li $t0, 0
+lw $a0, print3
+jal printInt
+la $a0, saltoLinea
+jal printStr
+lw $a0, print4
+jal printInt
+la $a0, saltoLinea
+jal printStr
+la $a0, print5
+jal printStr
+la $a0, saltoLinea
+jal printStr
 
 j end_program
 

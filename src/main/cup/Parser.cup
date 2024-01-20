@@ -36,6 +36,7 @@ action code {:
         boolean isParentesis = false;
         boolean sumaDespuesParentesis = false;
 
+        int contadorPrints = 0;
         /**
          * Verifica si el temporal ya se sumo al temporal 0
          * @param temporal temporal a verificar
@@ -267,6 +268,7 @@ action code {:
             Archivos.crearArchivo(filename);
             Archivos.escribirArchivo(filename, "");
             Archivos.agregarArchivo(filename, ".data\n");
+            Archivos.agregarArchivo(filename, "saltoLinea: .asciiz \"\\n\"");
             Archivos.agregarArchivo(filename, data.toString());
             Archivos.agregarArchivo(filename, ".text\n");
             // utilizar StringBuffer cod3D
@@ -280,10 +282,10 @@ action code {:
         //cod3d mips
         operador = operador.toString().replace(" ", "");
         operandoB = operandoB.replace(":int", "").replace(":float", "").replace(":bool", "").replace(":char", "").replace(":string", "");
-        System.out.println("------------------------------------");
-        System.out.println("OPERANDOAAAAAAAAAAAAAAAA: " + operandoA);
-        System.out.println("OPERADORRRRRRRRRRRRRRRRR: " + operador);
-        System.out.println("OPERANDOBBBBBBBBBBBBBBBB: " + operandoB);
+        //System.out.println("------------------------------------");
+        //System.out.println("OPERANDOAAAAAAAAAAAAAAAA: " + operandoA);
+        //System.out.println("OPERADORRRRRRRRRRRRRRRRR: " + operador);
+        //System.out.println("OPERANDOBBBBBBBBBBBBBBBB: " + operandoB);
 
         if(tipo.equals("int")) {
             if (operador.equals("+")) {
@@ -291,7 +293,7 @@ action code {:
                     cod3D.append("add $t" + currentTemp + ", $t" + currentTemp + ", " + operandoB + "\n");
                 }
 
-                System.out.println("$t: " + currentTemp);
+                //System.out.println("$t: " + currentTemp);
                 
                 if ((!contieneOperadorAritmetico(operandoA) && !operandoA.substring(0,1).equals("(")) || operandoA.substring(0,1).equals("-")) {
                     cod3D.append("add $t" + currentTemp + ", $t" + currentTemp + ", " + operandoA + "\n");
@@ -597,10 +599,58 @@ juguete ::= asignarJuguete FINREGALO
                     String tipo = tp.toString().split(":")[tp.toString().split(":").length - 1];
                     verificarTipoRetorno(tipo);
                 :}
-            | NARRA tallerDeJuguetes:tp FINREGALO
+            | NARRA parens tallerDeJuguetes:tp parens FINREGALO
             {:
+                //solo se permite imprimir int, string, y float
                 String tipo = tp.toString().split(":")[tp.toString().split(":").length - 1];
+                String nombre = vValue+currentHash;
+                
+
+
                 boolean isVar = variableDeclarada(vValue);
+                
+                if (!isVar) {
+                    //data.append("print" + contadorPrints + ": .asciiz " + vValue + "\"\n");");
+                    if (tipo.equals("int")) {
+                        data.append("print" + contadorPrints + ": .word " + vValue + "\n");
+                    }
+                    else if (tipo.equals("float")) {
+                        if (contieneOperadorAritmetico(vValue)) {
+                            System.err.println("Únicamente se permite imprimir operaciones decimales almacenadas en una variable.");
+                        }
+                        else {
+                            data.append("print" + contadorPrints + ": .float " + vValue + "\n");
+                        }
+                    }
+                    else if (tipo.equals("string")) {
+                        data.append("print" + contadorPrints + ": .asciiz " + vValue + "\n");
+                    }
+                    else {
+                        System.err.println("No se permite imprimir el tipo de dato: " + tipo);
+                        contadorPrints--;
+                    }
+                    nombre = "print" + contadorPrints;
+                }
+
+                if (tipo.equals("int")) {
+                    cod3D.append("lw $a0, " + nombre + "\njal printInt\n");
+                    cod3D.append("la $a0, saltoLinea\njal printStr\n");
+                }
+                else if (tipo.equals("float")) {
+                    if (!contieneOperadorAritmetico(vValue)) {
+                        cod3D.append("l.s $f12, " + nombre + "\njal printFloat\n");
+                        cod3D.append("la $a0, saltoLinea\njal printStr\n");
+                    }
+                }
+                else if (tipo.equals("string")) {
+                    cod3D.append("la $a0, " + nombre + "\njal printStr\n");
+                    cod3D.append("la $a0, saltoLinea\njal printStr\n");
+                }
+                else {
+                    System.err.println("No se permite imprimir el tipo de dato: " + tipo);
+                    contadorPrints--;
+                }
+                contadorPrints++;
             :}
             | ESCUCHA tallerDeJuguetes FINREGALO
             ;
@@ -617,19 +667,6 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                             System.err.println("Error semántico: Tipo de dato incorrecto en la asignación de la variable '" + nombre + "'.");
                             compila = false;
                         }
-                        System.out.println(tp.toString());
-                        int tam = vValue.length();
-                        String fp = vValue.substring(0,1);
-                        String lp = vValue.substring(tam-1,tam);
-
-                        System.out.println("fp: " + fp);
-                        System.out.println("lp: " + lp);
-                        /*
-                        //si lo primer y lo ultimo es un parentesis de apertura y de cierre, entonces suma 1
-                        if (fp.equals("(") && lp.equals(")")) {
-                            currentTemp += 1;
-                        }
-                        */
 
                         for (int i = 0; maxTemp > i; maxTemp--) {
                             cod3D.append("add $t"+(maxTemp - 1)+", $t"+(maxTemp - 1)+", $t" + maxTemp + "\n");  
@@ -644,7 +681,7 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                             if (tipo.toString().equals("int")) {
                                 data.append(nombre + currentHash + ": .word 0\n");
                                 cod3D.append("sw $t"+currentTemp+", " + nombre + currentHash + "\n");
-                                cod3D.append("lw $a0, "+nombre+currentHash+"\nli $v0, 1\nsyscall\n");
+                                //cod3D.append("lw $a0, "+nombre+currentHash+"\nli $v0, 1\nsyscall\n");
 
                             } else if (tipo.toString().equals("float")) {
                                 data.append(nombre + currentHash + ": .float 0.0\n");

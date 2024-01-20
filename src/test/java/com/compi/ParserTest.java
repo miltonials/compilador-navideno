@@ -253,15 +253,24 @@ public class ParserTest {
   public void miTest() throws Exception {
     String program = funMainAlt;
     program += "local int temp1 <= 1 + 2 + 3 + -4 + 5 + 6|";//13✅
+    program += "print(\"hola\")|";
+    program += "print(temp1)|";
+    program += "print((1.1 + 3.3 + 5.5 + 7.7 + 9.9 - ( 1.1 + 3.3 + 5.5 + 7.7 + 9.9 + 1.0)))|";
+    program += "print(1 - (2 - (10 + (5 + 5 + 5))) + 5 + 5)|";
+    program += "print(5/5)|";
+    program += "print(\"Soy un string\")|";
+
+    /*
     program += "local int temp2 <= 5 + 5 - 5 + 5 - 5 + 5|";//10✅
     program += "local int temp3 <= (5 + 5 + 5) + (5 + 5 + 5)|";//30✅
     program += "local int temp4 <= 5 + 5 + (5 + 5) + 5|";//25✅
     program += "local int temp5 <= 0 - (10 + 5) + 4 + 1 + 2 + 3|";//-5✅
-    program += "local int temp6 <= (0 - 10 + 5 + 4 + 1 + 2 + 3)|";//5❌(-25)
+    program += "local int temp6 <= (0 - 10 + 5 + 4 + 1 + 2 + 3)|";//5❌-25
     program += "local int temp7 <= 1+(2+1)+5+7+8|";//24✅
     program += "local int temp8 <= (1 - (2 - (10 + (5 + 5 + 5))) + 5 + 5) |";//34❌14
+     */
     //program += "local int tuki <= 10+2|";
-    //program += "print(\"hola\")|";
+
     /*
     program += "local int res <= ((1 - 1)+(2+1))|";
     program += "local int res1 <= 1 + ((5 + (1 - 3)) + 2) - 1|";
