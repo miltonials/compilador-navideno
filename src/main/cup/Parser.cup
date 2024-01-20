@@ -602,7 +602,40 @@ juguete ::= asignarJuguete FINREGALO
                 String tipo = tp.toString().split(":")[tp.toString().split(":").length - 1];
                 boolean isVar = variableDeclarada(vValue);
             :}
-            | ESCUCHA tallerDeJuguetes FINREGALO
+            | ESCUCHA tallerDeJuguetes:tp FINREGALO
+            {:
+                // System.out.println("paso por el read: "+tp.toString());
+                String tipo = tp.toString().split(":")[tp.toString().split(":").length - 1];
+                String variable = tp.toString().split(":")[0].replace(" ", "").replace("(", "");
+                System.out.println("tipo: "+tipo);
+                boolean isVar = variableDeclarada(variable);
+                //Se valida que la variable exista en la tabla de simbolos
+                if (!isVar) {
+                    System.err.println("Error semántico: Variable '" + variable + "' no declarada.");
+                    compila = false;
+                }
+                //validacion que la variable sea de tipo int o float
+                if (!tipo.equals("int") && !tipo.equals("float")) {
+                    System.err.println("Error semántico: Variable '" + variable + "' no es de tipo int o float.");
+                    compila = false;
+                }
+                // generacion de codigo 3d para el read
+                //si es int se usa la funcion readInt 
+                if (tipo.equals("int")) {
+                    //se llama a la funcion readInt
+                    cod3D.append("jal readInt\n");
+                    //se guarda el valor en la variable
+                    cod3D.append("sw $v0, " + variable + currentHash + "\n");
+                }
+                //si es float se usa la funcion readFloat
+                else if (tipo.equals("float")) {
+                    //se llama a la funcion readFloat
+                    cod3D.append("jal readFloat\n");
+                    //se guarda el valor en la variable
+                    cod3D.append("s.s $f0, " + variable + currentHash + "\n");
+                }
+
+            :}
             ;
 
 asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguetes:tp
