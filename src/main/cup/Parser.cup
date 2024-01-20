@@ -143,11 +143,17 @@ action code {:
             return declarada;    
         }
         public void verificarDeclaracionFuncion(String nombreFuncion) {
+            String[] funcionesNoPermitidas = {"main", "printInt", "printFloat", "printStr", "readInt", "readFloat", "readStr", "end_program"};
             if (funcionDeclarada(nombreFuncion)) {
                 // Capturar y registrar el error semántico
                 System.err.println("Error semántico: Función '" + nombreFuncion + "' ya declarada.");
                 compila = false;
             }
+            else if (Arrays.asList(funcionesNoPermitidas).contains(nombreFuncion)) {
+                System.err.println("Error semántico: Función '" + nombreFuncion + "' no permitida.");
+                compila = false;
+            }
+            
         }
 
         public boolean funcionDeclarada(String nombreFuncion) {
@@ -1011,7 +1017,7 @@ piezaImportada ::= PERSONA:nombre parens parens
                     :}
                 | PERSONA:nombre parens estampillasNavidena:val parens
                     {:
-                    
+
                         if (!funcionDeclarada(nombre)) {
                             System.err.println("Error semántico: Función '" + nombre + "' no declarada.");
                             compila = false;
@@ -1021,9 +1027,38 @@ piezaImportada ::= PERSONA:nombre parens parens
                         vValue = RESULT.toString();
 
                         // generacion de codigo 3d para llamada a funcion
+                        //elimina el tipo de dato de los parametros y se queda con los valores
+                        String parametros = val.toString().replace(":int", "").replace(":float", "").replace(":bool", "").replace(":char", "").replace(":string", "").replace(" ", "");
+                        System.out.println("parametros: "+parametros);
+                        String[] parametrosArray = parametros.split(",");
+
+                        // String[] parametrosArray = parametros.split(",");
+                        
+                        for (int i = 0; i < parametrosArray.length; i++) {
+                            System.out.println("parametro: "+parametrosArray[i]);
+                        }
+                        // se pasa los parametros a la funcion 
+                        for (int i = 0; i < parametrosArray.length; i++) {
+                            String tipo = getTipo(parametrosArray[i]);
+                            if (tipo.equals("int")) {
+                                cod3D.append("li $a" + i + ", " + parametrosArray[i] + "\n");
+                            }
+                            else if (tipo.equals("float")) {
+                                cod3D.append("li.s $f" + i + ", " + parametrosArray[i] + "\n");
+                            }
+                            else if (tipo.equals("bool")) {
+                                cod3D.append("li $a" + i + ", " + parametrosArray[i] + "\n");
+                            }
+                            else if (tipo.equals("char")) {
+                                cod3D.append("li $a" + i + ", " + parametrosArray[i] + "\n");
+                            }
+                            else if (tipo.equals("string")) {
+                                cod3D.append("li $a" + i + ", " + parametrosArray[i] + "\n");
+                            }
+                        }
                         //se llama a la funcion
                         cod3D.append("jal " + nombre + "\n");
-                        //se guarda el valor de retorno en la variable
+
 
                     :}
                 ;

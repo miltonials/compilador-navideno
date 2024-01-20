@@ -1,15 +1,13 @@
-function int prueba(){
-    local int a|
-    local int d|
+function int hola(int holaa,float ans){
+    local int d <= 5|
     local int c|
     return 3|
 }
 
 function int main () {
     @local bool res <= true|
-    local int hola|
-    local float hola2|
-    read(hola2)|
-    prueba2()|
+    local int hola <=5|
+    local float hola2 <= 3.3|
+    hola(hola, hola2)|
     return 3|
 }

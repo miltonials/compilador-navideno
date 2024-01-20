@@ -2,20 +2,30 @@
 .data
 
 saltoLinea: .asciiz "\n"
-aprueba: .word 0
-dprueba: .word 0
-cprueba: .word 0
+dhola: .word 0
+chola: .word 0
 holamain: .word 0
 hola2main: .float 0.0
 
 .text
 
-prueba:
+hola:
+#5
+sw $t0, dhola
+li $t0, 0
 main:
-#finParentesis
-jal readFloat
+#5
+sw $t0, holamain
+li $t0, 0
+#3.3
 s.s $f0, hola2main
-jal prueba
+l.s $f12, hola2main
+li $v0, 2
+syscall
+li $t0, 0
+li $a0, hola
+li.s $f1, hola2
+jal hola
 
 j end_program
 
