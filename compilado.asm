@@ -1,13 +1,52 @@
 
 .data
 
-saltoLinea: .asciiz "\n"
 arrmain: .space 12
 dmain: .word 0
 
+saltoLinea: .asciiz "\n"
 .text
 
 main:
+la $t0, arrmain
+li $t1, 5
+sw $t1, 0($t0)
+li $t2, 3
+sw $t2, 4($t0)
+li $t3, 4
+sw $t3, 8($t0)
+
+# mostrar los valores del arreglo
+li $t0, 0
+la $t1, arrmain
+lw $t2, 0($t1)
+li $v0, 1
+move $a0, $t2
+syscall
+li $v0, 4
+la $a0, saltoLinea
+syscall
+
+li $t0, 1
+la $t1, arrmain
+lw $t2, 4($t1)
+li $v0, 1
+move $a0, $t2
+syscall
+li $v0, 4
+la $a0, saltoLinea
+syscall
+
+li $t0, 2
+la $t1, arrmain
+lw $t2, 8($t1)
+li $v0, 1
+move $a0, $t2
+syscall
+li $v0, 4
+la $a0, saltoLinea
+syscall
+
 #0
 sw $t0, dmain
 li $t0, 0

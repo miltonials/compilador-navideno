@@ -2,7 +2,7 @@
 
 function int main () {
     @local bool res <= true|
-    local int[3] arr <= [5]|
+    local int[3] arr <= [5,3,4]|
     local int d <= 0|
     return 3|
 }
