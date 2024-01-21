@@ -315,7 +315,7 @@ action code {:
             Archivos.agregarArchivo(filename, ".text\n");
             // utilizar StringBuffer cod3D
             Archivos.agregarArchivo(filename, cod3D.toString());
-            Archivos.agregarArchivo(filename, "j end_program");
+            // Archivos.agregarArchivo(filename, "j end_program");
             Archivos.agregarArchivo(filename, Archivos.getContenido("macrosMips.asm"));
         }
 
@@ -825,7 +825,8 @@ juguete ::= asignarJuguete FINREGALO
                     
                     if(currentHash.toString().equals("main")){
                         //no se hace nanda porque no se retorna nada
-                        // se puede imprimir el valor de retorno
+                        // se salta a la etiqueta de fin de programa
+                        cod3D.append("j end_program\n");
                     }
                     else{
                         if(isVar){

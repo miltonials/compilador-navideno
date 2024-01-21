@@ -25,11 +25,8 @@ add $t0, $t0, 7
 sw $t0, dmain
 li $t0, 0
 jal hola
-# imprimir el valor retornado por hola
-lw $t0, returnInt
-li $v0, 1
-move $a0, $t0
-syscall
+j end_program
+
 j end_program
 
 
