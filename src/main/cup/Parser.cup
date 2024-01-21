@@ -38,6 +38,8 @@ action code {:
         int cantidadNumeros = 0;
         boolean isParentesis = false;
         boolean sumaDespuesParentesis = false;
+        boolean isPrimerNumero = true;
+
 
         int contadorPrints = 0;
         int contadorIf = 0;
@@ -156,6 +158,7 @@ action code {:
             // Lógica para verificar si la variable está declarada en la tabla de símbolos
             boolean declarada = false;
             for (String item : listaTablasSimbolos.get(currentHash)) {
+                System.out.println("item: "+item);
                 if (item.contains(nombreVariable) && !item.contains("Parametro")) {
                     declarada = true;
                 }
@@ -361,6 +364,10 @@ action code {:
                 
                 if ((!contieneOperadores(operandoA) && !operandoA.substring(0,1).equals("(")) || operandoA.substring(0,1).equals("-")) {
                     cod3D.append("add $t" + currentTemp + ", $t" + currentTemp + ", " + operandoA + "\n");
+                    if(isPrimerNumero){
+                        cod3D.append("add $t0, $t0,"+operandoB+ "\n"); // borrar esto si no funciona en el futuro
+                        isPrimerNumero = false;
+                    }
                 }
                 //cod3D.append("add $t"+currentTemp+", $t"+currentTemp+", $t" + (currentTemp+1) + "\n");
             } else if (operador.equals("-")) {
@@ -983,24 +990,74 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                     {:  
                         System.out.println("paso por la asignacion");
                         System.out.println("asignacion: "+tp.toString());
+                        System.out.println("valor de la variable: "+vValue);
+                        System.out.println("variable: "+nombre);
                         if(variableDeclarada(nombre)){
                             System.err.println("Error semántico: Variable '" + nombre + "' ya declarada.");
                             compila = false;
                         }
                         String tipoAux = tp.toString().split(":")[tp.toString().split(":").length - 1];
-                        
-                        if (!tipoAux.equals(tipo.toString())  && !contieneOperadorBooleano(tp.toString())) {
-                            System.err.println("Error semántico: Tipo de dato incorrecto en la asignación de la variable '" + nombre + "'.");
-                            compila = false;
+                        System.out.println("tipoAux: "+tipoAux);
+                        boolean isArray = false;
+                        String nombreArray = "";
+                        String tipoArray = "";
+                        if(tipoAux.contains("[") || tipoAux.contains("]")){
+                            isArray = true;
+                            nombreArray = tp.toString().split(":")[0].split("\\[")[0];
+                            tipoArray = tipoAux.replace("[", "").replace("]", "");
+                            System.out.println("nombreArray: "+nombreArray);
+                            System.out.println("tipoArray: "+tipoArray);
+                        }
+                        System.out.println("NombreArray: "+nombreArray);
+                        if(nombreArray.equals("")){                            
+                            if (!tipoAux.equals(tipo.toString())  && !contieneOperadorBooleano(tp.toString())) {
+                                System.err.println("Error semántico: Tipo de dato incorrecto en la asignación de la variable '" + nombre + "'.");
+                                compila = false;
+                            }
+                        }else{ 
+                            if (!tipo.equals(tipoArray)  && !contieneOperadorBooleano(tp.toString())) {
+                                System.err.println("Error semántico: Tipo de dato incorrecto en la asignación de la variable '" + nombre + "'.");
+                                compila = false;
+                            }
                         }
 
+                        System.out.println("#############");
                         sumaRegsAcumulados();
                         
                         
                         //crear una funcion que realice lo de abajo
                         // if (!contieneOperadorAritmetico(tp.toString())) { // si es una operacion aritmetica
                         cod3D.append("#" + vValue + "\n");
-                        if(compila){
+                        if(!tipoArray.equals("")){ // se recibio una variable array
+                            data.append(nombre + currentHash + ": .word 0\n");
+                            int posicion = 0;
+                            try{
+                                posicion = Integer.parseInt(tp.toString().split(":")[0].split("\\[")[1]);
+                            }
+                            catch(Exception e){
+                                System.out.println("Error al obtener la posicion del array");
+                            }
+                            System.out.println("posicion: "+posicion);
+                            // pasar direccion base del array a $t0
+                            cod3D.append("la $t0, "+nombreArray+currentHash+"\n");
+                            // pasar el valor de la posicion a $t1
+                            cod3D.append("li $t1, "+posicion+"\n");
+                            // calcular la direccion de la posicion
+                            cod3D.append("mul $t1, $t1, 4\n");
+                            // sumar la direccion base con la posicion
+                            cod3D.append("add $t0, $t0, $t1\n");
+                            // guardar el valor en la direccion calculada
+                            cod3D.append("sw $t2"+", ($t0)\n");
+                            // pasar la direccion de la variable a currentTemp
+                            cod3D.append("la $t3, "+nombreArray+currentHash+"\n");
+                            // pasar el valor de la variable a tcurrenTemp
+                            cod3D.append("sw $t2, 0($t3)\n");
+
+
+                            
+
+                        }
+                        else if(compila){
                             if (tipo.toString().equals("int")) {
                                 data.append(nombre + currentHash + ": .word 0\n");
                                 String[] partes = tp.toString().split(":");
@@ -1045,9 +1102,7 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                                 // apartar espacio en memoria para el array segun el tipo de dato
                                 data.append(nombre + currentHash + ": .space "+(tamanoInt*4)+"\n");
                                 //guardo el valor en la variable creada
-                                
-
-                            }                            
+                            }           
                         }
                         else {
                             cod3D.append("add $t0, " + tp.toString().split(":")[0] + "\n");
@@ -1179,9 +1234,11 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                     :}
                     | PERSONA:nombre ENTREGA ABREEMPAQUE estampillasNavidena CIERREEMPAQUE
                     {:
+                        System.out.println("paso por el array final"); 
                         verificarDeclaracionVariable(nombre);
                         String tipo = getTipo(nombre);
                         listaTablasSimbolos.get(currentHash).add( "Variable ("+tipo+") : " + nombre + " = [" + vValue + "]");
+                        System.out.println("valor: "+vValue);
 
                     :}
                     ;
@@ -1204,6 +1261,9 @@ tallerDeJuguetes ::= piezaJuguete: val
                         String tpValA = "";
                         String tpValB = "";
                         String tipo = "";
+
+                        System.out.println("valA: "+valA.toString());
+                        System.out.println("valB: "+valB.toString());
 
                         try {
                             tpValA = valA.toString().split(":")[1].split(" ")[0];
