@@ -2,30 +2,27 @@
 .data
 
 saltoLinea: .asciiz "\n"
-dhola: .word 0
-chola: .word 0
-holamain: .word 0
-hola2main: .float 0.0
+miBoolmain: .word 0
 
 .text
 
-hola:
-#5
-sw $t0, dhola
-li $t0, 0
 main:
-#5
-sw $t0, holamain
+li $t1,3233
+li $t1,3333
+#3333 == 3233
+j false1
+true1:
+li $t0,1
+j fin_1
+false1:
+li $t0,0
+fin_1:
+sw $t0, miBoolmain
 li $t0, 0
-#3.3
-s.s $f0, hola2main
-l.s $f12, hola2main
-li $v0, 2
-syscall
-li $t0, 0
-li $a0, hola
-li.s $f1, hola2
-jal hola
+lw $a0, miBoolmain
+jal printInt
+la $a0, saltoLinea
+jal printStr
 
 j end_program
 

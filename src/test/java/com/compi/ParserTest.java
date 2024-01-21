@@ -251,14 +251,22 @@ public class ParserTest {
 
   @Test
   public void miTest() throws Exception {
-    String program = funMainAlt;
-    program += "local int temp1 <= 1 + 2 + 3 + -4 + 5 + 6|";//13✅
-    program += "print(\"hola\")|";
-    program += "print(temp1)|";
-    program += "print((1.1 + 3.3 + 5.5 + 7.7 + 9.9 - ( 1.1 + 3.3 + 5.5 + 7.7 + 9.9 + 1.0)))|";
-    program += "print(1 - (2 - (10 + (5 + 5 + 5))) + 5 + 5)|";
-    program += "print(5/5)|";
-    program += "print(\"Soy un string\")|";
+
+    String program = "";//funInt + "print(\"Soy la función hola\")|return 3|}";
+    program += funMainAlt;
+    //program += "local int temp1 <= 1 + 2 + 3 + -4 + 5 + 6|";//13✅
+    //program += "print(\"hola\")|";
+    //program += "hola()|";
+    //program += "print(temp1)|";
+    program += "local bool miBool <= 3333==3233 # true|";
+    //program += "local int miBoolInt <= 1|";
+    program += "print(miBool)|";
+    //program += "local bool miBool2 <= 3+1+3+4 == 5+53+1+3+4 =< 5+5 => 3|";
+    //program += "local bool tuBool <= true|";
+    //program += "print((1.1 + 3.3 + 5.5 + 7.7 + 9.9 - ( 1.1 + 3.3 + 5.5 + 7.7 + 9.9 + 1.0)))|";
+    //program += "print(1 - (2 - (10 + (5 + 5 + 5))) + 5 + 5)|";
+    //program += "print(5/5)|";
+    //program += "print(\"Soy un string\")|";
 
     /*
     program += "local int temp2 <= 5 + 5 - 5 + 5 - 5 + 5|";//10✅

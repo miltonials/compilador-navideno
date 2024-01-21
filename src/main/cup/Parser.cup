@@ -12,6 +12,7 @@ import java_cup.runtime.Symbol;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Clase principal del compilador
@@ -37,6 +38,10 @@ action code {:
         boolean sumaDespuesParentesis = false;
 
         int contadorPrints = 0;
+        int contadorIf = 0;
+        int contadorCondiciones = 1;
+        int contadorElif = 0;
+        int contadorElse = 0;
 
         /**
           * Tipo de retorno de la funcion
@@ -94,6 +99,23 @@ action code {:
             }
             return false;
         }
+
+        /**
+         * contiene operadores booleanos
+         * @param variable
+        */
+        public boolean contieneOperadorBooleano(String variable) {
+            return Arrays.asList("<", "=>", ">", "=<", "==", "!=", "^", "#", "!").stream()
+                    .anyMatch(variable::contains);
+        }
+
+        public void sumaRegsAcumulados() {
+            for (int i = 0; maxTemp > i; maxTemp--) {
+                cod3D.append("add $t"+(maxTemp - 1)+", $t"+(maxTemp - 1)+", $t" + maxTemp + "\n");  
+                cod3D.append("li $t"+(maxTemp)+", 0\n");  
+            }
+        }
+
 
         /**
          * Verificar que el parametro no este declarado
@@ -269,13 +291,7 @@ action code {:
             }
 
             // Check for specific operator rules
-            if (operator.equals("+")
-                || operator.equals("-")
-                || operator.equals("*")
-                || operator.equals("/")
-                || operator.equals("//")
-                || operator.equals("~")
-                || operator.equals("**")
+            if (contieneOperadorAritmetico(operator) || contieneOperadorBooleano(operator)
                 ) {
                 // Allow addition, subtraction, multiplication, and division for both "int" and "float"
                 return true;
@@ -300,30 +316,50 @@ action code {:
             Archivos.agregarArchivo(filename, Archivos.getContenido("macrosMips.asm"));
         }
 
+    public boolean contieneOperadores(String expresion) {
+        return contieneOperadorAritmetico(expresion) || contieneOperadorBooleano(expresion);
+    }
+
+    public void generarSaltoCondicion() {
+        cod3D.append("j false"+(contadorCondiciones-1)+"\n");
+        cod3D.append("true"+(contadorCondiciones-1)+":\n");
+        cod3D.append("li $t0,1\n");
+        cod3D.append("j fin_"+(contadorCondiciones-1)+"\n");
+        cod3D.append("false"+(contadorCondiciones-1)+":\n");
+        cod3D.append("li $t0,0\n");
+        cod3D.append("fin_"+(contadorCondiciones-1)+":\n");
+    }
+
     int antTemp = -1;
+    String ultimoOperadorBooleano = "";
+
+    
     public void aritmetica3d(String operandoA, String operador, String operandoB, String tipo) {
         //cod3d mips
         operador = operador.toString().replace(" ", "");
         operandoB = operandoB.replace(":int", "").replace(":float", "").replace(":bool", "").replace(":char", "").replace(":string", "");
-        //System.out.println("------------------------------------");
-        //System.out.println("OPERANDOAAAAAAAAAAAAAAAA: " + operandoA);
-        //System.out.println("OPERADORRRRRRRRRRRRRRRRR: " + operador);
-        //System.out.println("OPERANDOBBBBBBBBBBBBBBBB: " + operandoB);
+        System.out.println("------------------------------------");
+        System.out.println("OPERANDOAAAAAAAAAAAAAAAA: " + operandoA);
+        System.out.println("OPERADORRRRRRRRRRRRRRRRR: " + operador);
+        System.out.println("OPERANDOBBBBBBBBBBBBBBBB: " + operandoB);
 
         if(tipo.equals("int")) {
             if (operador.equals("+")) {
-                if (!contieneOperadorAritmetico(operandoB) && !operandoB.substring(0,1).equals("(")) {
-                    cod3D.append("add $t" + currentTemp + ", $t" + currentTemp + ", " + operandoB + "\n");
+                if (!contieneOperadores(operandoB) && !operandoB.substring(0,1).equals("(")) {
+                    System.out.println("juaquin");
+                    if (contieneOperadores(operandoB)) {
+                        cod3D.append("add $t" + currentTemp + ", $t" + currentTemp + ", " + operandoB + "\n");
+                    }
                 }
 
                 //System.out.println("$t: " + currentTemp);
                 
-                if ((!contieneOperadorAritmetico(operandoA) && !operandoA.substring(0,1).equals("(")) || operandoA.substring(0,1).equals("-")) {
+                if ((!contieneOperadores(operandoA) && !operandoA.substring(0,1).equals("(")) || operandoA.substring(0,1).equals("-")) {
                     cod3D.append("add $t" + currentTemp + ", $t" + currentTemp + ", " + operandoA + "\n");
                 }
                 //cod3D.append("add $t"+currentTemp+", $t"+currentTemp+", $t" + (currentTemp+1) + "\n");
             } else if (operador.equals("-")) {
-                if (!contieneOperadorAritmetico(operandoB) && !operandoB.substring(0,1).equals("(")) {
+                if (!contieneOperadores(operandoB) && !operandoB.substring(0,1).equals("(")) {
                     cod3D.append("sub $t" + currentTemp + ", $t" + currentTemp + ", " + operandoB + "\n");
                 }
                 else {//si hay -(expr), entonces, expr (que es lo que se ha operado) cambia su símbolo
@@ -335,8 +371,129 @@ action code {:
                     }
                 }
 
-                if (!contieneOperadorAritmetico(operandoA) && !operandoA.substring(0,1).equals("(")) {
+                if (!contieneOperadores(operandoA) && !operandoA.substring(0,1).equals("(")) {
                     cod3D.append("add $t" + currentTemp + ", $t" + currentTemp + ", " + operandoA + "\n");
+                }
+            }
+            else if (contieneOperadorBooleano(operador)) {
+                currentTemp++;
+                if (contieneOperadores(operandoB)) {
+                    sumaRegsAcumulados();
+                }
+
+                if (operador.equals("=>")) {
+                    //bge
+                    if (currentTemp > 1) {
+                        cod3D.append("bge $t" + (currentTemp - 1) + ", $t" + (currentTemp - 2) + ", true" + (contadorCondiciones++) + "\n");
+                        generarSaltoCondicion();
+                    }
+                    if (!contieneOperadores(operandoB)) {
+                        cod3D.append("li $t" + currentTemp + ","+operandoB+"\n");
+                    }
+                    if (!contieneOperadores(operandoA)) {
+                        cod3D.append("li $t" + (currentTemp - 1) + ","+operandoA+"\n");
+                    }
+                    //currentTemp--;
+                }
+                else if (operador.equals("<")) {
+                    //blt
+                    if (currentTemp > 1) {
+                        cod3D.append("blt $t" + (currentTemp - 1) + ", $t" + (currentTemp - 2) + ", true" + (contadorCondiciones++) + "\n");
+                        generarSaltoCondicion();
+                    }
+                    if (!contieneOperadores(operandoB)) {
+                        cod3D.append("li $t" + currentTemp + ","+operandoB+"\n");
+                    }
+                    if (!contieneOperadores(operandoA)) {
+                        cod3D.append("li $t" + (currentTemp - 1) + ","+operandoA+"\n");
+                    }
+                }
+                else if (operador.equals("=<")) {
+                    //ble = if (a <= b) goto L
+                    if (currentTemp > 1) {
+                        cod3D.append("ble $t" + (currentTemp - 1) + ", $t" + (currentTemp - 2) + ", true" + (contadorCondiciones++) + "\n");
+                        generarSaltoCondicion();
+                    }
+                    if (!contieneOperadores(operandoB)) {
+                        cod3D.append("li $t" + currentTemp + ","+operandoB+"\n");
+                    }
+                    if (!contieneOperadores(operandoA)) {
+                        cod3D.append("li $t" + (currentTemp - 1) + ","+operandoA+"\n");
+                    }
+                }
+                else if (operador.equals(">")) {
+                    //bgt
+                    if (currentTemp > 1) {
+                        cod3D.append("bgt $t" + (currentTemp - 1) + ", $t" + (currentTemp - 2) + ", true" + (contadorCondiciones++) + "\n");
+                        generarSaltoCondicion();
+                    }
+                    if (!contieneOperadores(operandoB)) {
+                        cod3D.append("li $t" + currentTemp + ","+operandoB+"\n");
+                    }
+                    if (!contieneOperadores(operandoA)) {
+                        cod3D.append("li $t" + (currentTemp - 1) + ","+operandoA+"\n");
+                    }
+                }
+                else if (operador.equals("==")) {
+                    //beq
+                    if (currentTemp > 1) {
+                        cod3D.append("beq $t" + (currentTemp - 1) + ", $t" + (currentTemp - 2) + ", true" + (contadorCondiciones++) + "\n");
+                        generarSaltoCondicion();
+                    }
+                    if (!contieneOperadores(operandoB)) {
+                        cod3D.append("li $t" + currentTemp + ","+operandoB+"\n");
+                    }
+                    if (!contieneOperadores(operandoA)) {
+                        cod3D.append("li $t" + (currentTemp) + ","+operandoA+"\n");
+                    }
+                }
+                else if (operador.equals("!=")) {
+                    //bne
+                    if (currentTemp > 1) {
+                        cod3D.append("bne $t" + (currentTemp - 1) + ", $t" + (currentTemp - 2) + ", true" + (contadorCondiciones++) + "\n");
+                        generarSaltoCondicion();
+                    }
+                    if (!contieneOperadores(operandoB)) {
+                        cod3D.append("li $t" + currentTemp + ","+operandoB+"\n");
+                    }
+                    if (!contieneOperadores(operandoA)) {
+                        cod3D.append("li $t" + (currentTemp - 1) + ","+operandoA+"\n");
+                    }
+                }
+                else if (operador.equals("^")) {
+                    //and
+                    if (currentTemp > 1) {
+                        cod3D.append("and $t" + (currentTemp - 1) + ", $t" + (currentTemp - 2) + ", $t" + (currentTemp - 1) + "\n");
+                        generarSaltoCondicion();
+                    }
+                    if (!contieneOperadores(operandoB)) {
+                        cod3D.append("li $t" + currentTemp + ","+operandoB+"\n");
+                    }
+                    if (!contieneOperadores(operandoA)) {
+                        cod3D.append("li $t" + (currentTemp - 1) + ","+operandoA+"\n");
+                    }
+                }
+                else if (operador.equals("#")) {
+                    //or
+                    if (currentTemp > 1) {
+                        cod3D.append("or $t" + (currentTemp - 1) + ", $t" + (currentTemp - 2) + ", $t" + (currentTemp - 1) + "\n");
+                        generarSaltoCondicion();
+                    }
+                    if (!contieneOperadores(operandoB)) {
+                        cod3D.append("li $t" + currentTemp + ","+operandoB+"\n");
+                    }
+                    if (!contieneOperadores(operandoA)) {
+                        cod3D.append("li $t" + (currentTemp - 1) + ","+operandoA+"\n");
+                    }
+                }
+                else if (operador.equals("!")) {
+                    //not
+                    if (currentTemp > 1) {
+                        cod3D.append("not $t" + (currentTemp - 1) + ", $t" + (currentTemp - 1) + "\n");
+                    }
+                    if (!contieneOperadores(operandoA)) {
+                        cod3D.append("li $t" + currentTemp + ","+operandoA+"\n");
+                    }
                 }
             }
         }
@@ -655,7 +812,7 @@ juguete ::= asignarJuguete FINREGALO
                     nombre = "print" + contadorPrints;
                 }
 
-                if (tipo.equals("int")) {
+                if (tipo.equals("int") || tipo.equals("bool")) {
                     cod3D.append("lw $a0, " + nombre + "\njal printInt\n");
                     cod3D.append("la $a0, saltoLinea\njal printStr\n");
                 }
@@ -719,15 +876,12 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                         }
                         String tipoAux = tp.toString().split(":")[tp.toString().split(":").length - 1];
                         
-                        if (!tipoAux.equals(tipo.toString())) {
+                        if (!tipoAux.equals(tipo.toString())  && !contieneOperadorBooleano(tp.toString())) {
                             System.err.println("Error semántico: Tipo de dato incorrecto en la asignación de la variable '" + nombre + "'.");
                             compila = false;
                         }
 
-                        for (int i = 0; maxTemp > i; maxTemp--) {
-                            cod3D.append("add $t"+(maxTemp - 1)+", $t"+(maxTemp - 1)+", $t" + maxTemp + "\n");  
-                            cod3D.append("li $t"+(maxTemp)+", 0\n");  
-                        }
+                        sumaRegsAcumulados();
                         
                         
                         //crear una funcion que realice lo de abajo
@@ -747,9 +901,10 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                                 cod3D.append("l.s $f12, " + nombre + currentHash + "\nli $v0, 2\nsyscall\n");
                                 cantidadNumeros=0;
                             } else if (tipo.toString().equals("bool")) {
-                                data.append(nombre + currentHash + ": .word true\n");
+                                data.append(nombre + currentHash + ": .word 0\n");
+                                contadorCondiciones++;
+                                generarSaltoCondicion();
                                 cod3D.append("sw $t0, " + nombre + currentHash + "\n");
-                                cod3D.append("lw $a0, "+nombre+currentHash+"\nli $v0, 1\nsyscall\n");
                             } else if (tipo.toString().equals("char")) {
                                 data.append(nombre + currentHash + ": .byte 0\n");
                                 cod3D.append("sb $t0, " + nombre + currentHash + "\n");
