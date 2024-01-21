@@ -1,8 +1,9 @@
 
 .data
 
-saltoLinea: .asciiz "\n"
 miBoolmain: .word 0
+print0: .asciiz "dentro del if"
+print1: .asciiz "Dentro del else"
 
 saltoLinea: .asciiz "\n"
 .text
@@ -20,10 +21,30 @@ li $t0,0
 fin_1:
 sw $t0, miBoolmain
 li $t0, 0
-lw $a0, miBoolmain
-jal printInt
+blt $t1, $t0, true2
+j false2
+true2:
+li $t0,1
+j fin_2
+false2:
+li $t0,0
+fin_2:
+li $t2,6
+li $t1,4
+beq $0, 1, if_0
+j else_0
+if_0:
+la $a0, print0
+jal printStr
 la $a0, saltoLinea
 jal printStr
+j fin_else0
+else_0:
+la $a0, print1
+jal printStr
+la $a0, saltoLinea
+jal printStr
+fin_else0:
 
 j end_program
 

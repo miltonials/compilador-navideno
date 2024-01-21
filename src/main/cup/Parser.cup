@@ -498,6 +498,12 @@ action code {:
             }
         }
     }
+
+    public void generarBloqueSalto(String tipo, int contador, boolean alt) {
+        cod3D.append("beq $0, 1," + tipo + "_" + contador + "\n");
+        cod3D.append("j fin_"+tipo + contador + "\n");
+        cod3D.append(tipo + "_" + contador + ":\n");
+    }
 :}
 
 parser code {:
@@ -1334,17 +1340,48 @@ gomaLocaLogica ::= MELCHOR:operador {: RESULT = operador; :}
                 | GASPAR:operador {: RESULT = operador; :}
                 ;
 
-estructurarJuguete ::= estructurarJuguete_if
-                    | estructurarJuguete_if estructurarJuguete_else
-                    | estructurarJuguete_if estructurarJuguete_elif
-                    | estructurarJuguete_if estructurarJuguete_elif estructurarJuguete_else
+estructurarJuguete ::= ELFO estructurarJuguete_if
+                        {:
+                            cod3D.append("beq $0, 1, if_" + contadorIf + "\n");//condicion
+                            cod3D.append("j fin_if" + contadorIf + "\n");//salto a fin
+                            cod3D.append("if_" + contadorIf + ":\n");//creacion etiqueta
+                        :}
+                        bloque
+                        {:
+                            cod3D.append("fin_if" + contadorIf + ":\n");//finalizacion etiqueta
+                            contadorIf++;//aumento contador
+                        :}
+                    | estructurarJuguete_if ELFO
+                        {:
+                                cod3D.append("beq $0, 1, if_" + contadorIf + "\n");//condicion if
+                                cod3D.append("j else_" + contadorElse + "\n");//salto a else
+                                cod3D.append("if_" + contadorIf + ":\n");//creacion etiqueta if
+                        :}
+                        bloque
+                        {:
+                            cod3D.append("j fin_else" + contadorElse + "\n");
+                            contadorIf++;//aumento contador
+                        :}
+                        DUENDE 
+                        {:
+                            cod3D.append("else_" + contadorElse + ":\n");//creacion etiqueta else
+                        :}
+                        bloque
+                        {:
+                            cod3D.append("fin_else" + contadorElse + ":\n");//finalizacion etiqueta else
+                        :}
+                    | estructurarJuguete_if  bloque estructurarJuguete_elif bloque
+                    | estructurarJuguete_if bloque estructurarJuguete_elif bloque DUENDE bloque
                     | estructurarJuguete_for
                     | estructurarJuguete_doUntil
                     ;
 
-estructurarJuguete_if ::= ELFO condiciones bloque;
-estructurarJuguete_elif ::= HADA condiciones bloque | HADA condiciones bloque estructurarJuguete_elif;
-estructurarJuguete_else ::= DUENDE bloque;
+estructurarJuguete_if ::= ELFO condiciones;
+estructurarJuguete_elif ::= HADA condiciones
+                        | HADA condiciones estructurarJuguete_elif;
+
+//estructurarJuguete_else ::= DUENDE;
+
 estructurarJuguete_for ::= ENVUELVE encabezado_for bloque;
 estructurarJuguete_doUntil ::= HACE bloque REVISA condiciones FINREGALO;
 
@@ -1354,13 +1391,3 @@ bloque ::= ABREREGALO juguetes CIERRAREGALO;
 
 encabezado_for ::= ABRECUENTO asignarJuguete FINREGALO tallerDeJuguetes FINREGALO tallerDeJuguetes CIERRECUENTO;
 
-
-
-/*
-TODO: permitir que se pueda llamar funciones con parametros y sin parametros (un parametro puede ser una funcion)✅
-TODO: permitir que se pueda llamar una funcion como operando✅
-TODO: permitir creación de arreglos✅
-TODO: permitir Entrada y salida✅
-TODO: permitir Estructuras de control✅
-TODO: permitir ciclos✅
-*/
