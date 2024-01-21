@@ -703,6 +703,7 @@ non terminal estructurarJuguete_doUntil;
 non terminal bolsaFuncional;
 non terminal monnosAux;
 non terminal  parens;
+non terminal elifSimple;
 //-------------------------------------------------------------------------------------- PRECEDENCIA
 precedence left ABRECUENTO, CIERRECUENTO, PERSONA;
 
@@ -1494,33 +1495,48 @@ estructurarJuguete ::= ELFO estructurarJuguete_if
                             cod3D.append("fin_if" + (contadorIf-1) + ":\n");
                         :}
                         estructurarJuguete_elif
-                        bloque
+                    | estructurarJuguete_if
+                        {:
+                            cod3D.append("beq $0, 1, if_" + contadorIf + "\n");//condicion if
+                            cod3D.append("j fin_if" + contadorIf + "\n");//salto a fin
+                            cod3D.append("if_" + (contadorIf++) + ":\n");//creacion etiqueta if
+                            cod3D.append("#inicia if"+(contadorIf-1)+"\n");
+                        :}
+                      bloque
                         {:
                             cod3D.append("fin_if" + (contadorIf-1) + ":\n");
+                        :}
+                      estructurarJuguete_elif
+                        {:
                             cod3D.append("fin_elif" + contadorElif + ":\n");
                             contadorElif++;
                         :}
-                    | estructurarJuguete_if bloque estructurarJuguete_elif bloque DUENDE bloque//if elif else
+                      DUENDE bloque
+                        {:
+                            cod3D.append("fin_else" + contadorElse + ":\n");//finalizacion etiqueta else
+                            contadorElse++;
+                        :}
+                      //if elif else
                     | estructurarJuguete_for
                     | estructurarJuguete_doUntil
                     ;
 
 estructurarJuguete_if ::= ELFO condiciones;
-estructurarJuguete_elif ::= HADA condiciones
+estructurarJuguete_elif ::= elifSimple | elifSimple estructurarJuguete_elif;
+
+elifSimple ::= HADA condiciones
                             {:
                                 cod3D.append("beq $0, 1, if_" + contadorIf + "\n");//condicion if
                                 cod3D.append("j fin_if" + contadorIf + "\n");//salto a fin
                                 cod3D.append("if_" + (contadorIf++) + ":\n");//creacion etiqueta if
                                 cod3D.append("#inicia elif"+(contadorIf-1)+"\n");
                             :}
-                        | HADA condiciones
+                            bloque
                             {:
-                                cod3D.append("beq $0, 1, if_" + contadorIf + "\n");//condicion if
-                                cod3D.append("j fin_if" + contadorIf + "\n");//salto a fin
-                                cod3D.append("if_" + (contadorIf++) + ":\n");//creacion etiqueta if
-                                cod3D.append("#inicia elif"+(contadorIf-1)+"\n");
-                            :}
-                          estructurarJuguete_elif;
+                                cod3D.append("fin_if" + (contadorIf-1) + ":\n");
+                                cod3D.append("fin_elif" + contadorElif + ":\n");
+                                contadorElif++;
+                            :};
 
 //estructurarJuguete_else ::= DUENDE;
 

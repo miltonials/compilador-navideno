@@ -262,7 +262,8 @@ public class ParserTest {
     //program += "local int miBoolInt <= 1|";
 
     //program += "if if (4<6) {print(\"dentro del if\")|} else {print(\"Dentro del else\")|}";
-    program += "if (4<6) do {print(\"dentro del if\")|} elif(5==5) {print(\"Dentro del elif\")|}";
+    //program += "if (4<6) do {print(\"dentro del if\")|} elif(5==5) {print(\"Dentro del elif\")|}";
+    program += "if (4<6) {print(\"dentro del if\")|} elif(5==5) {print(\"Dentro del elif\")|} else {print(\"Dentro del else\")|}";
     //program += "local bool miBool2 <= 3+1+3+4 == 5+53+1+3+4 =< 5+5 => 3|";
     //program += "local bool tuBool <= true|";
     //program += "print((1.1 + 3.3 + 5.5 + 7.7 + 9.9 - ( 1.1 + 3.3 + 5.5 + 7.7 + 9.9 + 1.0)))|";
