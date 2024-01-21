@@ -1005,11 +1005,21 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                         if(tipoAux.contains("[") || tipoAux.contains("]")){
                             isArray = true;
                             nombreArray = tp.toString().split(":")[0].split("\\[")[0];
-                            tipoArray = tipoAux.replace("[", "").replace("]", "");
+                            // tipoArray = tp.toString().split(":")[0].split("\\[")[1].split("\\]")[0];
+                            for (String item : listaTablasSimbolos.get(currentHash)) {
+                                if(item.toString().contains(nombreArray)){
+                                    String[] tipoArrayAux = item.split(":");
+                                    String tipoArrayAux2 = tipoArrayAux[tipoArrayAux.length-1].replace("]", "");
+                                    // tipoArray = item.toString().split("\\(")[1].split("\\)")[0];
+                                    // System.out.println("tipoArrayAux: "+tipoArrayAux);
+                                    System.out.println("tipoArrayAux2: "+tipoArrayAux2);
+                                    tipoArray = tipoArrayAux2;
+                                }
+                            }
                             System.out.println("nombreArray: "+nombreArray);
                             System.out.println("tipoArray: "+tipoArray);
                         }
-                        System.out.println("NombreArray: "+nombreArray);
+                        // System.out.println("NombreArray: "+nombreArray);
                         if(nombreArray.equals("")){                            
                             if (!tipoAux.equals(tipo.toString())  && !contieneOperadorBooleano(tp.toString())) {
                                 System.err.println("Error semántico: Tipo de dato incorrecto en la asignación de la variable '" + nombre + "'.");
@@ -1038,25 +1048,23 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                             catch(Exception e){
                                 System.out.println("Error al obtener la posicion del array");
                             }
-                            System.out.println("posicion: "+posicion);
-                            // pasar direccion base del array a $t0
-                            cod3D.append("la $t0, "+nombreArray+currentHash+"\n");
-                            // pasar el valor de la posicion a $t1
-                            cod3D.append("li $t1, "+posicion+"\n");
-                            // calcular la direccion de la posicion
-                            cod3D.append("mul $t1, $t1, 4\n");
-                            // sumar la direccion base con la posicion
-                            cod3D.append("add $t0, $t0, $t1\n");
-                            // guardar el valor en la direccion calculada
-                            cod3D.append("sw $t2"+", ($t0)\n");
-                            // pasar la direccion de la variable a currentTemp
-                            cod3D.append("la $t3, "+nombreArray+currentHash+"\n");
-                            // pasar el valor de la variable a tcurrenTemp
-                            cod3D.append("sw $t2, 0($t3)\n");
-
-
-                            
-
+                            if(tipoArray.equals(tipo)){
+                                System.out.println("posicion: "+posicion);
+                                // pasar direccion base del array a $t0
+                                cod3D.append("la $t0, "+nombreArray+currentHash+"\n");
+                                // pasar el valor de la posicion a $t1
+                                cod3D.append("li $t1, "+posicion+"\n");
+                                // calcular la direccion de la posicion
+                                cod3D.append("mul $t1, $t1, 4\n");
+                                // sumar la direccion base con la posicion
+                                cod3D.append("add $t0, $t0, $t1\n");
+                                // guardar el valor en la direccion calculada
+                                cod3D.append("sw $t2"+", ($t0)\n");
+                                // pasar la direccion de la variable a currentTemp
+                                cod3D.append("la $t3, "+nombreArray+currentHash+"\n");
+                                // pasar el valor de la variable a tcurrenTemp
+                                cod3D.append("sw $t2, 0($t3)\n");
+                            }
                         }
                         else if(compila){
                             if (tipo.toString().equals("int")) {
@@ -1110,9 +1118,12 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                             cod3D.append("sw $t0, " + nombre + currentHash + "\n");
                             cod3D.append("lw $a0, "+nombre+currentHash+"\nli $v0, 1\nsyscall\n");
                         }
-                        cod3D.append("li $t0, 0\n");  // reiniciar el acumulador
-                        primeraOp = true;
-                        listaTablasSimbolos.get(currentHash).add( "Variable (" + tipo.toString() + ") : " + nombre + " = " + vValue);
+                        if(nombreArray.equals("")){
+                            listaTablasSimbolos.get(currentHash).add( "Variable (" + tipo.toString() + ") : " + nombre + " = " + vValue);
+                        }
+                        else{
+                            listaTablasSimbolos.get(currentHash).add( "Variable (" + tipo.toString() + ") : " + nombre + " = " + vValue+"]");
+                        }
                     :}
                     | LOCAL tipoJuguete:tipo PERSONA:nombre
                     {:
@@ -1159,6 +1170,8 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                     | LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA ABREEMPAQUE estampillasNavidena CIERREEMPAQUE
                     {:
                         System.out.println("paso por el array");
+                        nombre = nombre.toString().split("\\[")[0];
+                        System.out.println("nombre: "+nombre);
                         if(variableDeclarada(nombre)){
                             System.err.println("Error semántico: Variable '" + nombre + "' ya declarada.");
                             compila = false;
@@ -1199,7 +1212,7 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                             compila = false;
                         }
                         if(compila){
-                            if(!tipoAceptado.contains("float")){
+                            if(tipoAceptado.contains("int") || tipoAceptado.contains("char")){
                                 // paso la direccion de memoria de la variable a t0
                                 cod3D.append("la $t0, "+nombre+currentHash+"\n");
                                 // guardar los valores en el array
@@ -1208,16 +1221,10 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                                     cod3D.append("li $t"+(i+1)+", "+valoresArray[i]+"\n");
                                     cod3D.append("sw $t"+(i+1)+", "+(i*4)+"($t0)\n");
                                 }
-                            } // si es float se usa s.s
-                            else{
-                                // paso la direccion de memoria de la variable a t0
-                                cod3D.append("la $t0, "+nombre+currentHash+"\n");
-                                // guardar los valores en el array
-                                for(int i = 0; i < valoresArray.length; i++){
-                                    // guardar el valor en la posicion del array
-                                    cod3D.append("li.s $f"+(i+1)+", "+valoresArray[i]+"\n");
-                                    cod3D.append("s.s $f"+(i+1)+", "+(i*4)+"($t0)\n");
-                                }
+                            }
+                            else {
+                                System.err.println("Error semántico: El array "+nombre+" no puede ser de tipo "+tipoAceptado+". Solo se permiten arrays de tipo int o char.");
+                                compila = false;
                             }
                         }
                         
