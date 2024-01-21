@@ -1,11 +1,6 @@
-function int hola(){
-    local int andy <= 3|
-    return andy|
-}
-
 function int main () {
-    @local bool res <= true|
-    local int d <= 7+3+2|
-    hola()|
+    local int[3] prueba <= [1,4,38]|
+    local int hola <= prueba[1]|
+    local int hola3 <= 3+2|
     return 3|
 }
