@@ -1,13 +1,8 @@
-function int hola(int holaa,float ans){
-    local int d <= 5|
-    local int c|
-    return 3|
-}
+
 
 function int main () {
     @local bool res <= true|
-    local int hola <=5|
-    local float hola2 <= 3.3|
-    hola(hola, hola2)|
+    local float[3] arr <= [5.2,3.3,4]|
+    local int d <= 0|
     return 3|
 }

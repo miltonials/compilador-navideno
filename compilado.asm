@@ -4,6 +4,7 @@
 saltoLinea: .asciiz "\n"
 miBoolmain: .word 0
 
+saltoLinea: .asciiz "\n"
 .text
 
 main:
