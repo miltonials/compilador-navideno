@@ -1,8 +1,11 @@
-
+function int hola(){
+    local int andy <= 3|
+    return andy|
+}
 
 function int main () {
     @local bool res <= true|
-    local float[3] arr <= [5.2,3.3,4]|
-    local int d <= 0|
+    local int d <= 7+3+2|
+    hola()|
     return 3|
 }
