@@ -1,17 +1,26 @@
 
 .data
 
-miBoolmain: .word 0
 print0: .asciiz "dentro del if"
-print1: .asciiz "Dentro del else"
+print1: .asciiz "Dentro del elif"
 
 saltoLinea: .asciiz "\n"
 .text
 
 main:
-li $t1,3233
-li $t1,3333
-#3333 == 3233
+li $t1,6
+li $t0,4
+beq $0, 1, if_0
+j fin_if0
+if_0:
+#inicia if0
+la $a0, print0
+jal printStr
+la $a0, saltoLinea
+jal printStr
+j fin_elif0
+fin_if0:
+beq $t1, $t0, true1
 j false1
 true1:
 li $t0,1
@@ -19,32 +28,18 @@ j fin_1
 false1:
 li $t0,0
 fin_1:
-sw $t0, miBoolmain
-li $t0, 0
-blt $t1, $t0, true2
-j false2
-true2:
-li $t0,1
-j fin_2
-false2:
-li $t0,0
-fin_2:
-li $t2,6
-li $t1,4
-beq $0, 1, if_0
-j else_0
-if_0:
-la $a0, print0
-jal printStr
-la $a0, saltoLinea
-jal printStr
-j fin_else0
-else_0:
+li $t2,5
+li $t2,5
+beq $0, 1, if_1
+j fin_if1
+if_1:
+#inicia elif1
 la $a0, print1
 jal printStr
 la $a0, saltoLinea
 jal printStr
-fin_else0:
+fin_if1:
+fin_elif0:
 
 j end_program
 

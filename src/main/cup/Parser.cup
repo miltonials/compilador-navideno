@@ -31,6 +31,8 @@ action code {:
 
         StringBuffer cod3D = new StringBuffer();
         StringBuffer data = new StringBuffer();
+        StringBuffer condicionales = new StringBuffer();
+        StringBuffer bloquesTemporales = new StringBuffer();
         int currentTemp = 0;
         int maxTemp = 0;
         int cantidadNumeros = 0;
@@ -1370,15 +1372,46 @@ estructurarJuguete ::= ELFO estructurarJuguete_if
                         {:
                             cod3D.append("fin_else" + contadorElse + ":\n");//finalizacion etiqueta else
                         :}
-                    | estructurarJuguete_if  bloque estructurarJuguete_elif bloque
-                    | estructurarJuguete_if bloque estructurarJuguete_elif bloque DUENDE bloque
+                    | estructurarJuguete_if HACE
+                        {:
+                            cod3D.append("beq $0, 1, if_" + contadorIf + "\n");//condicion if
+                            cod3D.append("j fin_if" + contadorIf + "\n");//salto a fin
+                            cod3D.append("if_" + (contadorIf++) + ":\n");//creacion etiqueta if
+                            cod3D.append("#inicia if"+(contadorIf-1)+"\n");
+                        :}
+                        bloque
+                        {:
+                            cod3D.append("j fin_elif" + contadorElif + "\n");
+                            cod3D.append("fin_if" + (contadorIf-1) + ":\n");
+                        :}
+                        estructurarJuguete_elif
+                        bloque
+                        {:
+                            cod3D.append("fin_if" + (contadorIf-1) + ":\n");
+                            cod3D.append("fin_elif" + contadorElif + ":\n");
+                            contadorElif++;
+                        :}
+                    | estructurarJuguete_if bloque estructurarJuguete_elif bloque DUENDE bloque//if elif else
                     | estructurarJuguete_for
                     | estructurarJuguete_doUntil
                     ;
 
 estructurarJuguete_if ::= ELFO condiciones;
 estructurarJuguete_elif ::= HADA condiciones
-                        | HADA condiciones estructurarJuguete_elif;
+                            {:
+                                cod3D.append("beq $0, 1, if_" + contadorIf + "\n");//condicion if
+                                cod3D.append("j fin_if" + contadorIf + "\n");//salto a fin
+                                cod3D.append("if_" + (contadorIf++) + ":\n");//creacion etiqueta if
+                                cod3D.append("#inicia elif"+(contadorIf-1)+"\n");
+                            :}
+                        | HADA condiciones
+                            {:
+                                cod3D.append("beq $0, 1, if_" + contadorIf + "\n");//condicion if
+                                cod3D.append("j fin_if" + contadorIf + "\n");//salto a fin
+                                cod3D.append("if_" + (contadorIf++) + ":\n");//creacion etiqueta if
+                                cod3D.append("#inicia elif"+(contadorIf-1)+"\n");
+                            :}
+                          estructurarJuguete_elif;
 
 //estructurarJuguete_else ::= DUENDE;
 
