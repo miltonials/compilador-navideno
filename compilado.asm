@@ -1,51 +1,35 @@
 
 .data
 
-miBoolmain: .word 0
-print0: .asciiz "dentro del if"
-print1: .asciiz "Dentro del else"
+andyhola: .word 0
+dmain: .word 0
 
+returnInt: .word 0
+returnFloat: .float 0.0
+returnChar: .byte 0
 saltoLinea: .asciiz "\n"
 .text
 
-main:
-li $t1,3233
-li $t1,3333
-#3333 == 3233
-j false1
-true1:
-li $t0,1
-j fin_1
-false1:
-li $t0,0
-fin_1:
-sw $t0, miBoolmain
+hola:
+#3
+li $t0, 3
+sw $t0, andyhola
 li $t0, 0
-blt $t1, $t0, true2
-j false2
-true2:
-li $t0,1
-j fin_2
-false2:
-li $t0,0
-fin_2:
-li $t2,6
-li $t1,4
-beq $0, 1, if_0
-j else_0
-if_0:
-la $a0, print0
-jal printStr
-la $a0, saltoLinea
-jal printStr
-j fin_else0
-else_0:
-la $a0, print1
-jal printStr
-la $a0, saltoLinea
-jal printStr
-fin_else0:
-
+lw $v0, andyhola
+sw $v0, returnInt
+jr $ra
+main:
+add $t0, $t0, 3
+add $t0, $t0, 7
+#7 + 3 + 2
+sw $t0, dmain
+li $t0, 0
+jal hola
+# imprimir el valor retornado por hola
+lw $t0, returnInt
+li $v0, 1
+move $a0, $t0
+syscall
 j end_program
 
 

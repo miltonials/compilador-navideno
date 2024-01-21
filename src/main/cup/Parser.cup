@@ -308,6 +308,9 @@ action code {:
             Archivos.escribirArchivo(filename, "");
             Archivos.agregarArchivo(filename, ".data\n");
             Archivos.agregarArchivo(filename, data.toString());
+            Archivos.agregarArchivo(filename, "returnInt: .word 0");
+            Archivos.agregarArchivo(filename, "returnFloat: .float 0.0");
+            Archivos.agregarArchivo(filename, "returnChar: .byte 0");
             Archivos.agregarArchivo(filename, "saltoLinea: .asciiz \"\\n\"");
             Archivos.agregarArchivo(filename, ".text\n");
             // utilizar StringBuffer cod3D
@@ -784,14 +787,113 @@ juguete ::= asignarJuguete FINREGALO
                 {:
                     String tipo = tp.toString().split(":")[tp.toString().split(":").length - 1];
                     verificarTipoRetorno(tipo);
+                    System.out.println("tipo: "+tipo);
+                    System.out.println("valor: "+tp.toString());
+                    String valor = tp.toString().split(":")[0];
+                    System.out.println("valor: "+valor);
+                    Boolean isVar = false;
+                    try{
+                        if(tipo.equals("int")){
+                            Integer.parseInt(valor);
+                        }
+                        else if(tipo.equals("float")){
+                            Float.parseFloat(valor);
+                        }
+                        else if(tipo.equals("bool")){
+                            if(valor.equals("true") || valor.equals("false")){
+                                // es un booleano
+                                if(valor.equals("true")){
+                                    valor = "1";
+                                }
+                                else{
+                                    valor = "0";
+                                }
+                            }
+                        }
+                        else if(tipo.equals("char")){
+                            if(valor.length() > 2){
+                                isVar = true;
+                            }
+                        }
+                    }
+                    catch(Exception e){
+                        System.out.println("Es una variable");
+                        isVar = true;
+                    }
+                    // almacenar el valor de retorno en el registro $v0
+                    // la funcion que retorna no debe ser la main 
+                    
+                    if(currentHash.toString().equals("main")){
+                        //no se hace nanda porque no se retorna nada
+                        // se puede imprimir el valor de retorno
+                    }
+                    else{
+                        if(isVar){
+                            if(tipo.equals("int")){
+                                cod3D.append("lw $v0, "+(valor+currentHash)+"\n");
+                                //pasar el valor de retorno a la variable returnInt
+                                cod3D.append("sw $v0, returnInt\n");
+                            }
+                            else if(tipo.equals("float")){
+                                cod3D.append("l.s $f0, "+(valor+currentHash)+"\n");
+                                //pasar el valor de retorno a la variable returnFloat
+                                cod3D.append("s.s $f0, returnFloat\n");
+                            }
+                            else if(tipo.equals("bool")){
+                                cod3D.append("lw $v0, "+(valor+currentHash)+"\n");
+                                //pasar el valor de retorno a la variable returnInt
+                                cod3D.append("sw $v0, returnInt\n");
+                            }
+                            else if(tipo.equals("char")){
+                                cod3D.append("lw $v0, "+(valor+currentHash)+"\n");
+                                //pasar el valor de retorno a la variable returnInt
+                                cod3D.append("sw $v0, returnChar\n");
+                            }
+                            else if(tipo.equals("string")){
+                                cod3D.append("lw $v0, "+(valor+currentHash)+"\n");
+                                //pasar el valor de retorno a la variable returnInt
+                                cod3D.append("sw $v0, returnStr\n");
+                            }
+                        }
+                        else{
+                            if (tipo.equals("int")) {
+                                cod3D.append("li $v0, " + valor + "\n");
+                                //pasar el valor de retorno a la variable returnInt
+                                cod3D.append("sw $v0, returnInt\n");
+                            }
+                            else if (tipo.equals("float")) {
+                                cod3D.append("li.s $f0, " + valor + "\n");
+                                //pasar el valor de retorno a la variable returnFloat
+                                cod3D.append("s.s $f0, returnFloat\n");
+                            }
+                            else if (tipo.equals("bool")) {
+                                if (valor.equals("true")) {
+                                    cod3D.append("li $v0, 1\n");
+                                    // pasarlo a la variable returnInt
+                                    cod3D.append("sw $v0, returnInt\n");
+                                }
+                                else if (valor.equals("false")) {
+                                    cod3D.append("li $v0, 0\n");
+                                    // pasarlo a la variable returnInt
+                                    cod3D.append("sw $v0, returnInt\n");
+                                }
+                            }
+                            else if(tipo.equals("char")){
+                                cod3D.append("li $v0, " + valor + "\n");
+                                //pasar el valor de retorno a la variable returnInt
+                                cod3D.append("sw $v0, returnChar\n");
+                            }
+
+                        }
+                        cod3D.append("jr $ra\n");
+                    }
+
                 :}
             | NARRA parens tallerDeJuguetes:tp parens FINREGALO
             {:
                 //solo se permite imprimir int, string, y float
                 String tipo = tp.toString().split(":")[tp.toString().split(":").length - 1];
                 String nombre = vValue+currentHash;
-                
-
 
                 boolean isVar = variableDeclarada(vValue);
                 
@@ -876,6 +978,8 @@ juguete ::= asignarJuguete FINREGALO
 
 asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguetes:tp
                     {:  
+                        System.out.println("paso por la asignacion");
+                        System.out.println("asignacion: "+tp.toString());
                         if(variableDeclarada(nombre)){
                             System.err.println("Error semántico: Variable '" + nombre + "' ya declarada.");
                             compila = false;
@@ -896,6 +1000,12 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                         if(compila){
                             if (tipo.toString().equals("int")) {
                                 data.append(nombre + currentHash + ": .word 0\n");
+                                String[] partes = tp.toString().split(":");
+                                System.out.println("partes: "+partes.length);
+                                if(partes.length == 2 && partes[0].matches("-?\\d+")){
+                                    //pasamos el valor al registro $t0
+                                    cod3D.append("li $t0, "+partes[0]+"\n");
+                                }
                                 cod3D.append("sw $t"+currentTemp+", " + nombre + currentHash + "\n");
                                 //cod3D.append("lw $a0, "+nombre+currentHash+"\nli $v0, 1\nsyscall\n");
 
@@ -941,9 +1051,7 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                             cod3D.append("sw $t0, " + nombre + currentHash + "\n");
                             cod3D.append("lw $a0, "+nombre+currentHash+"\nli $v0, 1\nsyscall\n");
                         }
-                        
-                        cod3D.append("li $t0, 0\n");  
-
+                        cod3D.append("li $t0, 0\n");  // reiniciar el acumulador
                         primeraOp = true;
                         listaTablasSimbolos.get(currentHash).add( "Variable (" + tipo.toString() + ") : " + nombre + " = " + vValue);
                     :}
