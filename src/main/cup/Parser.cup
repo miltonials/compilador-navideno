@@ -1500,7 +1500,7 @@ juguetesUnarios ::= piezaUnaria:operador piezaNumerica:val
                         }
                         else
                         {
-                            cod3D.append("sub $t" + currentTemp + ", " + val.toString() + curren + "\n");
+                            cod3D.append("sub $t" + currentTemp + ", " + val.toString() + currentTemp + "\n");
                         }
                         //guardar el valor de la variable
                         cod3D.append("sw $t" + currentTemp + ", " + nombreVar + "\n");
