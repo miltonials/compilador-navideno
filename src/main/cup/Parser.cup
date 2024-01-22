@@ -47,6 +47,7 @@ action code {:
         int contadorElif = 0;
         int contadorElse = 0;
         int contadorDo = 0;
+        int contadorFor = 0;
 
         /**
           * Tipo de retorno de la funcion
@@ -712,6 +713,7 @@ non terminal bolsaFuncional;
 non terminal monnosAux;
 non terminal  parens;
 non terminal elifSimple;
+non terminal piezaNumerica;
 //-------------------------------------------------------------------------------------- PRECEDENCIA
 precedence left ABRECUENTO, CIERRECUENTO, PERSONA;
 
@@ -1292,12 +1294,12 @@ tallerDeJuguetes ::= piezaJuguete: val
                         //currentTemp -= 1;
                         aritmetica3d(valA.toString(), operador.toString(), valB.toString(), tipo.toString());
                     :}
-                    | GRINCH:operador piezaJuguete:val
+                    | GRINCH:operador piezaNumerica:val
                     {:
                         RESULT = operador.toString() + " " + val.toString();
                         vValue = RESULT.toString();
                     :}
-                    | QUIEN:operador piezaJuguete:val
+                    | QUIEN:operador piezaNumerica:val
                     {:
                         RESULT = operador.toString() + " " + val.toString();
                         vValue = RESULT.toString();
@@ -1368,15 +1370,9 @@ gomasNavidenas ::= gomaLocaAritmetica:operador {: RESULT = operador; :}
                 | gomaLocaLogica:operador {: RESULT = operador; :}
                 ;
 
-piezaJuguete ::= L_SANTACLAUS:val
+piezaJuguete ::= piezaNumerica:val
                 {:
-                    vValue = val.toString();
-                    RESULT =  val.toString() + ":int";
-                :}
-            | L_PERENOEL:val
-                {:
-                    vValue = val.toString();
-                    RESULT =  val + ":float";
+                    RESULT =  val;
                 :}
             | L_FATHERCHRISTMAS:val
                 {:
@@ -1415,6 +1411,18 @@ piezaJuguete ::= L_SANTACLAUS:val
                     }
                 :}
             ;
+
+piezaNumerica ::= L_SANTACLAUS:val
+                    {:
+                        vValue = val.toString();
+                        RESULT =  val.toString() + ":int";
+                    :}
+                | L_PERENOEL:val
+                    {:
+                        vValue = val.toString();
+                        RESULT =  val + ":float";
+                    :}
+                    ;
 
 piezaImportada ::= PERSONA:nombre parens parens
                     {:
@@ -1602,6 +1610,7 @@ elifSimple ::= HADA condiciones
 //estructurarJuguete_else ::= DUENDE;
 
 estructurarJuguete_for ::= ENVUELVE encabezado_for bloque;
+
 estructurarJuguete_doUntil ::= HACE
                                 {:
                                     cod3D.append("do_" + (contadorDo++) + ":\n");
@@ -1609,7 +1618,7 @@ estructurarJuguete_doUntil ::= HACE
                                 bloque
                                 REVISA condiciones FINREGALO
                                 {:
-                                    cod3D.append("beq $0, 1, do_" + (contadorDo-1) + "\n");
+                                    cod3D.append("beq $t0, 1, do_" + (contadorDo-1) + "\n");
                                 :}
                                 ;
 
@@ -1617,5 +1626,7 @@ condiciones ::= ABRECUENTO tallerDeJuguetes CIERRECUENTO;
 bloque ::= ABREREGALO juguetes CIERRAREGALO;
 
 
-encabezado_for ::= ABRECUENTO asignarJuguete FINREGALO tallerDeJuguetes FINREGALO tallerDeJuguetes CIERRECUENTO;
+encabezado_for ::= ABRECUENTO asignarJuguete FINREGALO
+                    tallerDeJuguetes FINREGALO
+                    tallerDeJuguetes CIERRECUENTO;
 
