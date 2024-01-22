@@ -1124,6 +1124,7 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                         else{
                             listaTablasSimbolos.get(currentHash).add( "Variable (" + tipo.toString() + ") : " + nombre + " = " + vValue+"]");
                         }
+                        System.out.println("#############fin asignacion");
                     :}
                     | LOCAL tipoJuguete:tipo PERSONA:nombre
                     {:
@@ -1156,9 +1157,11 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                     :}
                     | PERSONA:nombre ENTREGA tallerDeJuguetes:tp
                     {:
+                        System.out.println("paso por la asignacion sin declaracion");
+                        System.out.println("nombre: "+nombre);
                         verificarDeclaracionVariable(nombre);
                         String tipoAux;
-                        boolean isVariable = false;
+                        boolean isVariable = false; 
                         System.out.println("valor: "+tp.toString());
                         //= tp.toString().split(":")[tp.toString().split(":").length - 1];
                         if(tp.toString().contains("[")){
@@ -1293,16 +1296,54 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                         }
                         
                     :}
-                    | PERSONA:nombre ABREEMPAQUE tallerDeJuguetes:tp CIERREEMPAQUE ENTREGA tallerDeJuguetes
+                    | PERSONA:nombre ABREEMPAQUE tallerDeJuguetes:tp CIERREEMPAQUE ENTREGA tallerDeJuguetes:tp2
                     {:
-                        verificarDeclaracionVariable(nombre);
+                        System.out.println("paso por cambiar el valor de un array");
+                        System.out.println("nombre: "+nombre);
+                        System.out.println("valor: "+tp.toString());
+                        System.out.println("valor2: "+tp2.toString());
                         String tipoAux = tp.toString().split(":")[tp.toString().split(":").length - 1];
-                        if (!tipoAux.equals(getTipo(nombre))) {
-                            System.err.println("Error semántico: Tipo de dato incorrecto en la asignación de la variable '" + nombre + "'.");
+                        for (String item : listaTablasSimbolos.get(currentHash)) {
+                            if(item.toString().contains(nombre)){
+                                String[] tipoArrayAux = item.split(":");
+                                String tipoArrayAux2 = tipoArrayAux[tipoArrayAux.length-1].replace("]", "");
+                                // tipoArray = item.toString().split("\\(")[1].split("\\)")[0];
+                                // System.out.println("tipoArrayAux: "+tipoArrayAux);
+                                // System.out.println("tipoArrayAux2: "+tipoArrayAux2);
+                                tipoAux = tipoArrayAux2;
+                                // System.out.println("item: "+item);
+                            }
+                        }
+                        String tipoAux2 = tp2.toString().split(":")[tp2.toString().split(":").length - 1];
+                        if(!tipoAux.equals(tipoAux2)){
+                            System.err.println("Error semántico: El tipo de dato del array "+nombre+" es diferente al tipo de dato de los valores que se le quieren asignar.");
                             compila = false;
                         }
-                        String tipo = getTipo(nombre);
-                        listaTablasSimbolos.get(currentHash).add( "Variable ("+tipo+") : " + nombre + " = [" + vValue + "]");
+                        // System.out.println("tipoAux: "+tipoAux);
+                        // System.out.println("tipoAux2: "+tipoAux2);
+                        if(!tipoAux.contains("int") && !tipoAux.contains("char")){
+                            System.err.println("Error semántico: El array "+nombre+" no puede ser de tipo "+tipoAux+". Solo se permiten arrays de tipo int o char.");
+                            compila = false;
+                        }
+                        String posicion = tp.toString().split(":")[tp.toString().split(":").length - 2];
+                        String valor = tp2.toString().split(":")[0];
+                        // System.out.println("posicion: "+posicion);
+                        // System.out.println("valor: "+valor);
+                        if(compila){
+                            // pasar la direccion de memoria del array a $t0
+                            cod3D.append("la $t0, "+nombre+currentHash+"\n");
+                            // pasar la posicion a $t1
+                            cod3D.append("li $t1, "+posicion+"\n");
+                            // calcular la direccion de la posicion
+                            cod3D.append("mul $t1, $t1, 4\n");
+                            // sumar la direccion base con la posicion
+                            cod3D.append("add $t0, $t0, $t1\n");
+                            // guardar el valor en la direccion calculada
+                            cod3D.append("li $t2, "+valor+"\n");
+                            cod3D.append("sw $t2, ($t0)\n");
+                            // listaTablasSimbolos.get(currentHash).add( "Variable ("+tipoAux+"[]) : " + nombre + " = [" + vValue + "]");
+                        }
+                        // listaTablasSimbolos.get(currentHash).add( "Variable ("+tipo+") : " + nombre + " = [" + vValue + "]");
                     :}
                     | PERSONA:nombre ENTREGA ABREEMPAQUE estampillasNavidena CIERREEMPAQUE
                     {:
