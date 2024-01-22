@@ -714,8 +714,10 @@ non terminal monnosAux;
 non terminal  parens;
 non terminal elifSimple;
 non terminal piezaNumerica;
+non terminal juguetesUnarios;
+non terminal piezaUnaria;
 //-------------------------------------------------------------------------------------- PRECEDENCIA
-precedence left ABRECUENTO, CIERRECUENTO, PERSONA;
+precedence left ABRECUENTO, CIERRECUENTO;
 
 
 
@@ -1294,15 +1296,9 @@ tallerDeJuguetes ::= piezaJuguete: val
                         //currentTemp -= 1;
                         aritmetica3d(valA.toString(), operador.toString(), valB.toString(), tipo.toString());
                     :}
-                    | GRINCH:operador piezaNumerica:val
+                    | juguetesUnarios:val
                     {:
-                        RESULT = operador.toString() + " " + val.toString();
-                        vValue = RESULT.toString();
-                    :}
-                    | QUIEN:operador piezaNumerica:val
-                    {:
-                        RESULT = operador.toString() + " " + val.toString();
-                        vValue = RESULT.toString();
+                        RESULT =  val.toString();
                     :}
                     | BALTASAR:operador tallerDeJuguetes:val
                     {:
@@ -1365,6 +1361,23 @@ parens ::= ABRECUENTO {: currentTemp += 1; if (maxTemp < currentTemp) {maxTemp =
             :}
             ;
 
+juguetesUnarios ::= piezaUnaria:operador piezaNumerica:val
+                    {:
+                        RESULT = operador.toString() + " " + val.toString();
+                        vValue = RESULT.toString();
+                    :}
+                    |
+                    piezaUnaria:operador PERSONA:val
+                    {:
+                        RESULT = operador.toString() + " " + val.toString();
+                        vValue = RESULT.toString();
+                    :}
+                    ;
+
+piezaUnaria ::= GRINCH:operador {: RESULT = operador.toString(); :}
+                | QUIEN:operador {: RESULT = operador.toString(); :}
+                ;
+
 gomasNavidenas ::= gomaLocaAritmetica:operador {: RESULT = operador; :}
                 | gomaLocaRelacional:operador {: RESULT = operador; :}
                 | gomaLocaLogica:operador {: RESULT = operador; :}
@@ -1424,7 +1437,7 @@ piezaNumerica ::= L_SANTACLAUS:val
                     :}
                     ;
 
-piezaImportada ::= PERSONA:nombre parens parens
+piezaImportada ::= PERSONA:nombre ABRECUENTO CIERRECUENTO
                     {:
                         System.out.println(nombre);
                         if (!funcionDeclarada(nombre)) {
@@ -1609,7 +1622,12 @@ elifSimple ::= HADA condiciones
 
 //estructurarJuguete_else ::= DUENDE;
 
-estructurarJuguete_for ::= ENVUELVE encabezado_for bloque;
+estructurarJuguete_for ::= ENVUELVE encabezado_for bloque
+                            {:
+                                cod3D.append("j for_" + (contadorFor - 1) + "_inc\n");
+                                cod3D.append("for_" + (contadorFor-1) + "_fin:\n");
+                            :}
+                            ;
 
 estructurarJuguete_doUntil ::= HACE
                                 {:
@@ -1627,6 +1645,20 @@ bloque ::= ABREREGALO juguetes CIERRAREGALO;
 
 
 encabezado_for ::= ABRECUENTO asignarJuguete FINREGALO
+                    {:
+                        cod3D.append("\n\nfor_ini" + (contadorFor++) + ":\n");
+                        cod3D.append("for_" + (contadorFor - 1) + "_cond:\n");
+                    :}
                     tallerDeJuguetes FINREGALO
-                    tallerDeJuguetes CIERRECUENTO;
+                    {:
+                        cod3D.append("beq $t0, 1, for_" + (contadorFor - 1) + "_bloque\n");
+                        cod3D.append("j for_" + (contadorFor - 1) + "_fin\n");
+                        cod3D.append("for_" + (contadorFor - 1) + "_inc:\n");
+                    :}
+                    juguetesUnarios CIERRECUENTO 
+                    {:
+                        cod3D.append("j for_" + (contadorFor - 1) + "_cond\n");
+                        cod3D.append("for_" + (contadorFor - 1) + "_bloque:\n");
+                    :}
+                    ;
 
