@@ -310,20 +310,22 @@ action code {:
 
         public void generarArchivo() {
             // Solicitar nombre del generarArchivo
-            String filename = "compilado.asm";
-            Archivos.crearArchivo(filename);
-            Archivos.escribirArchivo(filename, "");
-            Archivos.agregarArchivo(filename, ".data\n");
-            Archivos.agregarArchivo(filename, data.toString());
-            Archivos.agregarArchivo(filename, "returnInt: .word 0");
-            Archivos.agregarArchivo(filename, "returnFloat: .float 0.0");
-            Archivos.agregarArchivo(filename, "returnChar: .byte 0");
-            Archivos.agregarArchivo(filename, "saltoLinea: .asciiz \"\\n\"");
-            Archivos.agregarArchivo(filename, ".text\n");
+            String filename = Archivos.asmFileName;
+            String path = "./resultados/" + filename + "/" + filename + ".asm";
+            System.out.println(path);
+            Archivos.crearArchivo(path);
+            Archivos.escribirArchivo(path, "");
+            Archivos.agregarArchivo(path, ".data\n");
+            Archivos.agregarArchivo(path, data.toString());
+            Archivos.agregarArchivo(path, "returnInt: .word 0");
+            Archivos.agregarArchivo(path, "returnFloat: .float 0.0");
+            Archivos.agregarArchivo(path, "returnChar: .byte 0");
+            Archivos.agregarArchivo(path, "saltoLinea: .asciiz \"\\n\"");
+            Archivos.agregarArchivo(path, ".text\n");
             // utilizar StringBuffer cod3D
-            Archivos.agregarArchivo(filename, cod3D.toString());
-            // Archivos.agregarArchivo(filename, "j end_program");
-            Archivos.agregarArchivo(filename, Archivos.getContenido("macrosMips.asm"));
+            Archivos.agregarArchivo(path, cod3D.toString());
+            // Archivos.agregarArchivo(path, "j end_program");
+            Archivos.agregarArchivo(path, Archivos.getContenido("macrosMips.asm"));
         }
 
     public boolean contieneOperadores(String expresion) {

@@ -1,0 +1,9 @@
+function int hola () {
+	print("Soy la función hola")|
+	return 3|
+}
+
+function int main () {
+	hola()|
+	return 1|
+}

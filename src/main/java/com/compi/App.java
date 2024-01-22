@@ -91,7 +91,9 @@ public class App implements Callable<Integer> {
         String format = "%-20s %-15s %-15s %-15s\n";
         String content = String.format(format, "Tipo", "Linea", "Columna", "Lexema");
         String newPath = "./resultados/" + filename.substring(0, filename.indexOf(".")) + "/";
-        String resFile = newPath + filename.substring(0, filename.indexOf(".")) + ".txt";
+        String resFile = newPath + filename.substring(0, filename.indexOf("."));
+        Archivos.asmFileName = filename.substring(0, filename.indexOf("."));
+        resFile += ".txt";
 
         Symbol token;
         int count = 0;

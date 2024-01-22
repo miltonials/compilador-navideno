@@ -13,6 +13,8 @@ import java.util.logging.Logger;
  */
 public class Archivos {
 
+  public static String asmFileName = "test.asm";
+
   /**
    * Create folders by a path parameter. Example: path =
    * "./folder/folder1/folder11". This create 3 folders.
