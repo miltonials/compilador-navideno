@@ -271,6 +271,11 @@ public class ParserTest {
     //program += "print(5/5)|";
     //program += "print(\"Soy un string\")|";
 
+    program += "do {";
+    program += "print(\"Soy un do until\")|";
+    program += "}";
+    program += "until (9+1 == 9+1 == 9+1)|";
+
     /*
     program += "local int temp2 <= 5 + 5 - 5 + 5 - 5 + 5|";//10✅
     program += "local int temp3 <= (5 + 5 + 5) + (5 + 5 + 5)|";//30✅

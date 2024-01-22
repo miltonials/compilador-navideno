@@ -46,6 +46,7 @@ action code {:
         int contadorCondiciones = 1;
         int contadorElif = 0;
         int contadorElse = 0;
+        int contadorDo = 0;
 
         /**
           * Tipo de retorno de la funcion
@@ -1601,7 +1602,16 @@ elifSimple ::= HADA condiciones
 //estructurarJuguete_else ::= DUENDE;
 
 estructurarJuguete_for ::= ENVUELVE encabezado_for bloque;
-estructurarJuguete_doUntil ::= HACE bloque REVISA condiciones FINREGALO;
+estructurarJuguete_doUntil ::= HACE
+                                {:
+                                    cod3D.append("do_" + (contadorDo++) + ":\n");
+                                :}
+                                bloque
+                                REVISA condiciones FINREGALO
+                                {:
+                                    cod3D.append("beq $0, 1, do_" + (contadorDo-1) + "\n");
+                                :}
+                                ;
 
 condiciones ::= ABRECUENTO tallerDeJuguetes CIERRECUENTO;
 bloque ::= ABREREGALO juguetes CIERRAREGALO;
