@@ -5,5 +5,6 @@ function int hola () {
 
 function int main () {
 	hola()|
+	print(3)|
 	return 1|
 }

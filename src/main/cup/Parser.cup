@@ -1484,7 +1484,7 @@ juguetesUnarios ::= piezaUnaria:operador piezaNumerica:val
                         }
                         else
                         {
-                            cod3D.append("sub $t" +c urrentTemp + ", " + val.toString() + "\n");
+                            cod3D.append("sub $t" +currentTemp + ", " + val.toString() + "\n");
                         }
                     :}
                     |
