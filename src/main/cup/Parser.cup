@@ -1479,12 +1479,31 @@ juguetesUnarios ::= piezaUnaria:operador piezaNumerica:val
                     {:
                         RESULT = operador.toString() + " " + val.toString();
                         vValue = RESULT.toString();
+                        if(operador.toString().equals("++")) {
+                            cod3D.append("add $t" + currentTemp + ", " + val.toString() + "\n");
+                        }
+                        else
+                        {
+                            cod3D.append("sub $t" +c urrentTemp + ", " + val.toString() + "\n");
+                        }
                     :}
                     |
                     piezaUnaria:operador PERSONA:val
                     {:
                         RESULT = operador.toString() + " " + val.toString();
                         vValue = RESULT.toString();
+                        String nombreVar = val.toString().split(":")[0] + currentHash;
+                        //obtener el valor de la variable
+                        cod3D.append("lw $t" + currentTemp + ", " + nombreVar + "\n");
+                        if(operador.toString().equals("++")) {
+                            cod3D.append("add $t" + currentTemp + ", " + val.toString() + "\n");
+                        }
+                        else
+                        {
+                            cod3D.append("sub $t" + currentTemp + ", " + val.toString() + curren + "\n");
+                        }
+                        //guardar el valor de la variable
+                        cod3D.append("sw $t" + currentTemp + ", " + nombreVar + "\n");
                     :}
                     ;
 
