@@ -1549,7 +1549,7 @@ piezaNumerica ::= L_SANTACLAUS:val
                     :}
                     ;
 
-piezaImportada ::= PERSONA:nombre ABRECUENTO CIERRECUENTO
+piezaImportada ::= PERSONA:nombre parens parens
                     {:
                         System.out.println(nombre);
                         if (!funcionDeclarada(nombre)) {

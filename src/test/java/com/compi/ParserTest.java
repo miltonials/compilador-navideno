@@ -232,10 +232,11 @@ public class ParserTest {
   @Test
   public void miTest() throws Exception {
 
-    String program = "";//funInt + "print(\"Soy la función hola\")|return 3|}";
+    String program = funInt + "print(\"Soy la función hola\")|return 3|}";
     program += funMainAlt;
     //program += "local int temp1 <= 1 + 2 + 3 + -4 + 5 + 6|";//13✅
-    program += "print(\"hola\")|";
+    //program += "print(\"hola\")|";
+    program += "hola()|";
     //program += "hola()|";
     //program += "print(temp1)|";
     //program += "local bool miBool <= 3333==3233|";
@@ -255,10 +256,11 @@ public class ParserTest {
     //program += "print(\"Soy un do until\")|";
     //program += "}";
     //program += "until (9+1 == 9+1 == 9+1)|";
-
+    /*
     program += "for (local int res <= 1| 2 < 5 | ++4) {";
     program += "print(\"Soy un do print dentro de un for\")|break|}";
     program += "print(\"adios!\")|";
+    */
     /*
     program += "local int temp2 <= 5 + 5 - 5 + 5 - 5 + 5|";//10✅
     program += "local int temp3 <= (5 + 5 + 5) + (5 + 5 + 5)|";//30✅
