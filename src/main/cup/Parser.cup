@@ -1193,6 +1193,9 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                             catch(Exception e){
                                 System.out.println("Error al obtener la posicion del array");
                             }
+                            System.out.println("tipo de la variable a asignar: "+getTipo(nombre));
+                            System.out.println("tipo de la variable: "+tipoAux);
+                            System.out.println(tipoAux.equals(getTipo(nombre)));
                             if(tipoAux.equals(getTipo(nombre))){
                                 // data.append(nombre + currentHash + ": .word 0\n");
                                 System.out.println("posicion: "+posicion);
@@ -1210,6 +1213,9 @@ asignarJuguete ::= LOCAL tipoJuguete:tipo PERSONA:nombre ENTREGA tallerDeJuguete
                                 cod3D.append("la $t3, "+nombreVariable+currentHash+"\n");
                                 // pasar el valor de la variable a tcurrenTemp
                                 cod3D.append("sw $t2, 0($t3)\n");
+                            }else{
+                                System.err.println("Error semántico: Tipo de dato incorrecto en la asignación de la variable '" + nombre + "'.");
+                                compila = false;
                             }
                         }else{
                             if (!tipoAux.equals(getTipo(nombre))) {
