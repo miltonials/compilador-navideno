@@ -1,6 +1,5 @@
 function int main () {
-    local int[3] prueba <= [1,4,38]|
-    local int hola <= prueba[1]|
-    local int hola3 <= 3+2|
+    local int[3] prueba <= [5,6,2]|
+    prueba[1] <= 2|
     return 3|
 }
